@@ -1,0 +1,17 @@
+[package]
+name = "voxel_engine_prototype"
+version = "0.1.0"
+authors = ["LokiVKlokeNaAndoke <ma.ba1@rambler.ru>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+amethyst = "0.13.2"
+float-cmp = "0.5.2"
+
+[features]
+vulkan = ["amethyst/vulkan"]
+
+[profile.dev]
+opt-level = 1

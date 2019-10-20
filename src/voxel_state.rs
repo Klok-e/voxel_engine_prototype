@@ -162,7 +162,7 @@ fn create_cube(world: &mut World, pos: Transform) {
 
     let albedo = world.exec(|loader: AssetLoaderSystemData<Texture>| {
         loader.load_from_data(
-            loaders::load_from_linear_rgba(LinSrgba::new(1.0, 0.0, 0.0, 1.0)).into(),
+            loaders::load_from_linear_rgba(LinSrgba::new(0.0, 100.0, 0.0, 1.0)).into(),
             (),
         )
     });
