@@ -75,6 +75,7 @@ impl<'a> System<'a> for CameraMoveSystem {
             cam_trans.append_rotation_y_axis(d_x * sensitivity.mouse);
         }
     }
+
     fn setup(&mut self, world: &mut World) {
         <Self as System<'_>>::SystemData::setup(world);
         self.readerid = Some(

@@ -1,3 +1,4 @@
+use crate::directions::Directions;
 use amethyst::prelude::*;
 use amethyst::{
     assets::AssetLoaderSystemData,
@@ -17,8 +18,6 @@ use amethyst::{
 use float_cmp::ApproxEq;
 use std::f32::consts::PI;
 
-pub struct VoxelState {}
-
 #[derive(Debug)]
 struct ChunkMesh {
     positions: Vec<Position>,
@@ -37,7 +36,7 @@ impl ChunkMesh {
         }
     }
 
-    fn insert_quad(&mut self, pos: math::Vector3<f32>, dir: math::Vector3<f32>) {
+    fn insert_quad(&mut self, pos: math::Vector3<f32>, dir: Directions) {
         let count = self.positions.len() as u16;
         /*
         2-------3   ^
@@ -89,12 +88,13 @@ impl ChunkMesh {
         ];
 
         let (vert0, vert1, vert2, vert3) = match dir {
-            x if x[1] == 1. => verts[2],
-            x if x[1] == -1. => verts[3],
-            x if x[0] == 1. => verts[4],
-            x if x[0] == -1. => verts[5],
-            x if x[2] == 1. => verts[0],
-            x if x[2] == -1. => verts[1],
+            // TODO: remove clones when Clion is happy without them
+            x if x.intersects(Directions::UP) => verts[2].clone(),
+            x if x.intersects(Directions::DOWN) => verts[3].clone(),
+            x if x.intersects(Directions::WEST) => verts[4].clone(),
+            x if x.intersects(Directions::EAST) => verts[5].clone(),
+            x if x.intersects(Directions::NORTH) => verts[0].clone(),
+            x if x.intersects(Directions::SOUTH) => verts[1].clone(),
             _ => unreachable!(),
         };
 
@@ -103,10 +103,10 @@ impl ChunkMesh {
         self.positions.push((pos + vert2).into());
         self.positions.push((pos + vert3).into());
 
-        self.normals.push(dir.into());
-        self.normals.push(dir.into());
-        self.normals.push(dir.into());
-        self.normals.push(dir.into());
+        self.normals.push(dir.to_vec().into());
+        self.normals.push(dir.to_vec().into());
+        self.normals.push(dir.to_vec().into());
+        self.normals.push(dir.to_vec().into());
 
         self.uv.push([0., 0.].into());
         self.uv.push([1., 0.].into());
@@ -130,6 +130,8 @@ impl ChunkMesh {
     }
 }
 
+pub struct VoxelState {}
+
 impl SimpleState for VoxelState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         initialise_camera(data.world);
@@ -144,12 +146,12 @@ fn create_cube(world: &mut World, pos: Transform) {
 
     let mut chunk_mesh = ChunkMesh::new();
 
-    chunk_mesh.insert_quad([0., 0., 0.].into(), math::Vector3::y());
-    chunk_mesh.insert_quad([0., 0., 0.].into(), -math::Vector3::y());
-    chunk_mesh.insert_quad([0., 0., 0.].into(), math::Vector3::x());
-    chunk_mesh.insert_quad([0., 0., 0.].into(), -math::Vector3::x());
-    chunk_mesh.insert_quad([0., 0., 0.].into(), math::Vector3::z());
-    chunk_mesh.insert_quad([0., 0., 0.].into(), -math::Vector3::z());
+    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::UP);
+    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::DOWN);
+    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::EAST);
+    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::WEST);
+    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::SOUTH);
+    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::NORTH);
 
     let mesh = world.exec(
         |loader: AssetLoaderSystemData<amethyst::renderer::types::Mesh>| {
@@ -162,7 +164,7 @@ fn create_cube(world: &mut World, pos: Transform) {
 
     let albedo = world.exec(|loader: AssetLoaderSystemData<Texture>| {
         loader.load_from_data(
-            loaders::load_from_linear_rgba(LinSrgba::new(0.0, 100.0, 0.0, 1.0)).into(),
+            loaders::load_from_linear_rgba(LinSrgba::new(1.0, 0.0, 0.0, 0.5)).into(),
             (),
         )
     });
@@ -181,13 +183,12 @@ fn create_cube(world: &mut World, pos: Transform) {
 }
 
 fn initialise_camera(world: &mut World) {
-    // Setup camera in a way that our screen covers whole arena and (0, 0) is in the bottom left.
     let mut transform = Transform::default();
     transform.set_translation_xyz(0., 0., 2.);
 
     world
         .create_entity()
-        .with(Camera::standard_3d(1.4, 1.))
+        .with(Camera::standard_3d(10., 10.))
         .with(transform)
         .build();
 }

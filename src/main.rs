@@ -1,9 +1,14 @@
-use amethyst::prelude::*;
+#[macro_use]
+extern crate bitflags;
+#[macro_use]
+extern crate lazy_static;
+
 use amethyst::{
-    core::TransformBundle,
+    core::{frame_limiter::FrameRateLimitStrategy, TransformBundle},
     input::{InputBundle, StringBindings},
+    prelude::*,
     renderer::{
-        plugins::{RenderShaded3D, RenderToWindow},
+        plugins::{RenderFlat3D, RenderShaded3D, RenderToWindow},
         types::DefaultBackend,
         RenderingBundle,
     },
@@ -11,16 +16,38 @@ use amethyst::{
     LoggerConfig,
 };
 
+use crate::{camera_move_system::CameraMoveSystem, core::APP_ROOT, voxel_state::VoxelState};
+use std::{fs::OpenOptions, time::Duration};
+
 mod camera_move_system;
+mod core;
+mod directions;
 mod voxel_state;
 
-use crate::camera_move_system::CameraMoveSystem;
-use voxel_state::VoxelState;
-
 fn main() -> amethyst::Result<()> {
-    amethyst::start_logger(LoggerConfig::default());
-    let app_root = application_root_dir()?;
-    let display_config_path = app_root.join("config").join("display.ron");
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}] {}",
+                chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                record.level(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Info)
+        .chain(std::io::stdout())
+        .chain(
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open(APP_ROOT.join("output.log"))?,
+        )
+        .apply()
+        .unwrap();
+
+    let display_config_path = APP_ROOT.join("config").join("display.ron");
 
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
@@ -31,8 +58,7 @@ fn main() -> amethyst::Result<()> {
                     RenderToWindow::from_config_path(display_config_path)
                         .with_clear([0.34, 0.36, 0.52, 1.0]),
                 )
-                // RenderFlat2D plugin is used to render entities with a `SpriteRender` component.
-                .with_plugin(RenderShaded3D::default()),
+                .with_plugin(RenderFlat3D::default()),
         )?
         .with_bundle(InputBundle::<StringBindings>::new())?
         .with(
@@ -41,8 +67,13 @@ fn main() -> amethyst::Result<()> {
             &["input_system", "transform_system"],
         );
 
-    let assets_dir = app_root.join("assets");
-    let mut game = Application::new(assets_dir, VoxelState {}, game_data)?;
+    let assets_dir = APP_ROOT.join("assets");
+    let mut game = Application::build(assets_dir, VoxelState {})?
+        .with_frame_limit(
+            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
+            144,
+        )
+        .build(game_data)?;
     game.run();
 
     Ok(())
