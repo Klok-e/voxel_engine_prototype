@@ -9,9 +9,9 @@ use amethyst::{
 
 use crate::{camera_move_system::init_camera, ui::init_fps_counter, voxels::create_cube};
 
-pub struct VoxelState {}
+pub struct GameplayState {}
 
-impl SimpleState for VoxelState {
+impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         init_camera(data.world);
         init_fps_counter(data.world);

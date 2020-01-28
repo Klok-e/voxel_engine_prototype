@@ -19,7 +19,7 @@ use amethyst::{
 };
 
 use crate::{
-    camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::VoxelState,
+    camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::GameplayState,
     ui::FpsUiSystem,
 };
 use std::{fs::OpenOptions, time::Duration};
@@ -79,7 +79,7 @@ fn main() -> amethyst::Result<()> {
         );
 
     let assets_dir = APP_ROOT.join("assets");
-    let mut game = Application::build(assets_dir, VoxelState {})?
+    let mut game = Application::build(assets_dir, GameplayState {})?
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
             144,

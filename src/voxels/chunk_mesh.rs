@@ -1,12 +1,14 @@
 use crate::{directions::Directions, ui::init_fps_counter};
-use amethyst::prelude::*;
 use amethyst::{
     assets::AssetLoaderSystemData,
     core::{
-        math,
-        math::geometry::{Rotation, Rotation3},
+        math::{
+            self,
+            geometry::{Rotation, Rotation3},
+        },
         Transform,
     },
+    prelude::*,
     renderer::{
         loaders,
         palette::LinSrgba,
@@ -19,16 +21,16 @@ use float_cmp::ApproxEq;
 use std::f32::consts::PI;
 
 #[derive(Debug)]
-struct ChunkMesh {
+struct ChunkMeshData {
     positions: Vec<Position>,
     normals: Vec<Normal>,
     uv: Vec<TexCoord>,
     indices: Vec<u16>,
 }
 
-impl ChunkMesh {
+impl ChunkMeshData {
     fn new() -> Self {
-        ChunkMesh {
+        ChunkMeshData {
             positions: Vec::new(),
             normals: Vec::new(),
             uv: Vec::new(),
@@ -133,7 +135,7 @@ impl ChunkMesh {
 pub fn create_cube(world: &mut World, pos: Transform) {
     let default_mat = world.read_resource::<MaterialDefaults>().0.clone();
 
-    let mut chunk_mesh = ChunkMesh::new();
+    let mut chunk_mesh = ChunkMeshData::new();
 
     chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::UP);
     chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::DOWN);
