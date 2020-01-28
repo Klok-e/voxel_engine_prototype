@@ -1,4 +1,4 @@
-use crate::directions::Directions;
+use crate::{directions::Directions, ui::init_fps_counter};
 use amethyst::prelude::*;
 use amethyst::{
     assets::AssetLoaderSystemData,
@@ -130,18 +130,7 @@ impl ChunkMesh {
     }
 }
 
-pub struct VoxelState {}
-
-impl SimpleState for VoxelState {
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        initialise_camera(data.world);
-        let mut transform = Transform::default();
-        transform.set_translation_xyz(0., 0., 0.);
-        create_cube(data.world, transform);
-    }
-}
-
-fn create_cube(world: &mut World, pos: Transform) {
+pub fn create_cube(world: &mut World, pos: Transform) {
     let default_mat = world.read_resource::<MaterialDefaults>().0.clone();
 
     let mut chunk_mesh = ChunkMesh::new();
@@ -180,15 +169,4 @@ fn create_cube(world: &mut World, pos: Transform) {
     });
 
     world.create_entity().with(mesh).with(mat).with(pos).build();
-}
-
-fn initialise_camera(world: &mut World) {
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(0., 0., 2.);
-
-    world
-        .create_entity()
-        .with(Camera::standard_3d(10., 10.))
-        .with(transform)
-        .build();
 }

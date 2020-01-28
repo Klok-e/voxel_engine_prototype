@@ -86,3 +86,14 @@ impl<'a> System<'a> for CameraMoveSystem {
         world.insert(CameraMoveSensitivity::default());
     }
 }
+
+pub fn init_camera(world: &mut World) {
+    let mut transform = Transform::default();
+    transform.set_translation_xyz(0., 0., 2.);
+
+    world
+        .create_entity()
+        .with(Camera::standard_3d(10., 10.))
+        .with(transform)
+        .build();
+}

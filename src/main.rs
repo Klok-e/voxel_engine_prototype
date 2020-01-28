@@ -12,17 +12,24 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
+    ui::{RenderUi, UiBundle},
     utils::application_root_dir,
+    utils::fps_counter::FpsCounterBundle,
     LoggerConfig,
 };
 
-use crate::{camera_move_system::CameraMoveSystem, core::APP_ROOT, voxel_state::VoxelState};
+use crate::{
+    camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::VoxelState,
+    ui::FpsUiSystem,
+};
 use std::{fs::OpenOptions, time::Duration};
 
 mod camera_move_system;
 mod core;
 mod directions;
-mod voxel_state;
+mod gameplay_state;
+mod ui;
+mod voxels;
 
 fn main() -> amethyst::Result<()> {
     fern::Dispatch::new()
@@ -34,7 +41,7 @@ fn main() -> amethyst::Result<()> {
                 message
             ))
         })
-        .level(log::LevelFilter::Info)
+        .level(log::LevelFilter::Warn)
         .chain(std::io::stdout())
         .chain(
             OpenOptions::new()
@@ -58,9 +65,13 @@ fn main() -> amethyst::Result<()> {
                     RenderToWindow::from_config_path(display_config_path)
                         .with_clear([0.34, 0.36, 0.52, 1.0]),
                 )
-                .with_plugin(RenderFlat3D::default()),
+                .with_plugin(RenderFlat3D::default())
+                .with_plugin(RenderUi::default()),
         )?
         .with_bundle(InputBundle::<StringBindings>::new())?
+        .with_bundle(FpsCounterBundle)?
+        .with_bundle(UiBundle::<StringBindings>::new())?
+        .with(FpsUiSystem, "show_fps_system", &["fps_counter_system"])
         .with(
             CameraMoveSystem::default(),
             "move_camera",

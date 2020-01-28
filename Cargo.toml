@@ -16,10 +16,11 @@ lazy_static = "1.4.0"
 chrono = "0.4.10"
 
 [features]
+default = ["vulkan"]
 vulkan = ["amethyst/vulkan"]
 
 [profile.dev]
-opt-level = 1
+opt-level = 2
 
 [profile.release]
 lto = true
