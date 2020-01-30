@@ -1,3 +1,4 @@
-struct Voxel {
+#[derive(Default)]
+pub struct Voxel {
     id: u16,
 }

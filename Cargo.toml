@@ -8,13 +8,13 @@ edition = "2018"
 
 [dependencies]
 amethyst = "0.13.2"
-float-cmp = "0.5.3"
 bitflags = "1.2.1"
 log = "0.4.8"
 fern = "0.5.9"
 lazy_static = "1.4.0"
 chrono = "0.4.10"
 num-traits = "0.2.11"
+ndarray = "0.13.0"
 
 [features]
 default = ["vulkan"]

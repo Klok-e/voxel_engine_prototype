@@ -17,11 +17,10 @@ use amethyst::{
         Camera, Material, MaterialDefaults, Texture,
     },
 };
-use float_cmp::ApproxEq;
 use std::f32::consts::PI;
 
 #[derive(Debug)]
-struct ChunkMeshData {
+pub struct ChunkMeshData {
     positions: Vec<Position>,
     normals: Vec<Normal>,
     uv: Vec<TexCoord>,
