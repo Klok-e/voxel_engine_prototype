@@ -1,4 +1,4 @@
-use crate::voxels::LoadAround;
+use crate::voxels::RenderAround;
 use amethyst::{
     core::{math, SystemDesc, Transform},
     derive::SystemDesc,
@@ -95,6 +95,6 @@ pub fn init_camera(world: &mut World) {
         .create_entity()
         .with(Camera::standard_3d(10., 10.))
         .with(transform)
-        .with(LoadAround::new(3))
+        .with(RenderAround::new(3))
         .build();
 }

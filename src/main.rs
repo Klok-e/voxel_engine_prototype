@@ -18,7 +18,7 @@ use amethyst::{
     LogLevelFilter, Logger, LoggerConfig, StdoutLog,
 };
 
-use crate::voxels::ChunksSystem;
+use crate::voxels::ChunkRenderSystem;
 use crate::{
     camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::GameplayState,
     ui::FpsUiSystem,
@@ -74,7 +74,7 @@ fn main() -> amethyst::Result<()> {
             "move_camera",
             &["input_system", "transform_system"],
         )
-        .with(ChunksSystem, "chunks_system", &[]);
+        .with(ChunkRenderSystem, "chunks_system", &[]);
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?
