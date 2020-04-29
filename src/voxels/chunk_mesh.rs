@@ -99,10 +99,10 @@ impl ChunkMeshData {
             _ => unreachable!(),
         };
 
-        self.positions.push((pos + vert0).into());
-        self.positions.push((pos + vert1).into());
-        self.positions.push((pos + vert2).into());
-        self.positions.push((pos + vert3).into());
+        self.positions.push((pos.clone() + vert0).into());
+        self.positions.push((pos.clone() + vert1).into());
+        self.positions.push((pos.clone() + vert2).into());
+        self.positions.push((pos.clone() + vert3).into());
 
         self.normals.push(dir.to_vec().into());
         self.normals.push(dir.to_vec().into());
