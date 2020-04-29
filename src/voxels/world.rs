@@ -1,24 +1,45 @@
 use super::chunk::Chunk;
+use super::chunk::{ChunkPosition, CHUNK_SIZE};
 use crate::core::{Vec3f, Vec3i};
-use crate::voxels::chunk::{ChunkPosition, CHUNK_SIZE};
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Default)]
-struct VoxelWorld {
+pub struct VoxelWorld {
     pub chunks: HashMap<Vec3i, Entity>,
 }
 
-struct LoadAround {
+pub struct LoadAround {
     pub distance: i32,
+}
+
+impl LoadAround {
+    pub fn new(distance: i32) -> Self {
+        LoadAround { distance }
+    }
 }
 
 impl Component for LoadAround {
     type Storage = DenseVecStorage<Self>;
 }
 
+pub enum ChunkPrepareStage {
+    TerrainGeneration,
+    Meshing,
+}
+
+impl Default for ChunkPrepareStage {
+    fn default() -> Self {
+        ChunkPrepareStage::TerrainGeneration
+    }
+}
+
+impl Component for ChunkPrepareStage {
+    type Storage = DenseVecStorage<Self>;
+}
+
 #[derive(SystemDesc)]
-struct ChunksSystem;
+pub struct ChunksSystem;
 
 impl<'a> System<'a> for ChunksSystem {
     type SystemData = (
@@ -26,45 +47,59 @@ impl<'a> System<'a> for ChunksSystem {
         WriteStorage<'a, Chunk>,
         ReadStorage<'a, LoadAround>,
         WriteStorage<'a, ChunkPosition>,
+        WriteStorage<'a, Transform>,
+        WriteStorage<'a, ChunkPrepareStage>,
         Entities<'a>,
     );
 
     fn run(
         &mut self,
-        (mut voxel_world, mut chunks, load_around, mut positions, ents): Self::SystemData,
+        (
+            mut voxel_world,
+            mut chunks,
+            load_around,
+            mut chunk_positions,
+            transforms,
+            mut chunk_stages,
+            ents,
+        ): Self::SystemData,
     ) {
-        for (loader, pos) in (&load_around, &mut positions).join() {
+        let mut maintained = HashSet::new();
+        for (loader, transform) in (&load_around, &transforms).join() {
+            let pos = transform.translation() / CHUNK_SIZE as f32;
+            let pos = Vec3i::new(
+                pos.x.floor() as i32,
+                pos.y.floor() as i32,
+                pos.z.floor() as i32,
+            );
             for z in -loader.distance..=loader.distance {
                 for y in -loader.distance..=loader.distance {
                     for x in -loader.distance..=loader.distance {
-                        let coord = Vec3i::from([x, y, z]) + pos.pos.clone();
-                        let chunk_ent = *voxel_world.chunks.entry(coord).or_insert_with(|| {
-                            let ent = ents.create();
-                            chunks.insert(ent, Chunk::new());
-                            ent
-                        });
-                        if chunks
-                            .get_mut(chunk_ent)
-                            .and_then(|c| Some(c.maintain(true)))
-                            .is_none()
-                        {
-                            log::warn!("Couldn't insert or create chunk!")
-                        }
+                        let coord: Vec3i = Vec3i::new(x, y, z) + pos.clone();
+                        maintained.insert(coord);
                     }
                 }
             }
         }
-        for (ent, pos, chunk) in (&ents, &positions, &mut chunks).join() {
-            if chunk.maintained {
-                chunk.maintain(false);
-            } else {
-                voxel_world.chunks.remove(&pos.pos);
-                ents.delete(ent);
-            }
+        let occupied = voxel_world.chunks.keys().cloned().collect::<HashSet<_>>();
+        let to_delete = occupied.difference(&maintained);
+        for coord in to_delete {
+            let ent = voxel_world.chunks.remove(coord).unwrap();
+            ents.delete(ent).unwrap();
+        }
+        let to_create = maintained.difference(&occupied);
+        for &coord in to_create {
+            let ent = ents.create();
+            chunks.insert(ent, Chunk::new()).unwrap();
+            chunk_positions.insert(ent, ChunkPosition::new(coord.into()));
+            chunk_stages.insert(ent, ChunkPrepareStage::default());
+            voxel_world.chunks.insert(coord.into(), ent);
         }
     }
 
     fn setup(&mut self, world: &mut World) {
+        <Self as System<'_>>::SystemData::setup(world);
+        world.register::<LoadAround>();
         world.register::<Chunk>();
         world.register::<ChunkPosition>();
     }

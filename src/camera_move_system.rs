@@ -1,3 +1,4 @@
+use crate::voxels::LoadAround;
 use amethyst::{
     core::{math, SystemDesc, Transform},
     derive::SystemDesc,
@@ -83,7 +84,6 @@ impl<'a> System<'a> for CameraMoveSystem {
                 .fetch_mut::<EventChannel<GameInputEvent>>()
                 .register_reader(),
         );
-        world.insert(CameraMoveSensitivity::default());
     }
 }
 
@@ -95,5 +95,6 @@ pub fn init_camera(world: &mut World) {
         .create_entity()
         .with(Camera::standard_3d(10., 10.))
         .with(transform)
+        .with(LoadAround::new(3))
         .build();
 }

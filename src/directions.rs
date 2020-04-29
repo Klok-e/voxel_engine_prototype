@@ -1,6 +1,6 @@
 use crate::core::{Vec3f, Vec3i};
 use amethyst::core::math::{self, base::Scalar, Vector3};
-use num_traits::{NumAssignRef, PrimInt};
+use amethyst::core::num::{NumAssignRef, PrimInt};
 
 bitflags! {
     pub struct Directions: u8 {

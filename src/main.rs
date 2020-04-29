@@ -15,9 +15,10 @@ use amethyst::{
     ui::{RenderUi, UiBundle},
     utils::application_root_dir,
     utils::fps_counter::FpsCounterBundle,
-    LoggerConfig,
+    LogLevelFilter, Logger, LoggerConfig, StdoutLog,
 };
 
+use crate::voxels::ChunksSystem;
 use crate::{
     camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::GameplayState,
     ui::FpsUiSystem,
@@ -32,27 +33,23 @@ mod ui;
 mod voxels;
 
 fn main() -> amethyst::Result<()> {
-    fern::Dispatch::new()
-        .format(|out, message, record| {
+    Logger::from_config_formatter(
+        LoggerConfig {
+            level_filter: LogLevelFilter::Warn,
+            log_file: Some("./output.log".parse()?),
+            ..LoggerConfig::default()
+        },
+        |out, message, record| {
             out.finish(format_args!(
-                "{}[{}] {}",
-                chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                record.level(),
-                message
+                "[{time}][{level}][{target}] {message}",
+                time = chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                target = record.target(),
+                level = record.level(),
+                message = message
             ))
-        })
-        .level(log::LevelFilter::Warn)
-        .chain(std::io::stdout())
-        .chain(
-            OpenOptions::new()
-                .read(true)
-                .write(true)
-                .truncate(true)
-                .create(true)
-                .open(APP_ROOT.join("output.log"))?,
-        )
-        .apply()
-        .unwrap();
+        },
+    )
+    .start();
 
     let display_config_path = APP_ROOT.join("config").join("display.ron");
 
@@ -62,7 +59,7 @@ fn main() -> amethyst::Result<()> {
             RenderingBundle::<DefaultBackend>::new()
                 // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
                 .with_plugin(
-                    RenderToWindow::from_config_path(display_config_path)
+                    RenderToWindow::from_config_path(display_config_path)?
                         .with_clear([0.34, 0.36, 0.52, 1.0]),
                 )
                 .with_plugin(RenderFlat3D::default())
@@ -76,7 +73,8 @@ fn main() -> amethyst::Result<()> {
             CameraMoveSystem::default(),
             "move_camera",
             &["input_system", "transform_system"],
-        );
+        )
+        .with(ChunksSystem, "chunks_system", &[]);
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?
