@@ -19,48 +19,23 @@ impl Component for RenderAround {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub enum ChunkPrepareStage {
-    TerrainGeneration,
-    Meshing,
-}
-
-impl Default for ChunkPrepareStage {
-    fn default() -> Self {
-        ChunkPrepareStage::TerrainGeneration
-    }
-}
-
-impl Component for ChunkPrepareStage {
-    type Storage = DenseVecStorage<Self>;
-}
-
 #[derive(SystemDesc)]
 pub struct ChunkRenderSystem;
 
 impl<'a> System<'a> for ChunkRenderSystem {
     type SystemData = (
         Write<'a, VoxelWorld>,
-        WriteStorage<'a, Chunk>,
         ReadStorage<'a, RenderAround>,
         WriteStorage<'a, ChunkPosition>,
         WriteStorage<'a, Transform>,
-        WriteStorage<'a, ChunkPrepareStage>,
         Entities<'a>,
     );
 
     fn run(
         &mut self,
-        (
-            mut voxel_world,
-            mut chunks,
-            load_around,
-            mut chunk_positions,
-            transforms,
-            mut chunk_stages,
-            ents,
-        ): Self::SystemData,
+        (mut voxel_world, load_around, mut chunk_positions, transforms, ents): Self::SystemData,
     ) {
-        let mut maintained = HashSet::new();
+        let mut chunk_ents = HashSet::new();
         for (loader, transform) in (&load_around, &transforms).join() {
             let pos = transform.translation() / CHUNK_SIZE as f32;
             let pos = Vec3i::new(
@@ -68,35 +43,28 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 pos.y.floor() as i32,
                 pos.z.floor() as i32,
             );
+
+            for (chunk_pos) in (&mut chunk_positions,).join() {
+                chunk_ents.insert(chunk_pos.clone())
+            }
+
             for z in -loader.distance..=loader.distance {
                 for y in -loader.distance..=loader.distance {
                     for x in -loader.distance..=loader.distance {
                         let coord: Vec3i = Vec3i::new(x, y, z) + pos.clone();
-                        maintained.insert(coord);
+                        if !chunk_ents.contains(&coord) {
+                            // create an entity representing this chunk
+                            //ents.build_entity().with()
+                        }
                     }
                 }
             }
-        }
-        let occupied = voxel_world.chunks.keys().cloned().collect::<HashSet<_>>();
-        let to_delete = occupied.difference(&maintained);
-        for coord in to_delete {
-            let ent = voxel_world.chunks.remove(coord).unwrap();
-            ents.delete(ent).unwrap();
-        }
-        let to_create = maintained.difference(&occupied);
-        for &coord in to_create {
-            let ent = ents.create();
-            chunks.insert(ent, Chunk::new()).unwrap();
-            chunk_positions.insert(ent, ChunkPosition::new(coord.into()));
-            chunk_stages.insert(ent, ChunkPrepareStage::default());
-            voxel_world.chunks.insert(coord.into(), ent);
         }
     }
 
     fn setup(&mut self, world: &mut World) {
         <Self as System<'_>>::SystemData::setup(world);
         world.register::<RenderAround>();
-        world.register::<Chunk>();
         world.register::<ChunkPosition>();
     }
 }

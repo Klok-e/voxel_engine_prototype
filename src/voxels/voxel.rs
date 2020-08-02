@@ -1,4 +1,4 @@
 #[derive(Default)]
 pub struct Voxel {
-    id: u16,
+    pub id: u16,
 }
