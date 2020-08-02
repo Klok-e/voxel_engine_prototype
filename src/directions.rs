@@ -14,7 +14,6 @@ bitflags! {
 }
 
 impl Directions {
-    //#[deprecated]
     pub fn to_vec<T>(&self) -> Vector3<T>
     where
         T: NumAssignRef + Scalar,
