@@ -16,7 +16,7 @@ ndarray = "0.13.1"
 rand = "0.7.3"
 noise = "0.6.0"
 flurry = "0.3.0"
-serde = "1.0.106"
+serde = "1.0.114"
 
 [features]
 default = ["vulkan"]
