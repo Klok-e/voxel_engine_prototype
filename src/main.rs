@@ -24,6 +24,7 @@ use crate::{
     ui::FpsUiSystem,
 };
 use std::{fs::OpenOptions, time::Duration};
+use amethyst::utils::auto_fov::AutoFovSystem;
 
 mod camera_move_system;
 mod core;
@@ -48,8 +49,7 @@ fn main() -> amethyst::Result<()> {
                 message = message
             ))
         },
-    )
-    .start();
+    ).start();
 
     let display_config_path = APP_ROOT.join("config").join("display.ron");
 
@@ -68,10 +68,11 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(InputBundle::<StringBindings>::new())?
         .with_bundle(FpsCounterBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
+        .with(AutoFovSystem::new(), "auto_fov_system", &[])
         .with(FpsUiSystem, "show_fps_system", &["fps_counter_system"])
         .with(
             CameraMoveSystem::default(),
-            "move_camera",
+            "move_camera_system",
             &["input_system", "transform_system"],
         )
         .with(ChunkRenderSystem, "chunks_system", &[]);

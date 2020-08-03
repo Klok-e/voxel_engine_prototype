@@ -44,15 +44,15 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 pos.z.floor() as i32,
             );
 
-            for (chunk_pos) in (&mut chunk_positions,).join() {
-                chunk_ents.insert(chunk_pos.clone())
+            for (chunk_pos, ) in (&chunk_positions, ).join() {
+                chunk_ents.insert(*chunk_pos);
             }
 
             for z in -loader.distance..=loader.distance {
                 for y in -loader.distance..=loader.distance {
                     for x in -loader.distance..=loader.distance {
                         let coord: Vec3i = Vec3i::new(x, y, z) + pos.clone();
-                        if !chunk_ents.contains(&coord) {
+                        if !chunk_ents.contains(&ChunkPosition::new(coord)) {
                             // create an entity representing this chunk
                             //ents.build_entity().with()
                         }

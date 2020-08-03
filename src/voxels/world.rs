@@ -9,8 +9,8 @@ use std::sync::{RwLock, RwLockWriteGuard};
 
 #[derive(Default)]
 pub struct VoxelWorld {
-    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk>>,
-    dirty: ConcurrentHashSet<ChunkPosition>,
+    chunks: HashMap<ChunkPosition, RwLock<Chunk>>,
+    dirty: HashSet<ChunkPosition>,
 }
 
 impl VoxelWorld {
@@ -18,43 +18,13 @@ impl VoxelWorld {
         Default::default()
     }
 
-    pub fn guard(&self) -> Guard {
-        self.chunks.guard()
-    }
-
-    pub fn chunk_at(&self, pos: ChunkPosition, guard: &Guard) -> ChunkRefMut {
-        let chunk = match self.chunks.get(&pos, guard) {
-            Some(chunk) => chunk,
-            None => {
+    pub fn chunk_at_or_create(&mut self, pos: &ChunkPosition, guard: &Guard) -> &RwLock<Chunk> {
+        let chunk = self.chunks.entry(*pos)
+            .or_insert_with(|| {
                 let mut c = Chunk::new();
-                ProceduralGenerator::new().fill_random(&pos, &mut c.data);
-                self.chunks.insert(pos, RwLock::new(c), guard);
-                self.chunks.get(&pos, guard).unwrap()
-            }
-        };
-        ChunkRefMut {
-            chunk,
-            dirty: &self.dirty,
-        }
-        //self.chunks.entry(pos).or_insert_with(|| {
-        //    let mut c = Chunk::new();
-        //    ProceduralGenerator::new().fill_random(&pos, &mut c.data);
-        //    c
-        //})
-    }
-}
-
-pub struct ChunkRefMut<'a> {
-    chunk: &'a RwLock<Chunk>,
-    dirty: &'a ConcurrentHashSet<ChunkPosition>,
-}
-
-impl ChunkRefMut {
-    fn new(chunk: &RwLock<Chunk>, dirty: &ConcurrentHashSet<ChunkPosition>) -> Self {
-        Self { chunk, dirty }
-    }
-
-    pub fn chunk(&mut self) -> RwLockWriteGuard<'_, Chunk> {
-        self.chunk.write().unwrap()
+                ProceduralGenerator::new().fill_random(&pos,  &mut c.data());
+                RwLock::new(c)
+            });
+        chunk
     }
 }

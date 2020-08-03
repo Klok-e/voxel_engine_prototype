@@ -8,6 +8,7 @@ use amethyst::{
     renderer::Camera,
     shrev::{EventChannel, ReaderId},
 };
+use amethyst::utils::auto_fov::AutoFov;
 
 type GameInputEvent = InputEvent<StringBindings>;
 
@@ -94,6 +95,7 @@ pub fn init_camera(world: &mut World) {
     world
         .create_entity()
         .with(Camera::standard_3d(10., 10.))
+        .with(AutoFov::new())
         .with(transform)
         .with(RenderAround::new(3))
         .build();

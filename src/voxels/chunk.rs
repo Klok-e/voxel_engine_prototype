@@ -9,14 +9,18 @@ pub const CHUNK_SIZE: usize = 32;
 pub const CHUNK_SIZEI: i32 = CHUNK_SIZE as i32;
 
 pub struct Chunk {
-    pub data: Array3<Voxel>,
+    data: Array3<Voxel>,
 }
 
 impl Chunk {
     pub fn new() -> Self {
         Chunk {
-            data: Array3::default([CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE]),
+            data: Array3::default([CHUNK_SIZE + 2, CHUNK_SIZE + 2, CHUNK_SIZE + 2]),
         }
+    }
+
+    pub fn data(&mut self) -> ArrayViewMut3<Voxel> {
+        self.data.slice_mut(s![1..-1, 1..-1, 1..-1])
     }
 }
 
@@ -31,6 +35,12 @@ impl ChunkPosition {
     }
 }
 
+impl From<Vec3i> for ChunkPosition {
+    fn from(value: Vec3i) -> Self {
+        ChunkPosition::new(value)
+    }
+}
+
 impl Default for ChunkPosition {
     fn default() -> Self {
         Self {
@@ -38,6 +48,7 @@ impl Default for ChunkPosition {
         }
     }
 }
+
 impl Ord for ChunkPosition {
     fn cmp(&self, other: &Self) -> Ordering {
         self.pos
@@ -47,6 +58,7 @@ impl Ord for ChunkPosition {
             .then(self.pos.z.cmp(&other.pos.z))
     }
 }
+
 impl PartialOrd for ChunkPosition {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))

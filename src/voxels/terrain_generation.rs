@@ -14,7 +14,7 @@ impl ProceduralGenerator {
     pub fn new() -> Self {
         Self { rng: Perlin::new() }
     }
-    pub fn fill_random(&mut self, pos: &ChunkPosition, arr: &mut Array3<Voxel>) {
+    pub fn fill_random(&mut self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
         for x in 0..CHUNK_SIZEI {
             for y in 0..CHUNK_SIZEI {
                 for z in 0..CHUNK_SIZEI {

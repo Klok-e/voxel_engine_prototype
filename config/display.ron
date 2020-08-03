@@ -1,4 +1,4 @@
 (
     title: "Voxel Engine",
-    dimensions: Some((900, 700)),
+    dimensions: Some((1200, 700)),
 )

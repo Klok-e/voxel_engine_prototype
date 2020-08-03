@@ -21,28 +21,4 @@ impl SimpleState for GameplayState {
         transform.set_translation_xyz(0., 0., 0.);
         create_cube(data.world, transform);
     }
-
-    fn handle_event(
-        &mut self,
-        data: StateData<'_, GameData<'_, '_>>,
-        event: StateEvent,
-    ) -> SimpleTrans {
-        use amethyst::winit::{Event, WindowEvent};
-        match event {
-            StateEvent::Window(Event::WindowEvent {
-                event: WindowEvent::Resized(size),
-                ..
-            }) => {
-                let dim = data.world.try_fetch_mut::<ScreenDimensions>();
-                dim.map(|mut dim| {
-                    let new_dim: (f64, f64) = size.into();
-                    dim.update(new_dim.0,new_dim.1);
-                }).unwrap_or_else(||{
-                    log::
-                });
-            }
-            _ => {}
-        }
-        SimpleTrans::None
-    }
 }
