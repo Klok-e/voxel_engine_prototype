@@ -28,7 +28,7 @@ pub struct ChunkMeshData {
 }
 
 impl ChunkMeshData {
-    fn new() -> Self {
+    pub fn new() -> Self {
         ChunkMeshData {
             positions: Vec::new(),
             normals: Vec::new(),
@@ -37,7 +37,7 @@ impl ChunkMeshData {
         }
     }
 
-    fn insert_quad(&mut self, pos: math::Vector3<f32>, dir: Directions) {
+    pub fn insert_quad(&mut self, pos: math::Vector3<f32>, dir: Directions) {
         let count = self.positions.len() as u16;
         /*
         2-------3   ^
@@ -122,7 +122,7 @@ impl ChunkMeshData {
         self.indices.push(count + 2);
     }
 
-    fn build_mesh<'a>(&self) -> MeshBuilder<'a> {
+    pub fn build_mesh<'a>(&self) -> MeshBuilder<'a> {
         amethyst::renderer::rendy::mesh::MeshBuilder::new()
             .with_vertices(self.positions.clone())
             .with_vertices(self.normals.clone())

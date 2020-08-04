@@ -4,6 +4,8 @@ use amethyst::ecs::prelude::*;
 use bitflags::_core::cmp::Ordering;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};
+use amethyst::renderer::rendy::mesh::MeshBuilder;
+use crate::voxels::chunk_mesh::ChunkMeshData;
 
 pub const CHUNK_SIZE: usize = 32;
 pub const CHUNK_SIZEI: i32 = CHUNK_SIZE as i32;
@@ -21,6 +23,19 @@ impl Chunk {
 
     pub fn data(&mut self) -> ArrayViewMut3<Voxel> {
         self.data.slice_mut(s![1..-1, 1..-1, 1..-1])
+    }
+
+    pub fn mesh(&self) -> MeshBuilder<'_> {
+        let mut chunk_mesh = ChunkMeshData::new();
+        for x in 0..CHUNK_SIZE {
+            for y in 0..CHUNK_SIZE {
+                for z in 0..CHUNK_SIZE {
+
+                }
+            }
+        }
+
+        chunk_mesh.build_mesh()
     }
 }
 

@@ -1,6 +1,7 @@
 use crate::core::{Vec3f, Vec3i};
 use amethyst::core::math::{self, base::Scalar, Vector3};
 use amethyst::core::num::{NumAssignRef, PrimInt};
+use bitflags::_core::iter::from_fn;
 
 bitflags! {
     pub struct Directions: u8 {
@@ -15,16 +16,35 @@ bitflags! {
 
 impl Directions {
     pub fn to_vec<T>(&self) -> Vector3<T>
-    where
-        T: NumAssignRef + Scalar,
+        where
+            T: NumAssignRef + Scalar,
     {
         Vector3::<T>::from(*self)
+    }
+
+    fn into_iter(self) -> impl Iterator<Item=Self> {
+        let mut i = 0u8;
+        const MAX: u8 = 6u8;
+        from_fn(move || {
+            let mut res = Directions::from_bits_truncate(1 << i);
+            while !self.contains(res) && i < MAX {
+                i += 1;
+                res = Directions::from_bits_truncate(1 << i);
+            }
+            let prev_i = i;
+            i += 1;
+            if prev_i >= MAX {
+                None
+            } else {
+                Some(res)
+            }
+        })
     }
 }
 
 impl<T> From<Directions> for Vector3<T>
-where
-    T: NumAssignRef + Scalar,
+    where
+        T: NumAssignRef + Scalar,
 {
     fn from(dir: Directions) -> Self {
         let mut res = Vector3::<T>::zeros();
@@ -51,8 +71,8 @@ where
 }
 
 impl<T> From<Vector3<T>> for Directions
-where
-    T: PrimInt + Scalar + NumAssignRef,
+    where
+        T: PrimInt + Scalar + NumAssignRef,
 {
     fn from(vec: Vector3<T>) -> Self {
         let mut res = Directions::empty();
@@ -72,5 +92,22 @@ where
             res |= Directions::SOUTH;
         }
         res
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::rstest;
+
+    #[rstest(dir, expected_vec,
+    case::north_west(Directions::NORTH | Directions::WEST, vec ! [Directions::NORTH, Directions::WEST]),
+    case::up_down(Directions::UP | Directions::DOWN, vec ! [Directions::UP, Directions::DOWN]),
+    case::all(Directions::all(), vec ! [Directions::NORTH, Directions::SOUTH, Directions::WEST, Directions::EAST, Directions::UP, Directions::DOWN]),
+    )]
+    fn direction_iter(dir: Directions, expected_vec: Vec<Directions>) {
+        dbg!(&dir);
+        dbg!(&expected_vec);
+        assert_eq!(dir.into_iter().collect::<Vec<_>>(), expected_vec);
     }
 }

@@ -3014,6 +3014,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "rstest"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dec448bc157977efdc0a71369cf923915b0c4806b1b2449c3fb011071d6f7c38"
+dependencies = [
+ "cfg-if",
+ "proc-macro2 1.0.19",
+ "quote 1.0.7",
+ "rustc_version",
+ "syn 1.0.36",
+]
+
+[[package]]
 name = "rust-argon2"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3668,6 +3681,7 @@ dependencies = [
  "ndarray",
  "noise",
  "rand 0.7.3",
+ "rstest",
  "serde",
 ]
 
