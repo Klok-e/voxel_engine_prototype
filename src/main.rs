@@ -80,7 +80,7 @@ fn main() -> amethyst::Result<()> {
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?
         .with_frame_limit(
-            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
+            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(1)),
             144,
         )
         .build(game_data)?;
