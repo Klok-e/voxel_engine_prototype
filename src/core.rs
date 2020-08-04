@@ -10,3 +10,7 @@ pub type ConcurrentHashSet<T> = flurry::HashSet<T>;
 lazy_static! {
     pub static ref APP_ROOT: PathBuf = application_root_dir().unwrap();
 }
+
+pub fn to_vecf(veci: Vec3i) -> Vec3f {
+    Vec3f::from([veci.x as f32, veci.y as f32, veci.z as f32])
+}

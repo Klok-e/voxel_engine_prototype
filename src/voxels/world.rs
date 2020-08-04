@@ -18,7 +18,7 @@ impl VoxelWorld {
         Default::default()
     }
 
-    pub fn chunk_at_or_create(&mut self, pos: &ChunkPosition, guard: &Guard) -> &RwLock<Chunk> {
+    pub fn chunk_at_or_create(&mut self, pos: &ChunkPosition) -> &RwLock<Chunk> {
         let chunk = self.chunks.entry(*pos)
             .or_insert_with(|| {
                 let mut c = Chunk::new();

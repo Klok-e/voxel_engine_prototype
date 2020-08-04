@@ -4,6 +4,9 @@ use super::world::VoxelWorld;
 use crate::core::{Vec3f, Vec3i};
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
 use std::collections::{HashMap, HashSet};
+use amethyst::core::math::{Quaternion, UnitQuaternion};
+use amethyst::core::num::real::Real;
+use crate::core::to_vecf;
 
 pub struct RenderAround {
     pub distance: i32,
@@ -33,9 +36,10 @@ impl<'a> System<'a> for ChunkRenderSystem {
 
     fn run(
         &mut self,
-        (mut voxel_world, load_around, mut chunk_positions, transforms, ents): Self::SystemData,
+        (mut voxel_world, load_around, mut chunk_positions, mut transforms, ents): Self::SystemData,
     ) {
-        let mut chunk_ents = HashSet::new();
+        let mut loaded_chunks = HashSet::new();
+        let mut chunks_to_load = HashSet::new();
         for (loader, transform) in (&load_around, &transforms).join() {
             let pos = transform.translation() / CHUNK_SIZE as f32;
             let pos = Vec3i::new(
@@ -45,20 +49,31 @@ impl<'a> System<'a> for ChunkRenderSystem {
             );
 
             for (chunk_pos, ) in (&chunk_positions, ).join() {
-                chunk_ents.insert(*chunk_pos);
+                loaded_chunks.insert(*chunk_pos);
             }
 
             for z in -loader.distance..=loader.distance {
                 for y in -loader.distance..=loader.distance {
                     for x in -loader.distance..=loader.distance {
-                        let coord: Vec3i = Vec3i::new(x, y, z) + pos.clone();
-                        if !chunk_ents.contains(&ChunkPosition::new(coord)) {
-                            // create an entity representing this chunk
-                            //ents.build_entity().with()
-                        }
+                        let pos = ChunkPosition::new(Vec3i::new(x, y, z) + pos.clone());
+                        chunks_to_load.insert(pos);
                     }
                 }
             }
+        }
+
+        for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
+            // create mesh
+            let chunk = voxel_world.chunk_at_or_create(&to_load_pos);
+
+            // create entity
+            ents.build_entity()
+                .with(*to_load_pos, &mut chunk_positions)
+                .with(Transform::new(to_vecf(to_load_pos.pos.clone()).into(),
+                                     UnitQuaternion::identity(),
+                                     Vec3f::identity().into()),
+                      &mut transforms)
+                .build();
         }
     }
 
