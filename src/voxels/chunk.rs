@@ -68,3 +68,17 @@ impl PartialOrd for ChunkPosition {
 impl Component for ChunkPosition {
     type Storage = DenseVecStorage<Self>;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn chunk_data_dimensions() {
+        let mut chunk = Chunk::new();
+
+        let data = chunk.data();
+
+        assert_eq!(data.shape(), &[CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE]);
+    }
+}
