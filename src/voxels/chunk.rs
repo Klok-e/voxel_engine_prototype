@@ -1,13 +1,14 @@
 use super::Voxel;
-use crate::core::Vec3i;
+use crate::core::{to_vecf, Vec3f, Vec3i};
+use crate::directions::Directions;
+use crate::voxels::chunk_mesh::ChunkMeshData;
 use amethyst::ecs::prelude::*;
+use amethyst::renderer::rendy::mesh::MeshBuilder;
 use bitflags::_core::cmp::Ordering;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};
-use amethyst::renderer::rendy::mesh::MeshBuilder;
-use crate::voxels::chunk_mesh::ChunkMeshData;
 
-pub const CHUNK_SIZE: usize = 32;
+pub const CHUNK_SIZE: usize = 8;
 pub const CHUNK_SIZEI: i32 = CHUNK_SIZE as i32;
 
 pub struct Chunk {
@@ -26,11 +27,27 @@ impl Chunk {
     }
 
     pub fn mesh(&self) -> MeshBuilder<'_> {
-        let mut chunk_mesh = ChunkMeshData::new();
-        for x in 0..CHUNK_SIZE {
-            for y in 0..CHUNK_SIZE {
-                for z in 0..CHUNK_SIZE {
+        let one: Vec3i = [1, 1, 1].into();
+        let onef: Vec3f = [1., 1., 1.].into();
 
+        let mut chunk_mesh = ChunkMeshData::new();
+        for x in 0..CHUNK_SIZEI {
+            for y in 0..CHUNK_SIZEI {
+                for z in 0..CHUNK_SIZEI {
+                    let pos: Vec3i = [x, y, z].into();
+                    for dir in Directions::all().into_iter() {
+                        let dir: Directions = dir;
+                        let spos: Vec3i = pos.clone() + dir.to_vec::<i32>() + one.clone();
+
+                        if self.data[(spos.x as usize, spos.y as usize, spos.z as usize)]
+                            .is_transparent()
+                        {
+                            chunk_mesh.insert_quad(
+                                to_vecf(pos) + onef / 2.,
+                                dir,
+                            );
+                        }
+                    }
                 }
             }
         }

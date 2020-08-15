@@ -1,4 +1,5 @@
 use crate::{directions::Directions, ui::init_fps_counter};
+use amethyst::renderer::types::Mesh;
 use amethyst::{
     assets::AssetLoaderSystemData,
     core::{
@@ -143,14 +144,9 @@ pub fn create_cube(world: &mut World, pos: Transform) {
     chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::SOUTH);
     chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::NORTH);
 
-    let mesh = world.exec(
-        |loader: AssetLoaderSystemData<amethyst::renderer::types::Mesh>| {
-            loader.load_from_data(
-                amethyst::renderer::types::MeshData(chunk_mesh.build_mesh()),
-                (),
-            )
-        },
-    );
+    let mesh = world.exec(|loader: AssetLoaderSystemData<Mesh>| {
+        loader.load_from_data(MeshData(chunk_mesh.build_mesh()), ())
+    });
 
     let albedo = world.exec(|loader: AssetLoaderSystemData<Texture>| {
         loader.load_from_data(

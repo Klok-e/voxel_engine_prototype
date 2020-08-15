@@ -1,4 +1,5 @@
 use crate::voxels::RenderAround;
+use amethyst::utils::auto_fov::AutoFov;
 use amethyst::{
     core::{math, SystemDesc, Transform},
     derive::SystemDesc,
@@ -8,7 +9,6 @@ use amethyst::{
     renderer::Camera,
     shrev::{EventChannel, ReaderId},
 };
-use amethyst::utils::auto_fov::AutoFov;
 
 type GameInputEvent = InputEvent<StringBindings>;
 
@@ -89,6 +89,8 @@ impl<'a> System<'a> for CameraMoveSystem {
 }
 
 pub fn init_camera(world: &mut World) {
+    world.register::<RenderAround>();
+
     let mut transform = Transform::default();
     transform.set_translation_xyz(0., 0., 2.);
 
@@ -97,6 +99,6 @@ pub fn init_camera(world: &mut World) {
         .with(Camera::standard_3d(10., 10.))
         .with(AutoFov::new())
         .with(transform)
-        .with(RenderAround::new(3))
+        .with(RenderAround::new(2))
         .build();
 }

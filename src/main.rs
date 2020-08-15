@@ -23,8 +23,8 @@ use crate::{
     camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::GameplayState,
     ui::FpsUiSystem,
 };
-use std::{fs::OpenOptions, time::Duration};
 use amethyst::utils::auto_fov::AutoFovSystem;
+use std::{fs::OpenOptions, time::Duration};
 
 mod camera_move_system;
 mod core;
@@ -49,7 +49,8 @@ fn main() -> amethyst::Result<()> {
                 message = message
             ))
         },
-    ).start();
+    )
+    .start();
 
     let display_config_path = APP_ROOT.join("config").join("display.ron");
 
