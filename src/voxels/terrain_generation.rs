@@ -21,7 +21,7 @@ impl ProceduralGenerator {
                     let p = Vec3i::from([x, y, z]);
                     let p = p + pos.pos * CHUNK_SIZEI;
                     arr[(x as usize, y as usize, z as usize)] = match p {
-                        p if p.y % 2 == 0 => Voxel { id: 0 },
+                        p if p.y > 0 => Voxel { id: 0 },
                         _ => Voxel { id: 1 },
                     };
                     //self.rng.get(p.into());

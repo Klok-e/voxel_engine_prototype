@@ -97,13 +97,13 @@ impl<'a> System<'a> for ChunkRenderSystem {
             let mesh = MeshData(chunk.write().unwrap().mesh().into_owned());
 
             let mesh: Handle<Mesh> = mesh_loader.load_from_data(mesh, ());
-            // let albedo = tex_loader.load_from_data(
-            //     loaders::load_from_linear_rgba(LinSrgba::new(1.0, 0.0, 0.0, 1.0)).into(),
-            //     (),
-            // );
+            let albedo = tex_loader.load_from_data(
+                loaders::load_from_linear_rgba(LinSrgba::new(0.0, 1.0, 0.0, 1.0)).into(),
+                (),
+            );
             let mat = mat_loader.load_from_data(
                 Material {
-                    //albedo,
+                    albedo,
                     ..mat_default.0.clone()
                 },
                 (),
