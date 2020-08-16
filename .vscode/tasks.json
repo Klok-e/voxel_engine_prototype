@@ -12,11 +12,21 @@
 		{
 			"type": "cargo",
 			"command": "run",
-			"args": ["--release"],
+			"args": [
+				"--release"
+			],
 			"problemMatcher": [
 				"$rustc"
 			],
 			"label": "rust: cargo run --release"
-		}
+		},
+		{
+			"type": "cargo",
+			"command": "fmt",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo fmt"
+		},
 	]
 }

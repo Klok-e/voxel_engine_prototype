@@ -1,14 +1,17 @@
 use super::chunk::Chunk;
-use super::chunk::{ChunkPosition, CHUNK_SIZE, CHUNK_SIZEI};
+use super::chunk::{ChunkPosition, CHUNK_SIZE, CHUNK_SIZEF, CHUNK_SIZEI};
 use super::world::VoxelWorld;
 use crate::core::to_vecf;
 use crate::core::{Vec3f, Vec3i};
 use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
-use amethyst::core::math::{Quaternion, UnitQuaternion};
+use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
 use amethyst::core::num::real::Real;
 use amethyst::renderer::palette::LinSrgba;
 use amethyst::renderer::types::MeshData;
-use amethyst::renderer::{loaders, Material, MaterialDefaults, Mesh, Texture};
+use amethyst::renderer::{
+    debug_drawing::DebugLinesComponent, loaders, palette::Srgba, Material, MaterialDefaults, Mesh,
+    Texture,
+};
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
 use std::collections::{HashMap, HashSet};
 
@@ -42,6 +45,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
         AssetLoaderSystemData<'a, Material>,
         WriteStorage<'a, Handle<Material>>,
         ReadExpect<'a, MaterialDefaults>,
+        WriteStorage<'a, DebugLinesComponent>,
     );
 
     fn run(
@@ -58,6 +62,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
             mat_loader,
             mut mats,
             mat_default,
+            mut debugs,
         ): Self::SystemData,
     ) {
         let mut loaded_chunks = HashSet::new();
@@ -111,12 +116,22 @@ impl<'a> System<'a> for ChunkRenderSystem {
 
             let mut transform = Transform::default();
             transform.set_translation(to_vecf(to_load_pos.pos * CHUNK_SIZEI));
+
+            // draw debug lines
+            let mut debug_lines = DebugLinesComponent::new();
+            debug_lines.add_box(
+                (to_vecf(to_load_pos.pos) * CHUNK_SIZEF).into(),
+                ((to_vecf(to_load_pos.pos) + Vec3f::from([1., 1., 1.])) * CHUNK_SIZEF).into(),
+                Srgba::new(0.1, 0.1, 0.1, 0.5),
+            );
+
             // create entity
             ents.build_entity()
                 .with(*to_load_pos, &mut chunk_positions)
                 .with(transform, &mut transforms)
                 .with(mat, &mut mats)
                 .with(mesh, &mut meshes)
+                .with(debug_lines, &mut debugs)
                 .build();
         }
     }

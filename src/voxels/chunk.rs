@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 
 pub const CHUNK_SIZE: usize = 8;
 pub const CHUNK_SIZEI: i32 = CHUNK_SIZE as i32;
+pub const CHUNK_SIZEF: f32 = CHUNK_SIZE as f32;
 
 pub struct Chunk {
     data: Array3<Voxel>,
@@ -42,10 +43,7 @@ impl Chunk {
                         if self.data[(spos.x as usize, spos.y as usize, spos.z as usize)]
                             .is_transparent()
                         {
-                            chunk_mesh.insert_quad(
-                                to_vecf(pos) + onef / 2.,
-                                dir,
-                            );
+                            chunk_mesh.insert_quad(to_vecf(pos) + onef / 2., dir);
                         }
                     }
                 }
