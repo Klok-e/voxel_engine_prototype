@@ -1,5 +1,6 @@
 use super::chunk::Chunk;
 use super::chunk::{ChunkPosition, CHUNK_SIZE, CHUNK_SIZEF, CHUNK_SIZEI};
+use super::materials::Materials;
 use super::world::VoxelWorld;
 use crate::core::to_vecf;
 use crate::core::{EntityBuildExt, Vec3f, Vec3i};
@@ -32,6 +33,34 @@ impl Component for RenderAround {
 #[derive(SystemDesc)]
 pub struct ChunkRenderSystem;
 
+impl ChunkRenderSystem {
+    fn init_materials(
+        &self,
+        tex_loader: AssetLoaderSystemData<Texture>,
+        mat_loader: AssetLoaderSystemData<Material>,
+        default_mat: ReadExpect<MaterialDefaults>,
+        mats:&mut Write<Option<Materials>>,
+    ) {
+        match **mats {
+            Some(_) => {}
+            None => {
+                let albedo = tex_loader.load_from_data(
+                    loaders::load_from_linear_rgba(LinSrgba::new(0.0, 1.0, 0.0, 1.0)).into(),
+                    (),
+                );
+                let mat = mat_loader.load_from_data(
+                    Material {
+                        albedo,
+                        ..default_mat.0.clone()
+                    },
+                    (),
+                );
+                **mats = Some(Materials { chunks: mat });
+            }
+        }
+    }
+}
+
 impl<'a> System<'a> for ChunkRenderSystem {
     type SystemData = (
         Write<'a, VoxelWorld>,
@@ -47,6 +76,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
         ReadExpect<'a, MaterialDefaults>,
         WriteStorage<'a, DebugLinesComponent>,
         WriteStorage<'a, BoundingSphere>,
+        Write<'a, Option<Materials>>,
     );
 
     fn run(
@@ -65,8 +95,11 @@ impl<'a> System<'a> for ChunkRenderSystem {
             mat_default,
             mut debugs,
             mut bound_spheres,
+            mut materials,
         ): Self::SystemData,
     ) {
+        self.init_materials(tex_loader, mat_loader, mat_default, &mut materials);
+
         let mut loaded_chunks = HashSet::new();
         let mut chunks_to_load = HashSet::new();
         for (loader, transform) in (&load_around, &transforms).join() {
@@ -109,18 +142,6 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .map(|m| MeshData(m.into_owned()))
                 .map(|m| mesh_loader.load_from_data(m, ()));
 
-            let albedo = tex_loader.load_from_data(
-                loaders::load_from_linear_rgba(LinSrgba::new(0.0, 1.0, 0.0, 1.0)).into(),
-                (),
-            );
-            let mat = mat_loader.load_from_data(
-                Material {
-                    albedo,
-                    ..mat_default.0.clone()
-                },
-                (),
-            );
-
             let mut transform = Transform::default();
             transform.set_translation(to_vecf(to_load_pos.pos * CHUNK_SIZEI));
 
@@ -132,11 +153,13 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 Srgba::new(0.1, 0.1, 0.1, 0.5),
             );
 
+            let def_mat = materials.clone().unwrap().chunks;
+
             // create entity
             ents.build_entity()
                 .with(*to_load_pos, &mut chunk_positions)
                 .with(transform, &mut transforms)
-                .with(mat, &mut mats)
+                .with(def_mat, &mut mats)
                 .with_opt(mesh, &mut meshes)
                 .with(debug_lines, &mut debugs)
                 .with(
