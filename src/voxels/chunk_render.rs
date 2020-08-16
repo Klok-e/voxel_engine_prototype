@@ -2,7 +2,7 @@ use super::chunk::Chunk;
 use super::chunk::{ChunkPosition, CHUNK_SIZE, CHUNK_SIZEF, CHUNK_SIZEI};
 use super::world::VoxelWorld;
 use crate::core::to_vecf;
-use crate::core::{Vec3f, Vec3i};
+use crate::core::{EntityBuildExt, Vec3f, Vec3i};
 use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
 use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
 use amethyst::core::num::real::Real;
@@ -101,9 +101,14 @@ impl<'a> System<'a> for ChunkRenderSystem {
         for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
             // create mesh
             let chunk = voxel_world.chunk_at_or_create(&to_load_pos);
-            let mesh = MeshData(chunk.write().unwrap().mesh().into_owned());
+            let mesh = chunk
+                .write()
+                .unwrap()
+                .mesh()
+                .build_mesh()
+                .map(|m| MeshData(m.into_owned()))
+                .map(|m| mesh_loader.load_from_data(m, ()));
 
-            let mesh: Handle<Mesh> = mesh_loader.load_from_data(mesh, ());
             let albedo = tex_loader.load_from_data(
                 loaders::load_from_linear_rgba(LinSrgba::new(0.0, 1.0, 0.0, 1.0)).into(),
                 (),
@@ -132,7 +137,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .with(*to_load_pos, &mut chunk_positions)
                 .with(transform, &mut transforms)
                 .with(mat, &mut mats)
-                .with(mesh, &mut meshes)
+                .with_opt(mesh, &mut meshes)
                 .with(debug_lines, &mut debugs)
                 .with(
                     BoundingSphere::new(

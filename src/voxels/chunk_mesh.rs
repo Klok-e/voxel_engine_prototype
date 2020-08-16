@@ -132,13 +132,17 @@ impl ChunkMeshData {
         self.indices.push(count + 1);
         self.indices.push(count + 2);
     }
-
-    pub fn build_mesh<'a>(&self) -> MeshBuilder<'a> {
-        amethyst::renderer::rendy::mesh::MeshBuilder::new()
-            .with_vertices(self.positions.clone())
-            .with_vertices(self.normals.clone())
-            .with_vertices(self.uv.clone())
-            .with_indices(Indices::from(self.indices.clone()))
+    /// Returns a mesh. None if mesh is empty.
+    pub fn build_mesh<'a>(&self) -> Option<MeshBuilder<'a>> {
+        if self.positions.is_empty() {
+            None
+        } else {
+            Some(amethyst::renderer::rendy::mesh::MeshBuilder::new()
+                .with_vertices(self.positions.clone())
+                .with_vertices(self.normals.clone())
+                .with_vertices(self.uv.clone())
+                .with_indices(Indices::from(self.indices.clone())))
+        }
     }
 }
 
@@ -155,7 +159,7 @@ pub fn create_cube(world: &mut World, pos: Transform) {
     chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::NORTH);
 
     let mesh = world.exec(|loader: AssetLoaderSystemData<Mesh>| {
-        loader.load_from_data(MeshData(chunk_mesh.build_mesh()), ())
+        loader.load_from_data(MeshData(chunk_mesh.build_mesh().unwrap()), ())
     });
 
     let albedo = world.exec(|loader: AssetLoaderSystemData<Texture>| {

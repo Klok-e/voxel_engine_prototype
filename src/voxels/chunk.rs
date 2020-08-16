@@ -30,7 +30,7 @@ impl Chunk {
         self.data.slice(s![1..-1, 1..-1, 1..-1])
     }
 
-    pub fn mesh(&self) -> MeshBuilder<'_> {
+    pub fn mesh(&self) -> ChunkMeshData {
         let one: Vec3i = [1, 1, 1].into();
         let onef: Vec3f = [1., 1., 1.].into();
 
@@ -56,7 +56,7 @@ impl Chunk {
             }
         }
 
-        chunk_mesh.build_mesh()
+        chunk_mesh
     }
 }
 

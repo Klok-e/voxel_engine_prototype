@@ -28,7 +28,7 @@ vulkan = ["amethyst/vulkan"]
 opt-level = 3
 
 [profile.dev]
-opt-level = 0
+opt-level = 1
 
 [profile.release]
 lto = true
