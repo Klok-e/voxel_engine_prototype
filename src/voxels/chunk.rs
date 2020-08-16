@@ -1,5 +1,5 @@
 use super::Voxel;
-use crate::core::{to_vecf, Vec3f, Vec3i};
+use crate::core::{to_uarr, to_vecf, Vec3f, Vec3i};
 use crate::directions::Directions;
 use crate::voxels::chunk_mesh::ChunkMeshData;
 use amethyst::ecs::prelude::*;
@@ -23,8 +23,11 @@ impl Chunk {
         }
     }
 
-    pub fn data(&mut self) -> ArrayViewMut3<Voxel> {
+    pub fn data_mut(&mut self) -> ArrayViewMut3<Voxel> {
         self.data.slice_mut(s![1..-1, 1..-1, 1..-1])
+    }
+    pub fn data(&self) -> ArrayView3<Voxel> {
+        self.data.slice(s![1..-1, 1..-1, 1..-1])
     }
 
     pub fn mesh(&self) -> MeshBuilder<'_> {
@@ -36,12 +39,16 @@ impl Chunk {
             for y in 0..CHUNK_SIZEI {
                 for z in 0..CHUNK_SIZEI {
                     let pos: Vec3i = [x, y, z].into();
+                    if self.data[to_uarr(pos)].is_transparent() {
+                        // if current voxel is transparent
+                        continue;
+                    }
+                    // if current voxel is solid
                     for dir in Directions::all().into_iter() {
                         let dir: Directions = dir;
                         let spos: Vec3i = pos.clone() + dir.to_vec::<i32>() + one.clone();
-                        if self.data[(spos.x as usize, spos.y as usize, spos.z as usize)]
-                            .is_transparent() && dir == Directions::UP
-                        {
+                        if self.data[to_uarr(spos)].is_transparent() {
+                            // if adjacent voxel is transparent
                             chunk_mesh.insert_quad(to_vecf(pos) + onef / 2., dir);
                         }
                     }
@@ -106,7 +113,7 @@ mod tests {
     fn chunk_data_dimensions() {
         let mut chunk = Chunk::new();
 
-        let data = chunk.data();
+        let data = chunk.data_mut();
 
         assert_eq!(data.shape(), &[CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE]);
     }

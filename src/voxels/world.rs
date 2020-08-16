@@ -22,7 +22,7 @@ impl VoxelWorld {
     pub fn chunk_at_or_create(&mut self, pos: &ChunkPosition) -> &RwLock<Chunk> {
         let chunk = self.chunks.entry(*pos).or_insert_with(|| {
             let mut c = Chunk::new();
-            ProceduralGenerator::new().fill_random(&pos, &mut c.data());
+            ProceduralGenerator::new().fill_random(&pos, &mut c.data_mut());
             RwLock::new(c)
         });
         chunk
@@ -30,6 +30,6 @@ impl VoxelWorld {
 
     pub fn voxel_at(&mut self, chunk: &ChunkPosition, pos: &[usize; 3]) -> Voxel {
         let mut chunk = self.chunk_at_or_create(chunk).write().unwrap();
-        chunk.data()[*pos]
+        chunk.data_mut()[*pos]
     }
 }

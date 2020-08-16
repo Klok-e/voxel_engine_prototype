@@ -14,3 +14,7 @@ lazy_static! {
 pub fn to_vecf(veci: Vec3i) -> Vec3f {
     Vec3f::from([veci.x as f32, veci.y as f32, veci.z as f32])
 }
+
+pub fn to_uarr(veci: Vec3i) -> [usize; 3] {
+    [veci.x as usize, veci.y as usize, veci.z as usize]
+}
