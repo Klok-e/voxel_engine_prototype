@@ -9,8 +9,8 @@ use amethyst::core::num::real::Real;
 use amethyst::renderer::palette::LinSrgba;
 use amethyst::renderer::types::MeshData;
 use amethyst::renderer::{
-    debug_drawing::DebugLinesComponent, loaders, palette::Srgba, Material, MaterialDefaults, Mesh,
-    Texture,
+    debug_drawing::DebugLinesComponent, loaders, palette::Srgba, visibility::BoundingSphere,
+    Material, MaterialDefaults, Mesh, Texture,
 };
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
 use std::collections::{HashMap, HashSet};
@@ -46,6 +46,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
         WriteStorage<'a, Handle<Material>>,
         ReadExpect<'a, MaterialDefaults>,
         WriteStorage<'a, DebugLinesComponent>,
+        WriteStorage<'a, BoundingSphere>,
     );
 
     fn run(
@@ -63,6 +64,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
             mut mats,
             mat_default,
             mut debugs,
+            mut bound_spheres,
         ): Self::SystemData,
     ) {
         let mut loaded_chunks = HashSet::new();
@@ -132,6 +134,14 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .with(mat, &mut mats)
                 .with(mesh, &mut meshes)
                 .with(debug_lines, &mut debugs)
+                .with(
+                    BoundingSphere::new(
+                        (Vec3f::from([1., 1., 1.]) * CHUNK_SIZEF / 2.).into(),
+                        // distance from center to outermost vertex of a cube
+                        CHUNK_SIZEF * 3. / 2.,
+                    ),
+                    &mut bound_spheres,
+                )
                 .build();
         }
     }
