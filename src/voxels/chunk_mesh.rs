@@ -55,36 +55,42 @@ impl ChunkMeshData {
             math::Vector3<f32>,
             math::Vector3<f32>,
         ); 6] = [
+            // south
             (
                 [-0.5, 0.5, 0.5].into(),
                 [0.5, 0.5, 0.5].into(),
                 [-0.5, -0.5, 0.5].into(),
                 [0.5, -0.5, 0.5].into(),
             ),
+            // north
             (
                 [-0.5, -0.5, -0.5].into(),
                 [0.5, -0.5, -0.5].into(),
                 [-0.5, 0.5, -0.5].into(),
                 [0.5, 0.5, -0.5].into(),
             ),
+            // up
             (
                 [-0.5, 0.5, -0.5].into(),
                 [0.5, 0.5, -0.5].into(),
                 [-0.5, 0.5, 0.5].into(),
                 [0.5, 0.5, 0.5].into(),
             ),
+            // down
             (
                 [-0.5, -0.5, 0.5].into(),
                 [0.5, -0.5, 0.5].into(),
                 [-0.5, -0.5, -0.5].into(),
                 [0.5, -0.5, -0.5].into(),
             ),
+            // east
             (
                 [0.5, -0.5, 0.5].into(),
                 [0.5, 0.5, 0.5].into(),
                 [0.5, -0.5, -0.5].into(),
                 [0.5, 0.5, -0.5].into(),
             ),
+            // west
             (
                 [-0.5, -0.5, -0.5].into(),
                 [-0.5, 0.5, -0.5].into(),
@@ -97,10 +103,10 @@ impl ChunkMeshData {
             // TODO: remove clones when Clion is happy without them
             x if x.intersects(Directions::UP) => verts[2].clone(),
             x if x.intersects(Directions::DOWN) => verts[3].clone(),
-            x if x.intersects(Directions::WEST) => verts[4].clone(),
-            x if x.intersects(Directions::EAST) => verts[5].clone(),
-            x if x.intersects(Directions::NORTH) => verts[0].clone(),
-            x if x.intersects(Directions::SOUTH) => verts[1].clone(),
+            x if x.intersects(Directions::WEST) => verts[5].clone(),
+            x if x.intersects(Directions::EAST) => verts[4].clone(),
+            x if x.intersects(Directions::NORTH) => verts[1].clone(),
+            x if x.intersects(Directions::SOUTH) => verts[0].clone(),
             _ => unreachable!(),
         };
 
