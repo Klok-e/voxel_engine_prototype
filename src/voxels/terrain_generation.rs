@@ -15,6 +15,7 @@ impl ProceduralGenerator {
         Self { rng: Perlin::new() }
     }
     pub fn fill_random(&mut self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
+        //let mut filled = 0;
         for x in 0..CHUNK_SIZEI {
             for y in 0..CHUNK_SIZEI {
                 for z in 0..CHUNK_SIZEI {
@@ -22,11 +23,15 @@ impl ProceduralGenerator {
                     let p = p + pos.pos * CHUNK_SIZEI;
                     arr[(x as usize, y as usize, z as usize)] = match p {
                         p if p.y > 0 => Voxel { id: 0 },
-                        _ => Voxel { id: 1 },
+                        _ => {
+                            //filled += 1;
+                            Voxel { id: 1 }
+                        }
                     };
                     //self.rng.get(p.into());
                 }
             }
         }
+        //dbg!(pos, filled);
     }
 }

@@ -39,9 +39,8 @@ impl Chunk {
                     for dir in Directions::all().into_iter() {
                         let dir: Directions = dir;
                         let spos: Vec3i = pos.clone() + dir.to_vec::<i32>() + one.clone();
-
                         if self.data[(spos.x as usize, spos.y as usize, spos.z as usize)]
-                            .is_transparent()
+                            .is_transparent() && dir == Directions::UP
                         {
                             chunk_mesh.insert_quad(to_vecf(pos) + onef / 2., dir);
                         }
@@ -79,21 +78,21 @@ impl Default for ChunkPosition {
     }
 }
 
-impl Ord for ChunkPosition {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.pos
-            .x
-            .cmp(&other.pos.x)
-            .then(self.pos.y.cmp(&other.pos.y))
-            .then(self.pos.z.cmp(&other.pos.z))
-    }
-}
+// impl Ord for ChunkPosition {
+//     fn cmp(&self, other: &Self) -> Ordering {
+//         self.pos
+//             .x
+//             .cmp(&other.pos.x)
+//             .then(self.pos.y.cmp(&other.pos.y))
+//             .then(self.pos.z.cmp(&other.pos.z))
+//     }
+// }
 
-impl PartialOrd for ChunkPosition {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
+// impl PartialOrd for ChunkPosition {
+//     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+//         Some(self.cmp(other))
+//     }
+// }
 
 impl Component for ChunkPosition {
     type Storage = DenseVecStorage<Self>;

@@ -39,6 +39,10 @@ impl ChunkMeshData {
     }
 
     pub fn insert_quad(&mut self, pos: math::Vector3<f32>, dir: Directions) {
+        if dir.into_iter().count() > 1 {
+            panic!("insert_quad called with more than one direction");
+        }
+
         let count = self.positions.len() as u16;
         /*
         2-------3   ^

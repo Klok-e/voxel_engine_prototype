@@ -1,4 +1,6 @@
+use crate::core::Vec3f;
 use crate::voxels::RenderAround;
+use crate::directions::Directions;
 use amethyst::utils::auto_fov::AutoFov;
 use amethyst::{
     core::{math, SystemDesc, Transform},
@@ -6,7 +8,11 @@ use amethyst::{
     ecs::{Join, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
     input::{ControllerButton, InputEvent, InputHandler, StringBindings, VirtualKeyCode},
     prelude::*,
-    renderer::Camera,
+    renderer::{
+        light::{Light, DirectionalLight},
+        palette::Srgb,
+        Camera,
+    },
     shrev::{EventChannel, ReaderId},
 };
 
@@ -91,6 +97,10 @@ impl<'a> System<'a> for CameraMoveSystem {
 pub fn init_camera(world: &mut World) {
     world.register::<RenderAround>();
 
+    let mut light = DirectionalLight::default();
+    light.color = Srgb::new(1., 1., 1.);
+    world.create_entity().with(Light::Directional(light)).build();
+
     let mut transform = Transform::default();
     transform.set_translation_xyz(0., 0., 2.);
 
@@ -99,6 +109,6 @@ pub fn init_camera(world: &mut World) {
         .with(Camera::standard_3d(10., 10.))
         .with(AutoFov::new())
         .with(transform)
-        .with(RenderAround::new(2))
+        .with(RenderAround::new(0))
         .build();
 }
