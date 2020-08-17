@@ -1,4 +1,4 @@
-use super::chunk::{Chunk, ChunkPosition, CHUNK_SIZEI};
+use super::chunk::{Chunk, ChunkPosition, CHSIZEI};
 use super::Voxel;
 use crate::core::Vec3i;
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
@@ -16,11 +16,11 @@ impl ProceduralGenerator {
     }
     pub fn fill_random(&mut self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
         //let mut filled = 0;
-        for x in 0..CHUNK_SIZEI {
-            for y in 0..CHUNK_SIZEI {
-                for z in 0..CHUNK_SIZEI {
+        for x in 0..CHSIZEI {
+            for y in 0..CHSIZEI {
+                for z in 0..CHSIZEI {
                     let p = Vec3i::from([x, y, z]);
-                    let p = p + pos.pos * CHUNK_SIZEI;
+                    let p = p + pos.pos * CHSIZEI;
                     arr[(x as usize, y as usize, z as usize)] = match p {
                         p if p.y > -2 => Voxel { id: 0 },
                         _ => {

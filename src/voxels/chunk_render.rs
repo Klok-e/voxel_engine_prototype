@@ -1,5 +1,5 @@
 use super::chunk::Chunk;
-use super::chunk::{ChunkPosition, CHUNK_SIZE, CHUNK_SIZEF, CHUNK_SIZEI};
+use super::chunk::{ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI};
 use super::materials::Materials;
 use super::world::VoxelWorld;
 use crate::core::to_vecf;
@@ -104,13 +104,13 @@ impl<'a> System<'a> for ChunkRenderSystem {
         let mut loaded_chunks = HashSet::new();
         let mut chunks_to_load = HashSet::new();
         for (loader, transform) in (&load_around, &transforms).join() {
-            let pos = transform.translation() / CHUNK_SIZE as f32;
+            let pos = transform.translation() / CHSIZE as f32;
             let pos = Vec3i::new(
                 pos.x.floor() as i32,
                 pos.y.floor() as i32,
                 pos.z.floor() as i32,
             );
-            let index: Vec3f = transform.translation() - to_vecf(pos * CHUNK_SIZEI);
+            let index: Vec3f = transform.translation() - to_vecf(pos * CHSIZEI);
             let index = [
                 index.x.floor() as usize,
                 index.y.floor() as usize,
@@ -144,13 +144,13 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .map(|m| mesh_loader.load_from_data(m, ()));
 
             let mut transform = Transform::default();
-            transform.set_translation(to_vecf(to_load_pos.pos * CHUNK_SIZEI));
+            transform.set_translation(to_vecf(to_load_pos.pos * CHSIZEI));
 
             // draw debug lines
             let mut debug_lines = DebugLinesComponent::new();
             debug_lines.add_box(
-                (to_vecf(to_load_pos.pos) * CHUNK_SIZEF).into(),
-                ((to_vecf(to_load_pos.pos) + Vec3f::from([1., 1., 1.])) * CHUNK_SIZEF).into(),
+                (to_vecf(to_load_pos.pos) * CHSIZEF).into(),
+                ((to_vecf(to_load_pos.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
                 Srgba::new(0.1, 0.1, 0.1, 0.5),
             );
 
@@ -165,9 +165,9 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .with(debug_lines, &mut debugs)
                 .with(
                     BoundingSphere::new(
-                        (Vec3f::from([1., 1., 1.]) * CHUNK_SIZEF / 2.).into(),
+                        (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
                         // distance from center to outermost vertex of a cube
-                        CHUNK_SIZEF * 3. / 2.,
+                        CHSIZEF * 3. / 2.,
                     ),
                     &mut bound_spheres,
                 )

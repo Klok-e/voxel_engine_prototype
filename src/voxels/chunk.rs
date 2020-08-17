@@ -8,9 +8,9 @@ use bitflags::_core::cmp::Ordering;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};
 
-pub const CHUNK_SIZE: usize = 8;
-pub const CHUNK_SIZEI: i32 = CHUNK_SIZE as i32;
-pub const CHUNK_SIZEF: f32 = CHUNK_SIZE as f32;
+pub const CHSIZE: usize = 8;
+pub const CHSIZEI: i32 = CHSIZE as i32;
+pub const CHSIZEF: f32 = CHSIZE as f32;
 
 pub struct Chunk {
     data: Array3<Voxel>,
@@ -19,7 +19,7 @@ pub struct Chunk {
 impl Chunk {
     pub fn new() -> Self {
         Chunk {
-            data: Array3::default([CHUNK_SIZE + 2, CHUNK_SIZE + 2, CHUNK_SIZE + 2]),
+            data: Array3::default([CHSIZE + 2, CHSIZE + 2, CHSIZE + 2]),
         }
     }
 
@@ -35,9 +35,9 @@ impl Chunk {
         let onef: Vec3f = [1., 1., 1.].into();
 
         let mut chunk_mesh = ChunkMeshData::new();
-        for x in 0..CHUNK_SIZEI {
-            for y in 0..CHUNK_SIZEI {
-                for z in 0..CHUNK_SIZEI {
+        for x in 0..CHSIZEI {
+            for y in 0..CHSIZEI {
+                for z in 0..CHSIZEI {
                     let pos: Vec3i = [x, y, z].into();
                     if self.data[to_uarr(pos + one)].is_transparent() {
                         // if current voxel is transparent
@@ -45,7 +45,6 @@ impl Chunk {
                     }
                     // if current voxel is solid
                     for dir in Directions::all().into_iter() {
-                        let dir: Directions = dir;
                         let spos: Vec3i = pos + dir.to_vec::<i32>();
                         if self.data[to_uarr(spos + one)].is_transparent() {
                             // if adjacent voxel is transparent
@@ -115,6 +114,6 @@ mod tests {
 
         let data = chunk.data_mut();
 
-        assert_eq!(data.shape(), &[CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE]);
+        assert_eq!(data.shape(), &[CHSIZE, CHSIZE, CHSIZE]);
     }
 }

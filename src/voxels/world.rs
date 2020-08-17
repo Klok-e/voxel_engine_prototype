@@ -1,5 +1,5 @@
 use super::chunk::Chunk;
-use super::chunk::{ChunkPosition, CHUNK_SIZE};
+use super::chunk::{ChunkPosition, CHSIZE};
 use super::terrain_generation::ProceduralGenerator;
 use super::voxel::Voxel;
 use crate::core::{ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i};
