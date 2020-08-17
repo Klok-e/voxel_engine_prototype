@@ -39,15 +39,15 @@ impl Chunk {
             for y in 0..CHUNK_SIZEI {
                 for z in 0..CHUNK_SIZEI {
                     let pos: Vec3i = [x, y, z].into();
-                    if self.data[to_uarr(pos)].is_transparent() {
+                    if self.data[to_uarr(pos + one)].is_transparent() {
                         // if current voxel is transparent
                         continue;
                     }
                     // if current voxel is solid
                     for dir in Directions::all().into_iter() {
                         let dir: Directions = dir;
-                        let spos: Vec3i = pos.clone() + dir.to_vec::<i32>() + one.clone();
-                        if self.data[to_uarr(spos)].is_transparent() {
+                        let spos: Vec3i = pos + dir.to_vec::<i32>();
+                        if self.data[to_uarr(spos + one)].is_transparent() {
                             // if adjacent voxel is transparent
                             chunk_mesh.insert_quad(to_vecf(pos) + onef / 2., dir);
                         }

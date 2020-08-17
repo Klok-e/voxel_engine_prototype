@@ -137,11 +137,13 @@ impl ChunkMeshData {
         if self.positions.is_empty() {
             None
         } else {
-            Some(amethyst::renderer::rendy::mesh::MeshBuilder::new()
-                .with_vertices(self.positions.clone())
-                .with_vertices(self.normals.clone())
-                .with_vertices(self.uv.clone())
-                .with_indices(Indices::from(self.indices.clone())))
+            Some(
+                amethyst::renderer::rendy::mesh::MeshBuilder::new()
+                    .with_vertices(self.positions.clone())
+                    .with_vertices(self.normals.clone())
+                    .with_vertices(self.uv.clone())
+                    .with_indices(Indices::from(self.indices.clone())),
+            )
         }
     }
 }

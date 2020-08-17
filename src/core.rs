@@ -1,5 +1,8 @@
 use amethyst::ecs::{prelude::*, world::EntityResBuilder};
-use amethyst::{core::math::Vector3, prelude::*, utils::application_root_dir,renderer::Material,assets::Handle};
+use amethyst::{
+    assets::Handle, core::math::Vector3, prelude::*, renderer::Material,
+    utils::application_root_dir,
+};
 use flurry;
 use std::path::PathBuf;
 

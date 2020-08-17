@@ -1,6 +1,6 @@
 use crate::core::Vec3f;
-use crate::voxels::RenderAround;
 use crate::directions::Directions;
+use crate::voxels::RenderAround;
 use amethyst::utils::auto_fov::AutoFov;
 use amethyst::{
     core::{math, SystemDesc, Transform},
@@ -9,7 +9,7 @@ use amethyst::{
     input::{ControllerButton, InputEvent, InputHandler, StringBindings, VirtualKeyCode},
     prelude::*,
     renderer::{
-        light::{Light, DirectionalLight},
+        light::{DirectionalLight, Light},
         palette::Srgb,
         Camera,
     },
@@ -99,7 +99,10 @@ pub fn init_camera(world: &mut World) {
 
     let mut light = DirectionalLight::default();
     light.color = Srgb::new(1., 1., 1.);
-    world.create_entity().with(Light::Directional(light)).build();
+    world
+        .create_entity()
+        .with(Light::Directional(light))
+        .build();
 
     let mut transform = Transform::default();
     transform.set_translation_xyz(0., 0., 2.);
