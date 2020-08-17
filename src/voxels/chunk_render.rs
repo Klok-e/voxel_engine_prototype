@@ -57,7 +57,6 @@ impl ChunkRenderSystem {
                     (),
                 );
                 **mats = Some(Materials { chunks: mat });
-                dbg!(&**mats);
             }
         }
     }
