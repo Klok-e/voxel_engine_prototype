@@ -39,23 +39,25 @@ impl ChunkRenderSystem {
         tex_loader: AssetLoaderSystemData<Texture>,
         mat_loader: AssetLoaderSystemData<Material>,
         default_mat: ReadExpect<MaterialDefaults>,
-        mats:&mut Write<Option<Materials>>,
+        mats: &mut Write<Option<Materials>>,
     ) {
         match **mats {
             Some(_) => {}
             None => {
-                let albedo = tex_loader.load_from_data(
-                    loaders::load_from_linear_rgba(LinSrgba::new(0.0, 1.0, 0.0, 1.0)).into(),
-                    (),
-                );
+                // TODO: use albedo when it stops crashing the game
+                // let albedo = tex_loader.load_from_data(
+                //     loaders::load_from_srgba(Srgba::new(0.1, 0.9, 0.1, 1.0)).into(),
+                //     (),
+                // );
                 let mat = mat_loader.load_from_data(
                     Material {
-                        albedo,
+                        //albedo,
                         ..default_mat.0.clone()
                     },
                     (),
                 );
                 **mats = Some(Materials { chunks: mat });
+                dbg!(&**mats);
             }
         }
     }
