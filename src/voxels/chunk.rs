@@ -201,7 +201,7 @@ mod tests {
         assert_eq!(expected, &dbg!(actual));
     }
 
-    // expected results were checked by hand with a python visualization
+    /// expected results were checked by hand with a python visualization
     #[test]
     fn rotate_xy() {
         let control = array![
@@ -217,6 +217,8 @@ mod tests {
 
         check(&expected, &control, |p| rotate90_xy(p));
     }
+
+    /// expected results were checked by hand with a python visualization
     #[test]
     fn rotate_xz() {
         let control = array![
@@ -232,6 +234,8 @@ mod tests {
 
         check(&expected, &control, |p| rotate90_xz(p));
     }
+
+    /// expected results were checked by hand with a python visualization
     #[test]
     fn rotate_yz() {
         let control = array![
