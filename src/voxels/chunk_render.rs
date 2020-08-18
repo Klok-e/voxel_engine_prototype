@@ -4,6 +4,7 @@ use super::materials::Materials;
 use super::world::VoxelWorld;
 use crate::core::to_vecf;
 use crate::core::{EntityBuildExt, Vec3f, Vec3i};
+use crate::directions::Directions;
 use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
 use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
 use amethyst::core::num::real::Real;
@@ -14,6 +15,7 @@ use amethyst::renderer::{
     Material, MaterialDefaults, Mesh, Texture,
 };
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
+use flurry::epoch::pin;
 use std::collections::{HashMap, HashSet};
 
 pub struct RenderAround {
@@ -132,12 +134,24 @@ impl<'a> System<'a> for ChunkRenderSystem {
             }
         }
 
+        let guard = pin();
         for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-            // create mesh
-            let chunk = voxel_world.chunk_at_or_create(&to_load_pos);
-            let mesh = chunk
+            let chunk = voxel_world
+                .chunk_at_or_create(&to_load_pos, &guard)
                 .write()
-                .unwrap()
+                .unwrap();
+            for (dir, dirvec) in Directions::all()
+                .into_iter()
+                .map(|d| (d, d.to_vec::<i32>()))
+            {
+                let neighb = voxel_world
+                    .chunk_at_or_create(&(to_load_pos.pos + dirvec).into(), &guard)
+                    .read()
+                    .unwrap();
+            }
+
+            // create mesh
+            let mesh = chunk
                 .mesh()
                 .build_mesh()
                 .map(|m| MeshData(m.into_owned()))

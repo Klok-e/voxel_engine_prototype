@@ -10,8 +10,8 @@ use std::sync::{RwLock, RwLockWriteGuard};
 
 #[derive(Default)]
 pub struct VoxelWorld {
-    chunks: HashMap<ChunkPosition, RwLock<Chunk>>,
-    dirty: HashSet<ChunkPosition>,
+    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk>>,
+    dirty: ConcurrentHashSet<ChunkPosition>,
 }
 
 impl VoxelWorld {
@@ -19,17 +19,25 @@ impl VoxelWorld {
         Default::default()
     }
 
-    pub fn chunk_at_or_create(&mut self, pos: &ChunkPosition) -> &RwLock<Chunk> {
-        let chunk = self.chunks.entry(*pos).or_insert_with(|| {
-            let mut c = Chunk::new();
-            ProceduralGenerator::new().fill_random(&pos, &mut c.data_mut());
-            RwLock::new(c)
-        });
+    pub fn chunk_at_or_create<'a>(
+        &'a self,
+        pos: &ChunkPosition,
+        guard: &'a Guard,
+    ) -> &'a RwLock<Chunk> {
+        let chunk = match self.chunks.get(pos, guard) {
+            Some(c) => c,
+            None => {
+                let mut c = Chunk::new();
+                ProceduralGenerator::new().fill_random(&pos, &mut c.data_mut());
+                self.chunks.insert(*pos, RwLock::new(c), guard).unwrap();
+                self.chunks.get(pos, guard).unwrap()
+            }
+        };
         chunk
     }
 
-    pub fn voxel_at(&mut self, chunk: &ChunkPosition, pos: &[usize; 3]) -> Voxel {
-        let mut chunk = self.chunk_at_or_create(chunk).write().unwrap();
-        chunk.data_mut()[*pos]
+    pub fn voxel_at(&self, chunk: &ChunkPosition, pos: &[usize; 3], guard: &Guard) -> Voxel {
+        let chunk = self.chunk_at_or_create(chunk, guard).write().unwrap();
+        chunk.data()[*pos]
     }
 }

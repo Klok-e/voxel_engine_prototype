@@ -130,21 +130,21 @@ impl Default for ChunkPosition {
     }
 }
 
-// impl Ord for ChunkPosition {
-//     fn cmp(&self, other: &Self) -> Ordering {
-//         self.pos
-//             .x
-//             .cmp(&other.pos.x)
-//             .then(self.pos.y.cmp(&other.pos.y))
-//             .then(self.pos.z.cmp(&other.pos.z))
-//     }
-// }
+impl Ord for ChunkPosition {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.pos
+            .x
+            .cmp(&other.pos.x)
+            .then(self.pos.y.cmp(&other.pos.y))
+            .then(self.pos.z.cmp(&other.pos.z))
+    }
+}
 
-// impl PartialOrd for ChunkPosition {
-//     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-//         Some(self.cmp(other))
-//     }
-// }
+impl PartialOrd for ChunkPosition {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
 
 impl Component for ChunkPosition {
     type Storage = DenseVecStorage<Self>;
