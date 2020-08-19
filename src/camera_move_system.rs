@@ -81,6 +81,10 @@ impl<'a> System<'a> for CameraMoveSystem {
             cam_trans.append_translation(translation * sensitivity.translation);
             cam_trans.append_rotation_x_axis(d_y * sensitivity.mouse);
             cam_trans.append_rotation_y_axis(d_x * sensitivity.mouse);
+
+            let right = cam_trans.rotation() * Vec3f::x();
+            let angle = right.angle(&Vec3f::y()) - std::f32::consts::FRAC_PI_2;
+            cam_trans.append_rotation_z_axis(-angle);
         }
     }
 
