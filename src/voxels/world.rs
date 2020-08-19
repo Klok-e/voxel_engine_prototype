@@ -29,7 +29,7 @@ impl VoxelWorld {
             None => {
                 let mut c = Chunk::new();
                 ProceduralGenerator::new().fill_random(&pos, &mut c.data_mut());
-                self.chunks.insert(*pos, RwLock::new(c), guard).unwrap();
+                self.chunks.insert(*pos, RwLock::new(c), guard);
                 self.chunks.get(pos, guard).unwrap()
             }
         };
