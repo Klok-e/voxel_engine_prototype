@@ -1,18 +1,21 @@
 use super::chunk::{Chunk, ChunkPosition, CHSIZEI};
 use super::Voxel;
-use crate::core::Vec3i;
+use crate::core::{to_vecf, Vec3f, Vec3i};
+use amethyst::core::math::{Point2, Vector2};
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
 use ndarray::prelude::*;
 use ndarray::Zip;
-use noise::{NoiseFn, Perlin};
+use noise::{Fbm, NoiseFn, Perlin, Seedable};
 
 pub struct ProceduralGenerator {
-    rng: Perlin,
+    rng: Fbm,
 }
 
 impl ProceduralGenerator {
     pub fn new() -> Self {
-        Self { rng: Perlin::new() }
+        Self {
+            rng: Fbm::new().set_seed(42),
+        }
     }
     pub fn fill_random(&mut self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
         //let mut filled = 0;
@@ -20,15 +23,15 @@ impl ProceduralGenerator {
             for y in 0..CHSIZEI {
                 for z in 0..CHSIZEI {
                     let p = Vec3i::from([x, y, z]);
-                    let p = p + pos.pos * CHSIZEI;
-                    arr[(x as usize, y as usize, z as usize)] = match p {
-                        p if p.y > -2 => Voxel { id: 0 },
+                    let p = to_vecf(p + pos.pos * CHSIZEI);
+                    let value = self.rng.get([p.x as f64 / 100., p.z as f64 / 100.]);
+                    arr[(x as usize, y as usize, z as usize)] = match value {
+                        value if p.y as f64 + 5. > value * 10. => Voxel { id: 0 },
                         _ => {
                             //filled += 1;
                             Voxel { id: 1 }
                         }
                     };
-                    //self.rng.get(p.into());
                 }
             }
         }
