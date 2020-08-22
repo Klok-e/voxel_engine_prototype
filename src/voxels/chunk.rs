@@ -185,6 +185,7 @@ impl Component for ChunkPosition {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
     const SMALLCH: usize = 3;
     const SMALLCHI: i32 = SMALLCH as i32;
@@ -263,8 +264,7 @@ mod tests {
         check(&expected, &control, |p| SmallChunk::rotate90_yz(p));
     }
 
-    #[test]
-    fn copy_up() {
+    fn get_small_chunk() -> SmallChunk {
         let up = array![
             [[1, 10, 19], [2, 11, 20], [3, 12, 21]],
             [[4, 13, 22], [5, 14, 23], [6, 15, 24]],
@@ -279,16 +279,36 @@ mod tests {
                 }
             }
         }
+        upch
+    }
+
+    fn ch_index_to_arru16(ch: &SmallChunk, ax: Axis, index: usize) -> Array2<u16> {
+        let data = ch.data.map(|v| v.id);
+        let slice = data.index_axis(ax, index).to_owned();
+        slice
+    }
+
+    #[rstest(
+        dir,
+        axis,
+        other_index,
+        this_index,
+        case::up(Directions::UP, 1, 1, 4),
+        case::down(Directions::DOWN, 1, 3, 0),
+        case::west(Directions::WEST, 0, 3, 0),
+        case::east(Directions::EAST, 0, 1, 4),
+        case::north(Directions::NORTH, 2, 3, 0),
+        case::south(Directions::SOUTH, 2, 1, 4),
+    )]
+    fn copy_face(dir: Directions, axis: usize, other_index: usize, this_index: usize) {
+        let otherch = get_small_chunk();
 
         let mut this = SmallChunk::new();
+        this.copy_borders(&otherch, dir);
 
-        this.copy_borders(&upch, Directions::UP);
+        let expected = ch_index_to_arru16(&otherch, Axis(axis), other_index);
+        let actual = ch_index_to_arru16(&this, Axis(axis), this_index);
 
-        let up_data = upch.data.map(|v| v.id);
-        let up_slice = up_data.index_axis(Axis(1), 1);
-        let this_data = this.data.map(|v| v.id);
-        let this_slice = this_data.index_axis(Axis(1), 4);
-
-        assert_eq!(up_slice, this_slice);
+        assert_eq!(expected, actual);
     }
 }
