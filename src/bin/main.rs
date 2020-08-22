@@ -1,10 +1,3 @@
-#![feature(min_const_generics)]
-
-#[macro_use]
-extern crate bitflags;
-#[macro_use]
-extern crate lazy_static;
-
 use amethyst::{
     core::{frame_limiter::FrameRateLimitStrategy, TransformBundle},
     input::{InputBundle, StringBindings},
@@ -20,20 +13,14 @@ use amethyst::{
     LogLevelFilter, Logger, LoggerConfig, StdoutLog,
 };
 
-use crate::voxels::ChunkRenderSystem;
-use crate::{
+use voxel_engine_prototype_lib::voxels::ChunkRenderSystem;
+use voxel_engine_prototype_lib::{
     camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::GameplayState,
     ui::FpsUiSystem,
 };
 use amethyst::utils::auto_fov::AutoFovSystem;
 use std::{fs::OpenOptions, time::Duration};
 
-mod camera_move_system;
-mod core;
-mod directions;
-mod gameplay_state;
-mod ui;
-mod voxels;
 
 fn main() -> amethyst::Result<()> {
     Logger::from_config_formatter(
