@@ -3,7 +3,7 @@ use amethyst::{
     derive::SystemDesc,
     ecs::prelude::*,
     prelude::*,
-    ui::{Anchor, TtfFormat, UiText, UiTransform},
+    ui::{Anchor, LineMode, TtfFormat, UiText, UiTransform},
     utils::fps_counter::FpsCounter,
 };
 use log;
@@ -30,7 +30,14 @@ pub fn init_fps_counter(world: &mut World) {
         (),
         &world.read_resource(),
     );
-    let text = UiText::new(font, "0".to_owned(), [1., 1., 1., 1.], 14.);
+    let text = UiText::new(
+        font,
+        "0".to_owned(),
+        [1., 1., 1., 1.],
+        14.,
+        LineMode::Single,
+        Anchor::Middle,
+    );
     let fps_text_ent = world.create_entity().with(transform).with(text).build();
     world.insert(FpsText { text: fps_text_ent })
 }
