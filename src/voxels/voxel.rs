@@ -11,3 +11,9 @@ impl Voxel {
         }
     }
 }
+
+impl From<u16> for Voxel {
+    fn from(v: u16) -> Self {
+        Voxel { id: v }
+    }
+}
