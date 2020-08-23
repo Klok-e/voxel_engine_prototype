@@ -30,7 +30,7 @@ pub fn meshing(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("meshing");
 
-    group.significance_level(0.01).sample_size(500).measurement_time(Duration::from_secs(30));
+    group.significance_level(0.01).sample_size(500);
 
     bench_const::<2>(&mut group, BenchmarkId::new("mesh", 2));
     bench_const::<4>(&mut group, BenchmarkId::new("mesh", 4));
