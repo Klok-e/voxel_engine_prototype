@@ -14,16 +14,16 @@ name = "meshing"
 harness = false
 
 [dependencies]
-amethyst = "0.15.0"
+amethyst = "0.15.1"
 bitflags = "1.2.1"
 log = "0.4.11"
 lazy_static = "1.4.0"
-chrono = "0.4.13"
+chrono = "0.4.15"
 ndarray = "0.13.1"
 rand = "0.7.3"
 noise = "0.6.0"
 flurry = "0.3.0"
-serde = "1.0.114"
+serde = "1.0.115"
 
 [features]
 default = ["vulkan"]

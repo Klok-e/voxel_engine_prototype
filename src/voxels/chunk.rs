@@ -10,7 +10,7 @@ use ndarray::Zip;
 use serde::{Deserialize, Serialize};
 use std::convert::identity;
 
-pub const CHSIZE: usize = 8;
+pub const CHSIZE: usize = 32;
 pub const CHSIZEI: i32 = CHSIZE as i32;
 pub const CHSIZEF: f32 = CHSIZE as f32;
 
