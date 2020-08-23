@@ -1,12 +1,11 @@
 #![feature(min_const_generics)]
 
 use criterion::{
-    black_box, criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup,
-    Criterion,PlotConfiguration,BenchmarkId,SamplingMode
+    criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
+    Criterion,
 };
 use rand::prelude::*;
-use voxel_engine_prototype_lib::voxels::{Chunk, CHSIZE};
-use std::time::Duration;
+use voxel_engine_prototype_lib::voxels::Chunk;
 
 fn create_random_chunk<const N: usize>(rng: &mut StdRng) -> Chunk<N> {
     let mut ch = Chunk::new();
@@ -42,13 +41,13 @@ pub fn meshing(c: &mut Criterion) {
     bench_const::<16>(&mut group, BenchmarkId::new("mesh", 16));
     bench_const::<18>(&mut group, BenchmarkId::new("mesh", 18));
     bench_const::<20>(&mut group, BenchmarkId::new("mesh", 20));
-    bench_const::<22>(&mut group, BenchmarkId::new("mesh",22));
+    bench_const::<22>(&mut group, BenchmarkId::new("mesh", 22));
     bench_const::<24>(&mut group, BenchmarkId::new("mesh", 24));
     bench_const::<26>(&mut group, BenchmarkId::new("mesh", 26));
     bench_const::<28>(&mut group, BenchmarkId::new("mesh", 28));
     bench_const::<30>(&mut group, BenchmarkId::new("mesh", 30));
     bench_const::<32>(&mut group, BenchmarkId::new("mesh", 32));
-    
+
     group.finish();
 }
 
