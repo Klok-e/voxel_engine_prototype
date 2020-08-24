@@ -45,10 +45,10 @@ impl<const N: usize> Chunk<N> {
         let one: Vec3i = [1, 1, 1].into();
         for x in 0..(Self::NI) {
             for z in 0..(Self::NI) {
-                let (x, y, z) = index_transform((x, Self::NI, z));
-                let dest_index: Vec3i = dbg!([x, y, z].into());
-                let (x, y, z) = index_transform((x, -1, z));
-                let source_index: Vec3i = dbg!([x, y, z].into());
+                let (xi, yi, zi) = index_transform((x, Self::NI, z));
+                let dest_index: Vec3i = [xi, yi, zi].into();
+                let (xi, yi, zi) = index_transform((x, 0, z));
+                let source_index: Vec3i = [xi, yi, zi].into();
 
                 data[to_uarr(dest_index + one)] = other[to_uarr(source_index + one)];
             }
@@ -57,29 +57,29 @@ impl<const N: usize> Chunk<N> {
 
     pub fn copy_borders(&mut self, other: &Self, dir: Directions) {
         let dir: Directions = dir.to_vec::<i32>().into();
-        match dbg!(dir) {
+        match dir {
             x if x == Directions::NORTH => {
-                Self::copy_face_up(&mut self.data, &other.data, |p| Self::rotate90_yz(p));
-            }
-            x if x == Directions::SOUTH => {
                 Self::copy_face_up(&mut self.data, &other.data, |p| {
                     Self::rotate90_yz(Self::rotate90_yz(Self::rotate90_yz(p)))
                 });
             }
+            x if x == Directions::SOUTH => {
+                Self::copy_face_up(&mut self.data, &other.data, |p| Self::rotate90_yz(p));
+            }
             x if x == Directions::WEST => {
+                Self::copy_face_up(&mut self.data, &other.data, |p| Self::rotate90_xy(p));
+            }
+            x if x == Directions::EAST => {
                 Self::copy_face_up(&mut self.data, &other.data, |p| {
                     Self::rotate90_xy(Self::rotate90_xy(Self::rotate90_xy(p)))
                 });
-            }
-            x if x == Directions::EAST => {
-                Self::copy_face_up(&mut self.data, &other.data, |p| Self::rotate90_xy(p));
             }
             x if x == Directions::UP => {
                 Self::copy_face_up(&mut self.data, &other.data, |p| identity(p));
             }
             x if x == Directions::DOWN => {
                 Self::copy_face_up(&mut self.data, &other.data, |p| {
-                    Self::rotate90_xy(Self::rotate90_xy(p))
+                    Self::reverse_x(Self::rotate90_xy(Self::rotate90_xy(p)))
                 });
             }
             // x if x == (Directions::UP | Directions::EAST) => {
@@ -131,6 +131,9 @@ impl<const N: usize> Chunk<N> {
     }
     fn reverse_y((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
         (x, Self::NI - y - 1, z)
+    }
+    fn reverse_z((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
+        (x, y, Self::NI - z - 1)
     }
     pub fn rotate90_xy((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
         Self::reverse_x(Self::transpose_xy((x, y, z)))
@@ -216,7 +219,7 @@ mod tests {
             let (x, y, z) = fn_view((x as i32, y as i32, z as i32));
             *actual = control[[x as usize, y as usize, z as usize]];
         });
-        assert_eq!(expected, &dbg!(actual));
+        assert_eq!(expected, &actual);
     }
 
     /// expected results were checked by hand with a python visualization
@@ -289,7 +292,7 @@ mod tests {
     }
 
     fn ch_index_to_arru16(ch: &SmallChunk, ax: Axis, index: usize) -> Array2<u16> {
-        let data = ch.data.map(|v| v.id);
+        let data = dbg!(ch.data.map(|v| v.id));
         let slice = data.index_axis(ax, index).to_owned();
         slice
     }

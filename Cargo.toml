@@ -36,7 +36,7 @@ opt-level = 3
 opt-level = 1
 
 [profile.release]
-lto = true
+lto = "thin"
 
 [lib]
 name = "voxel_engine_prototype_lib"

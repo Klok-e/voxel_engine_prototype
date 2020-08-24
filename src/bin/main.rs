@@ -13,14 +13,13 @@ use amethyst::{
     LogLevelFilter, Logger, LoggerConfig, StdoutLog,
 };
 
+use amethyst::utils::auto_fov::AutoFovSystem;
+use std::{fs::OpenOptions, time::Duration};
 use voxel_engine_prototype_lib::voxels::ChunkRenderSystem;
 use voxel_engine_prototype_lib::{
     camera_move_system::CameraMoveSystem, core::APP_ROOT, gameplay_state::GameplayState,
     ui::FpsUiSystem,
 };
-use amethyst::utils::auto_fov::AutoFovSystem;
-use std::{fs::OpenOptions, time::Duration};
-
 
 fn main() -> amethyst::Result<()> {
     Logger::from_config_formatter(
