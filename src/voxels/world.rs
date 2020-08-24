@@ -1,4 +1,4 @@
-use super::chunk::Chunk;
+use super::chunk::SChunk;
 use super::chunk::{ChunkPosition, CHSIZE};
 use super::terrain_generation::ProceduralGenerator;
 use super::voxel::Voxel;
@@ -10,7 +10,7 @@ use std::sync::{RwLock, RwLockWriteGuard};
 
 #[derive(Default)]
 pub struct VoxelWorld {
-    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk>>,
+    chunks: ConcurrentHashMap<ChunkPosition, RwLock<SChunk>>,
     dirty: ConcurrentHashSet<ChunkPosition>,
 }
 
@@ -23,11 +23,11 @@ impl VoxelWorld {
         &'a self,
         pos: &ChunkPosition,
         guard: &'a Guard,
-    ) -> &'a RwLock<Chunk> {
+    ) -> &'a RwLock<SChunk> {
         let chunk = match self.chunks.get(pos, guard) {
             Some(c) => c,
             None => {
-                let mut c = Chunk::new();
+                let mut c = SChunk::new();
                 ProceduralGenerator::new().fill_random(&pos, &mut c.data_mut());
                 self.chunks.insert(*pos, RwLock::new(c), guard);
                 self.chunks.get(pos, guard).unwrap()
