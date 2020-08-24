@@ -76,9 +76,6 @@ impl<const N: usize> Chunk<N> {
             x if x == Directions::DOWN => {
                 Self::copy_face_up(&mut self.data, |p| Self::rotate90_xy(Self::rotate90_xy(p)));
             }
-            x if x == (Directions::UP | Directions::EAST) => {
-                Self::copy_face_up(&mut self.data, |p| identity(p));
-            }
             _ => todo!("add all 26 combinations of directions"),
         }
     }
@@ -298,7 +295,7 @@ mod tests {
         case::west(Directions::WEST, 0, 3, 0),
         case::east(Directions::EAST, 0, 1, 4),
         case::north(Directions::NORTH, 2, 3, 0),
-        case::south(Directions::SOUTH, 2, 1, 4),
+        case::south(Directions::SOUTH, 2, 1, 4)
     )]
     fn copy_face(dir: Directions, axis: usize, other_index: usize, this_index: usize) {
         let otherch = get_small_chunk();
@@ -308,6 +305,34 @@ mod tests {
 
         let expected = ch_index_to_arru16(&otherch, Axis(axis), other_index);
         let actual = ch_index_to_arru16(&this, Axis(axis), this_index);
+
+        assert_eq!(expected, actual);
+    }
+
+    fn ch_index_index_to_arru16(
+        ch: &SmallChunk,
+        ax1: Axis,
+        index1: usize,
+        ax2: Axis,
+        index2: usize,
+    ) -> Array1<u16> {
+        let data = ch.data.map(|v| v.id);
+        let slice = data
+            .index_axis(ax1, index1)
+            .index_axis(ax2, index2)
+            .to_owned();
+        slice
+    }
+
+    #[test]
+    fn copy_edge() {
+        let otherch = get_small_chunk();
+
+        let mut this = SmallChunk::new();
+        this.copy_borders(&otherch, Directions::UP | Directions::WEST);
+
+        let expected = ch_index_index_to_arru16(&otherch, Axis(1), 1, Axis(0), 3);
+        let actual = ch_index_index_to_arru16(&this, Axis(1), 4, Axis(0), 0);
 
         assert_eq!(expected, actual);
     }
