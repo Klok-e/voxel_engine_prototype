@@ -136,7 +136,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
 
         let guard = pin();
         for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-            let chunk = voxel_world
+            let mut chunk = voxel_world
                 .chunk_at_or_create(&to_load_pos, &guard)
                 .write()
                 .unwrap();
@@ -148,6 +148,8 @@ impl<'a> System<'a> for ChunkRenderSystem {
                     .chunk_at_or_create(&(to_load_pos.pos + dirvec).into(), &guard)
                     .read()
                     .unwrap();
+
+                chunk.copy_borders(&*neighb, dir);
             }
 
             // create mesh

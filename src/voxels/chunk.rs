@@ -37,41 +37,47 @@ impl Chunk {
     pub fn copy_borders(&mut self, other: &Self, dir: Directions) {
         fn copy_face_up(
             data: &mut Array3<Voxel>,
+            other: &Array3<Voxel>,
             index_transform: impl Fn((i32, i32, i32)) -> (i32, i32, i32),
         ) {
             let one: Vec3i = [1, 1, 1].into();
             for x in 0..(CHSIZEI) {
                 for z in 0..(CHSIZEI) {
-                    let (x, y, z) = index_transform((x, CHSIZEI - 1, z));
-                    let index: Vec3i = [x, y, z].into();
-                    data[to_uarr(index + one)];
+                    let (x, y, z) = index_transform((x, CHSIZEI, z));
+                    let dest_index: Vec3i = dbg!([x, y, z].into());
+                    let (x, y, z) = index_transform((x, -1, z));
+                    let source_index: Vec3i = dbg!([x, y, z].into());
+                    
+                    data[to_uarr(dest_index + one)] = other[to_uarr(source_index + one)];
                 }
             }
         }
 
         let dir: Directions = dir.to_vec::<i32>().into();
-        match dir {
+        match dbg!(dir) {
             x if x == Directions::NORTH => {
-                copy_face_up(&mut self.data, |p| rotate90_yz(rotate90_yz(rotate90_yz(p))));
+                copy_face_up(&mut self.data, &other.data, |p| rotate90_yz(p));
             }
             x if x == Directions::SOUTH => {
-                copy_face_up(&mut self.data, |p| rotate90_yz(rotate90_yz(p)));
+                copy_face_up(&mut self.data, &other.data, |p| rotate90_yz(rotate90_yz(rotate90_yz(p))));
             }
             x if x == Directions::WEST => {
-                copy_face_up(&mut self.data, |p| rotate90_xy(p));
+                copy_face_up(&mut self.data, &other.data, |p| {
+                    rotate90_xy(rotate90_xy(rotate90_xy(p)))
+                });
             }
             x if x == Directions::EAST => {
-                copy_face_up(&mut self.data, |p| rotate90_xy(rotate90_xy(rotate90_xy(p))));
+                copy_face_up(&mut self.data, &other.data, |p| rotate90_xy(p));
             }
             x if x == Directions::UP => {
-                copy_face_up(&mut self.data, |p| identity(p));
+                copy_face_up(&mut self.data, &other.data, |p| identity(p));
             }
             x if x == Directions::DOWN => {
-                copy_face_up(&mut self.data, |p| rotate90_xy(rotate90_xy(p)));
+                copy_face_up(&mut self.data, &other.data, |p| rotate90_xy(rotate90_xy(p)));
             }
-            x if x == (Directions::UP | Directions::EAST) => {
-                copy_face_up(&mut self.data, |p| identity(p));
-            }
+            // x if x == (Directions::UP | Directions::EAST) => {
+            //     copy_face_up(&mut self.data, &other, |p| identity(p));
+            // }
             _ => todo!("add all 26 combinations of directions"),
         }
     }
