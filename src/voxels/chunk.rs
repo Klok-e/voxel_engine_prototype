@@ -85,7 +85,7 @@ impl<const N: usize> Chunk<N> {
             // x if x == (Directions::UP | Directions::EAST) => {
             //     copy_face_up(&mut self.data, &other, |p| identity(p));
             // }
-            _ => todo!("add all 26 combinations of directions"),
+            _ => {} //todo!("add all 26 combinations of directions")
         }
     }
 
@@ -143,6 +143,28 @@ impl<const N: usize> Chunk<N> {
     }
     pub fn rotate90_yz((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
         Self::reverse_y(Self::transpose_yz((x, y, z)))
+    }
+
+    /// Checks whether the provided idnex is on the chunk border
+    /// and if it is, return border direction
+    pub fn is_on_border(ind: &[usize; 3]) -> Option<Directions> {
+        let mut dir = Vec3i::new(ind[0] as i32, ind[1] as i32, ind[2] as i32);
+        let dir = dir.map(|v| {
+            if v == Self::NI - 1 {
+                1
+            } else if v == 0 {
+                -1
+            } else {
+                0
+            }
+        });
+
+        if dir.x + dir.y + dir.z == 0 {
+            None
+        } else {
+            let dir = Directions::from(dir);
+            Some(dir)
+        }
     }
 }
 

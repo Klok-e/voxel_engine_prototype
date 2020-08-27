@@ -40,6 +40,10 @@ impl Directions {
             }
         })
     }
+
+    pub fn invert(self) -> Self {
+        (-self.to_vec::<i32>()).into()
+    }
 }
 
 impl<T> From<Directions> for Vector3<T>

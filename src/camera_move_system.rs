@@ -1,6 +1,6 @@
 use crate::core::Vec3f;
 use crate::directions::Directions;
-use crate::voxels::RenderAround;
+use crate::{destroy_on_touch_system::DestroyVoxOnTouch, voxels::RenderAround};
 use amethyst::utils::auto_fov::AutoFov;
 use amethyst::{
     core::{math, SystemDesc, Transform},
@@ -117,5 +117,6 @@ pub fn init_camera(world: &mut World) {
         .with(AutoFov::new())
         .with(transform)
         .with(RenderAround::new(1))
+        .with(DestroyVoxOnTouch)
         .build();
 }

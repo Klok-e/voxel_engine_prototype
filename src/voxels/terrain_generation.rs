@@ -11,13 +11,19 @@ pub struct ProceduralGenerator {
     rng: Fbm,
 }
 
+impl Default for ProceduralGenerator {
+    fn default() -> Self {
+        ProceduralGenerator::new()
+    }
+}
+
 impl ProceduralGenerator {
     pub fn new() -> Self {
         Self {
             rng: Fbm::new().set_seed(42),
         }
     }
-    pub fn fill_random(&mut self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
+    pub fn fill_random(&self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
         //let mut filled = 0;
         for x in 0..CHSIZEI {
             for y in 0..CHSIZEI {
