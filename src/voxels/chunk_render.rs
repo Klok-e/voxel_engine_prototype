@@ -9,6 +9,7 @@ use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
 use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
 use amethyst::core::num::real::Real;
 use amethyst::renderer::palette::LinSrgba;
+use amethyst::renderer::resources::AmbientColor;
 use amethyst::renderer::types::MeshData;
 use amethyst::renderer::{
     debug_drawing::DebugLinesComponent, loaders, palette::Srgba, visibility::BoundingSphere,
@@ -40,27 +41,39 @@ impl ChunkRenderSystem {
         &self,
         tex_loader: AssetLoaderSystemData<Texture>,
         mat_loader: AssetLoaderSystemData<Material>,
-        default_mat: ReadExpect<MaterialDefaults>,
-        mats: &mut Write<Option<Materials>>,
-    ) {
-        match **mats {
-            Some(_) => {}
-            None => {
-                // TODO: use albedo when it stops crashing the game
-                // let albedo = tex_loader.load_from_data(
-                //     loaders::load_from_srgba(Srgba::new(0.1, 0.9, 0.1, 1.0)).into(),
-                //     (),
-                // );
-                let mat = mat_loader.load_from_data(
-                    Material {
-                        //albedo,
-                        ..default_mat.0.clone()
-                    },
-                    (),
-                );
-                **mats = Some(Materials { chunks: mat });
-            }
-        }
+    ) -> Materials {
+        use amethyst::renderer::pod::Environment;
+        use amethyst::renderer::{mtl::TextureOffset, ImageFormat};
+
+        //let albedo = loaders::load_from_srgba(Srgba::new(0.5, 0.7, 0.5, 1.0));
+        let emission = loaders::load_from_srgba(Srgba::new(0.0, 0.0, 0.0, 0.0));
+        let normal = loaders::load_from_linear_rgba(LinSrgba::new(0.5, 0.5, 1.0, 1.0));
+        let metallic_roughness = loaders::load_from_linear_rgba(LinSrgba::new(0.0, 0.5, 0.0, 0.0));
+        let ambient_occlusion = loaders::load_from_linear_rgba(LinSrgba::new(1.0, 1.0, 1.0, 1.0));
+        let cavity = loaders::load_from_linear_rgba(LinSrgba::new(1.0, 1.0, 1.0, 1.0));
+
+        //let albedo = tex_loader.load_from_data(albedo.into(), ());
+        let albedo = tex_loader.load("blocks/dirt.png", ImageFormat::default(), ());
+        let emission = tex_loader.load_from_data(emission.into(), ());
+        let normal = tex_loader.load_from_data(normal.into(), ());
+        let metallic_roughness = tex_loader.load_from_data(metallic_roughness.into(), ());
+        let ambient_occlusion = tex_loader.load_from_data(ambient_occlusion.into(), ());
+        let cavity = tex_loader.load_from_data(cavity.into(), ());
+
+        let chunks = mat_loader.load_from_data(
+            Material {
+                alpha_cutoff: 0.01,
+                albedo,
+                emission,
+                normal,
+                metallic_roughness,
+                ambient_occlusion,
+                cavity,
+                uv_offset: TextureOffset::default(),
+            },
+            (),
+        );
+        Materials { chunks }
     }
 }
 
@@ -73,13 +86,10 @@ impl<'a> System<'a> for ChunkRenderSystem {
         Entities<'a>,
         AssetLoaderSystemData<'a, Mesh>,
         WriteStorage<'a, Handle<Mesh>>,
-        AssetLoaderSystemData<'a, Texture>,
-        AssetLoaderSystemData<'a, Material>,
         WriteStorage<'a, Handle<Material>>,
-        ReadExpect<'a, MaterialDefaults>,
         WriteStorage<'a, DebugLinesComponent>,
         WriteStorage<'a, BoundingSphere>,
-        Write<'a, Option<Materials>>,
+        WriteExpect<'a, Materials>,
     );
 
     fn run(
@@ -92,17 +102,12 @@ impl<'a> System<'a> for ChunkRenderSystem {
             ents,
             mesh_loader,
             mut meshes,
-            tex_loader,
-            mat_loader,
             mut mats,
-            mat_default,
             mut debugs,
             mut bound_spheres,
             mut materials,
         ): Self::SystemData,
     ) {
-        self.init_materials(tex_loader, mat_loader, mat_default, &mut materials);
-
         let mut loaded_chunks = HashSet::new();
         let mut chunks_to_load = HashSet::new();
         for (loader, transform) in (&load_around, &transforms).join() {
@@ -170,7 +175,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 Srgba::new(0.1, 0.1, 0.1, 0.5),
             );
 
-            let def_mat = materials.clone().unwrap().chunks;
+            let def_mat = materials.chunks.clone();
 
             // create entity
             ents.build_entity()
@@ -195,5 +200,10 @@ impl<'a> System<'a> for ChunkRenderSystem {
         <Self as System<'_>>::SystemData::setup(world);
         world.register::<RenderAround>();
         world.register::<ChunkPosition>();
+
+        world.insert(AmbientColor(Srgba::new(0.5, 0.5, 0.5, 1.0)));
+
+        let mats = world.exec(|(tex, mat)| self.init_materials(tex, mat));
+        world.insert(mats)
     }
 }

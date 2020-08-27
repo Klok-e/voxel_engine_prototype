@@ -122,8 +122,8 @@ impl ChunkMeshData {
 
         self.uv.push([0., 0.].into());
         self.uv.push([1., 0.].into());
-        self.uv.push([1., 1.].into());
         self.uv.push([0., 1.].into());
+        self.uv.push([1., 1.].into());
 
         self.indices.push(count + 0);
         self.indices.push(count + 2);
