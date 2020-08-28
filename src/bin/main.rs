@@ -66,9 +66,9 @@ fn main() -> amethyst::Result<()> {
             "move_camera_system",
             &["input_system", "transform_system"],
         )
-        .with(ChunkRenderSystem, "chunks_system", &[])
         .with(DestroyOnTouchSystem, "destroy_on_touch_system", &[])
-        .with(WorldApplyChangesSystem, "world_apply_changes_system", &[]);
+        .with(ChunkRenderSystem, "chunks_system", &["destroy_on_touch_system"])
+        .with(WorldApplyChangesSystem, "world_apply_changes_system", &["destroy_on_touch_system"]);
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?

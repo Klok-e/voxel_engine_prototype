@@ -24,7 +24,7 @@ impl<'a> System<'a> for DestroyOnTouchSystem {
     fn run(&mut self, (on_touch, transform, world): Self::SystemData) {
         let guard = pin();
         for (_, transform) in (&on_touch, &transform).join() {
-            world.set_voxel_at_pos(&transform.translation(), Voxel { id: 0 }, &guard);
+            world.set_voxel_at_pos((&transform.translation()), Voxel { id: 0 }, &guard);
         }
     }
 

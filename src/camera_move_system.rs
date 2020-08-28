@@ -1,6 +1,6 @@
 use crate::core::Vec3f;
 use crate::directions::Directions;
-use crate::{destroy_on_touch_system::DestroyVoxOnTouch, voxels::RenderAround};
+use crate::{destroy_on_touch_system::DestroyVoxOnTouch, voxels::dirty_around_system::RenderAround,  };
 use amethyst::utils::auto_fov::AutoFov;
 use amethyst::{
     core::{math, SystemDesc, Transform},

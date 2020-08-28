@@ -34,6 +34,10 @@ impl VoxelWorld {
         Default::default()
     }
 
+    pub fn dirty(&self) -> &ConcurrentHashSet<ChunkPosition> {
+        &self.dirty
+    }
+
     pub fn chunk_at_or_create<'a>(
         &'a self,
         pos: &ChunkPosition,
@@ -94,6 +98,8 @@ impl VoxelWorld {
             list.iter().for_each(|change| {
                 chunk.data_mut()[change.index] = change.new_vox;
 
+                self.dirty.insert(*pos, guard);
+
                 // if on a border
                 let border = SChunk::is_on_border(&change.index);
                 if let Some(border_dir) = border {
@@ -110,13 +116,25 @@ impl VoxelWorld {
                 .unwrap();
 
             let copy_to_vec = copy_to_dir.to_vec::<i32>();
-            let next_chunk = chunk_pos.pos + copy_to_vec;
+            let next_chunk_pos = chunk_pos.pos + copy_to_vec;
             let mut next_chunk = self
-                .chunk_at_or_create(&ChunkPosition { pos: next_chunk }, guard)
+                .chunk_at_or_create(
+                    &ChunkPosition {
+                        pos: next_chunk_pos,
+                    },
+                    guard,
+                )
                 .try_write()
                 .unwrap();
 
             next_chunk.copy_borders(&*curr_chunk, copy_to_dir.invert());
+
+            self.dirty.insert(
+                ChunkPosition {
+                    pos: next_chunk_pos,
+                },
+                guard,
+            );
         }
     }
 

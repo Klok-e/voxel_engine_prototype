@@ -1,7 +1,7 @@
 use super::chunk::Chunk;
 use super::chunk::{ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI};
 use super::materials::Materials;
-use super::world::VoxelWorld;
+use super::{dirty_around_system::RenderAround, world::VoxelWorld};
 use crate::core::to_vecf;
 use crate::core::{EntityBuildExt, Vec3f, Vec3i};
 use crate::directions::Directions;
@@ -18,20 +18,6 @@ use amethyst::renderer::{
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
 use flurry::epoch::pin;
 use std::collections::{HashMap, HashSet};
-
-pub struct RenderAround {
-    pub distance: i32,
-}
-
-impl RenderAround {
-    pub fn new(distance: i32) -> Self {
-        RenderAround { distance }
-    }
-}
-
-impl Component for RenderAround {
-    type Storage = DenseVecStorage<Self>;
-}
 
 #[derive(SystemDesc)]
 pub struct ChunkRenderSystem;
@@ -99,7 +85,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
             load_around,
             mut chunk_positions,
             mut transforms,
-            ents,
+            mut ents,
             mesh_loader,
             mut meshes,
             mut mats,
@@ -108,54 +94,17 @@ impl<'a> System<'a> for ChunkRenderSystem {
             mut materials,
         ): Self::SystemData,
     ) {
-        let mut loaded_chunks = HashSet::new();
-        let mut chunks_to_load = HashSet::new();
-        for (loader, transform) in (&load_around, &transforms).join() {
-            let pos = transform.translation() / CHSIZE as f32;
-            let pos = Vec3i::new(
-                pos.x.floor() as i32,
-                pos.y.floor() as i32,
-                pos.z.floor() as i32,
-            );
-            let index: Vec3f = transform.translation() - to_vecf(pos * CHSIZEI);
-            let index = [
-                index.x.floor() as usize,
-                index.y.floor() as usize,
-                index.z.floor() as usize,
-            ];
-            //dbg!(voxel_world.voxel_at(&ChunkPosition::new(pos), &index));
-
-            for (chunk_pos,) in (&chunk_positions,).join() {
-                loaded_chunks.insert(*chunk_pos);
-            }
-
-            for z in -loader.distance..=loader.distance {
-                for y in -loader.distance..=loader.distance {
-                    for x in -loader.distance..=loader.distance {
-                        let pos = ChunkPosition::new(Vec3i::new(x, y, z) + pos.clone());
-                        chunks_to_load.insert(pos);
-                    }
-                }
-            }
+        let mut chunk_entities = HashMap::new();
+        for (chunk_pos, ent) in (&chunk_positions, &ents).join() {
+            chunk_entities.insert(*chunk_pos, ent);
         }
 
         let guard = pin();
-        for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-            let mut chunk = voxel_world
-                .chunk_at_or_create(&to_load_pos, &guard)
-                .write()
+        for to_clean in voxel_world.dirty().iter(&guard) {
+            let chunk = voxel_world
+                .chunk_at_or_create(&to_clean, &guard)
+                .read()
                 .unwrap();
-            for (dir, dirvec) in Directions::all()
-                .into_iter()
-                .map(|d| (d, d.to_vec::<i32>()))
-            {
-                let neighb = voxel_world
-                    .chunk_at_or_create(&(to_load_pos.pos + dirvec).into(), &guard)
-                    .read()
-                    .unwrap();
-
-                chunk.copy_borders(&*neighb, dir);
-            }
 
             // create mesh
             let mesh = chunk
@@ -164,36 +113,41 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .map(|m| MeshData(m.into_owned()))
                 .map(|m| mesh_loader.load_from_data(m, ()));
 
-            let mut transform = Transform::default();
-            transform.set_translation(to_vecf(to_load_pos.pos * CHSIZEI));
+            if let Some(m) = mesh {
+                let entity = chunk_entities.entry(*to_clean).or_insert_with(|| {
+                    let mut transform = Transform::default();
+                    transform.set_translation(to_vecf(to_clean.pos * CHSIZEI));
 
-            // draw debug lines
-            let mut debug_lines = DebugLinesComponent::new();
-            debug_lines.add_box(
-                (to_vecf(to_load_pos.pos) * CHSIZEF).into(),
-                ((to_vecf(to_load_pos.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
-                Srgba::new(0.1, 0.1, 0.1, 0.5),
-            );
+                    // draw debug lines
+                    let mut debug_lines = DebugLinesComponent::new();
+                    debug_lines.add_box(
+                        (to_vecf(to_clean.pos) * CHSIZEF).into(),
+                        ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
+                        Srgba::new(0.1, 0.1, 0.1, 0.5),
+                    );
 
-            let def_mat = materials.chunks.clone();
+                    let def_mat = materials.chunks.clone();
 
-            // create entity
-            ents.build_entity()
-                .with(*to_load_pos, &mut chunk_positions)
-                .with(transform, &mut transforms)
-                .with(def_mat, &mut mats)
-                .with_opt(mesh, &mut meshes)
-                .with(debug_lines, &mut debugs)
-                .with(
-                    BoundingSphere::new(
-                        (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
-                        // distance from center to outermost vertex of a cube
-                        CHSIZEF * 3. / 2.,
-                    ),
-                    &mut bound_spheres,
-                )
-                .build();
+                    // create entity
+                    ents.build_entity()
+                        .with(*to_clean, &mut chunk_positions)
+                        .with(transform, &mut transforms)
+                        .with(def_mat, &mut mats)
+                        .with(debug_lines, &mut debugs)
+                        .with(
+                            BoundingSphere::new(
+                                (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
+                                // distance from center to outermost vertex of a cube
+                                CHSIZEF * 3. / 2.,
+                            ),
+                            &mut bound_spheres,
+                        )
+                        .build()
+                });
+                meshes.insert(*entity, m).unwrap();
+            }
         }
+        voxel_world.dirty().clear(&guard);
     }
 
     fn setup(&mut self, world: &mut World) {
