@@ -15,7 +15,9 @@ use amethyst::{
 
 use amethyst::utils::auto_fov::AutoFovSystem;
 use std::{fs::OpenOptions, time::Duration};
-use voxel_engine_prototype_lib::voxels::ChunkRenderSystem;
+use voxel_engine_prototype_lib::voxels::{
+    dirty_around_system::DirtyAroundSystem, ChunkRenderSystem,
+};
 use voxel_engine_prototype_lib::{
     camera_move_system::CameraMoveSystem, core::APP_ROOT,
     destroy_on_touch_system::DestroyOnTouchSystem, gameplay_state::GameplayState, ui::FpsUiSystem,
@@ -67,8 +69,17 @@ fn main() -> amethyst::Result<()> {
             &["input_system", "transform_system"],
         )
         .with(DestroyOnTouchSystem, "destroy_on_touch_system", &[])
-        .with(ChunkRenderSystem, "chunks_system", &["destroy_on_touch_system"])
-        .with(WorldApplyChangesSystem, "world_apply_changes_system", &["destroy_on_touch_system"]);
+        .with(DirtyAroundSystem, "dirty_around_system", &[])
+        .with(
+            ChunkRenderSystem,
+            "chunks_system",
+            &["destroy_on_touch_system", "dirty_around_system"],
+        )
+        .with(
+            WorldApplyChangesSystem,
+            "world_apply_changes_system",
+            &["destroy_on_touch_system"],
+        );
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?

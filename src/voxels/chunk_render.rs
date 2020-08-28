@@ -114,7 +114,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .map(|m| mesh_loader.load_from_data(m, ()));
 
             if let Some(m) = mesh {
-                let entity = chunk_entities.entry(*to_clean).or_insert_with(|| {
+                let entity = chunk_entities.get(to_clean).map(|v| *v).unwrap_or_else(|| {
                     let mut transform = Transform::default();
                     transform.set_translation(to_vecf(to_clean.pos * CHSIZEI));
 
@@ -144,7 +144,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
                         )
                         .build()
                 });
-                meshes.insert(*entity, m).unwrap();
+                meshes.insert(entity, m).unwrap();
             }
         }
         voxel_world.dirty().clear(&guard);
