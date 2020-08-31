@@ -113,37 +113,38 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 .map(|m| MeshData(m.into_owned()))
                 .map(|m| mesh_loader.load_from_data(m, ()));
 
+            // get entity from hashmap or create a new one
+            let entity = chunk_entities.get(to_clean).map(|v| *v).unwrap_or_else(|| {
+                let mut transform = Transform::default();
+                transform.set_translation(to_vecf(to_clean.pos * CHSIZEI));
+
+                // draw debug lines
+                let mut debug_lines = DebugLinesComponent::new();
+                debug_lines.add_box(
+                    (to_vecf(to_clean.pos) * CHSIZEF).into(),
+                    ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
+                    Srgba::new(0.1, 0.1, 0.1, 0.5),
+                );
+
+                let def_mat = materials.chunks.clone();
+
+                // create entity
+                ents.build_entity()
+                    .with(*to_clean, &mut chunk_positions)
+                    .with(transform, &mut transforms)
+                    .with(def_mat, &mut mats)
+                    .with(debug_lines, &mut debugs)
+                    .with(
+                        BoundingSphere::new(
+                            (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
+                            // distance from center to outermost vertex of a cube
+                            CHSIZEF * 3. / 2.,
+                        ),
+                        &mut bound_spheres,
+                    )
+                    .build()
+            });
             if let Some(m) = mesh {
-                let entity = chunk_entities.get(to_clean).map(|v| *v).unwrap_or_else(|| {
-                    let mut transform = Transform::default();
-                    transform.set_translation(to_vecf(to_clean.pos * CHSIZEI));
-
-                    // draw debug lines
-                    let mut debug_lines = DebugLinesComponent::new();
-                    debug_lines.add_box(
-                        (to_vecf(to_clean.pos) * CHSIZEF).into(),
-                        ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
-                        Srgba::new(0.1, 0.1, 0.1, 0.5),
-                    );
-
-                    let def_mat = materials.chunks.clone();
-
-                    // create entity
-                    ents.build_entity()
-                        .with(*to_clean, &mut chunk_positions)
-                        .with(transform, &mut transforms)
-                        .with(def_mat, &mut mats)
-                        .with(debug_lines, &mut debugs)
-                        .with(
-                            BoundingSphere::new(
-                                (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
-                                // distance from center to outermost vertex of a cube
-                                CHSIZEF * 3. / 2.,
-                            ),
-                            &mut bound_spheres,
-                        )
-                        .build()
-                });
                 meshes.insert(entity, m).unwrap();
             }
         }
