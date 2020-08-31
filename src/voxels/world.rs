@@ -139,11 +139,11 @@ impl VoxelWorld {
     }
 
     pub fn to_ch_pos_index(pos: &Vec3f) -> (ChunkPosition, [usize; 3]) {
-        let pos = pos / CHSIZEF;
+        let posch = pos / CHSIZEF;
         let ch_pos = Vec3i::new(
-            pos.x.floor() as i32,
-            pos.y.floor() as i32,
-            pos.z.floor() as i32,
+            posch.x.floor() as i32,
+            posch.y.floor() as i32,
+            posch.z.floor() as i32,
         );
         let index = pos - to_vecf(ch_pos * CHSIZEI);
         let index = [

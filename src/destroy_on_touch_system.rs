@@ -24,13 +24,16 @@ impl<'a> System<'a> for DestroyOnTouchSystem {
     fn run(&mut self, (on_touch, transform, world): Self::SystemData) {
         let guard = pin();
         for (_, transform) in (&on_touch, &transform).join() {
-            //world.set_voxel_at_pos((&transform.translation()), Voxel { id: 0 }, &guard);
+            match world.voxel_at_pos(&transform.translation(), &guard) {
+                Voxel { id: 0 } => {}
+                _ => world.set_voxel_at_pos(&transform.translation(), Voxel { id: 0 }, &guard),
+            }
         }
     }
 
     fn setup(&mut self, world: &mut World) {
         <Self as System>::SystemData::setup(world);
-        
+
         world.register::<DestroyVoxOnTouch>();
     }
 }

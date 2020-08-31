@@ -69,17 +69,18 @@ fn main() -> amethyst::Result<()> {
             &["input_system", "transform_system"],
         )
         .with(DestroyOnTouchSystem, "destroy_on_touch_system", &[])
-        .with(DirtyAroundSystem, "dirty_around_system", &[])
-        .with(
-            ChunkRenderSystem,
-            "chunks_system",
-            &["destroy_on_touch_system", "dirty_around_system"],
-        )
         .with(
             WorldApplyChangesSystem,
             "world_apply_changes_system",
             &["destroy_on_touch_system"],
+        )
+        .with(DirtyAroundSystem, "dirty_around_system", &[])
+        .with(
+            ChunkRenderSystem,
+            "chunks_system",
+            &["world_apply_changes_system", "dirty_around_system"],
         );
+        
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?
