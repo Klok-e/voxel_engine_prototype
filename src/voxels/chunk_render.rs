@@ -4,7 +4,7 @@ use super::materials::Materials;
 use super::{dirty_around_system::RenderAround, world::VoxelWorld};
 use crate::core::to_vecf;
 use crate::core::{EntityBuildExt, Vec3f, Vec3i};
-use crate::directions::Directions;
+use crate::{directions::Directions, game_config::GameConfig};
 use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
 use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
 use amethyst::core::num::real::Real;
@@ -76,6 +76,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
         WriteStorage<'a, DebugLinesComponent>,
         WriteStorage<'a, BoundingSphere>,
         WriteExpect<'a, Materials>,
+        ReadExpect<'a, GameConfig>,
     );
 
     fn run(
@@ -92,6 +93,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
             mut debugs,
             mut bound_spheres,
             mut materials,
+            config,
         ): Self::SystemData,
     ) {
         let mut chunk_entities = HashMap::new();
@@ -100,7 +102,7 @@ impl<'a> System<'a> for ChunkRenderSystem {
         }
 
         let guard = pin();
-        for to_clean in voxel_world.dirty().iter(&guard) {
+        for to_clean in voxel_world.dirty().iter(&guard).take(config.chunks_render_per_frame) {
             let chunk = voxel_world
                 .chunk_at_or_create(&to_clean, &guard)
                 .read()
@@ -147,8 +149,9 @@ impl<'a> System<'a> for ChunkRenderSystem {
             if let Some(m) = mesh {
                 meshes.insert(entity, m).unwrap();
             }
+
+            voxel_world.dirty().remove(to_clean, &guard);
         }
-        voxel_world.dirty().clear(&guard);
     }
 
     fn setup(&mut self, world: &mut World) {

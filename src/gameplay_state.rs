@@ -7,6 +7,7 @@ use amethyst::{
     prelude::*,
 };
 
+use crate::game_config::GameConfig;
 use crate::{camera_move_system::init_camera, ui::init_fps_counter, voxels::create_cube};
 use amethyst::input::StringBindings;
 use amethyst::window::ScreenDimensions;
@@ -20,5 +21,9 @@ impl SimpleState for GameplayState {
         let mut transform = Transform::default();
         transform.set_translation_xyz(0., 0., 0.);
         create_cube(data.world, transform);
+
+        data.world.insert(GameConfig {
+            chunks_render_per_frame: 20,
+        })
     }
 }
