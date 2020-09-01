@@ -39,20 +39,26 @@ impl VoxelWorld {
         &self.dirty
     }
 
+    pub fn chunk_at<'a>(
+        &'a self,
+        pos: &ChunkPosition,
+        guard: &'a Guard,
+    ) -> Option<&'a RwLock<SChunk>> {
+        self.chunks.get(pos, guard)
+    }
+
     pub fn chunk_at_or_create<'a>(
         &'a self,
         pos: &ChunkPosition,
         guard: &'a Guard,
     ) -> &'a RwLock<SChunk> {
-        let chunk = match self.chunks.get(pos, guard) {
-            Some(c) => c,
-            None => {
-                let mut c = SChunk::new();
-                self.procedural.fill_random(&pos, &mut c.data_mut());
-                self.chunks.try_insert(*pos, RwLock::new(c), guard).unwrap();
-                self.chunks.get(pos, guard).unwrap()
-            }
-        };
+        let chunk = self.chunk_at(pos, guard).unwrap_or_else(|| {
+            // or create and insert a new chunk
+            let mut c = SChunk::new();
+            self.procedural.fill_random(&pos, &mut c.data_mut());
+            self.chunks.try_insert(*pos, RwLock::new(c), guard).unwrap();
+            self.chunks.get(pos, guard).unwrap()
+        });
         chunk
     }
 

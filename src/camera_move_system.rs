@@ -1,6 +1,6 @@
 use crate::{
     core::Vec3f, destroy_on_touch_system::DestroyVoxOnTouch,
-    voxels::dirty_around_system::RenderAround,
+    voxels::{dirty_around_system::RenderAround,generate_map_around_system::GenerateMapAround},
 };
 use amethyst::{
     core::{math, Transform},
@@ -49,6 +49,7 @@ impl<'a> System<'a> for CameraMoveSystem {
     fn run(&mut self, (input, cameras, mut transforms, events, sensitivity): Self::SystemData) {
         let mut translation = math::Vector3::<f32>::zeros();
         if input.key_is_down(VirtualKeyCode::W) {
+            println!("W down");
             translation -= math::Vector3::z();
         }
         if input.key_is_down(VirtualKeyCode::S) {
@@ -118,6 +119,7 @@ pub fn init_camera(world: &mut World) {
         .with(AutoFov::new())
         .with(transform)
         .with(RenderAround::new(1))
+        .with(GenerateMapAround::new(10))
         .with(DestroyVoxOnTouch)
         .build();
 }

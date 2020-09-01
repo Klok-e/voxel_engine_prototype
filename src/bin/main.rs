@@ -8,7 +8,7 @@ use amethyst::{
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
-    utils::{fps_counter::FpsCounterBundle, auto_fov::AutoFovSystem},
+    utils::{auto_fov::AutoFovSystem, fps_counter::FpsCounterBundle},
     LogLevelFilter, Logger, LoggerConfig,
 };
 use std::time::Duration;
@@ -18,7 +18,10 @@ use voxel_engine_prototype_lib::{
     destroy_on_touch_system::DestroyOnTouchSystem,
     gameplay_state::GameplayState,
     ui::FpsUiSystem,
-    voxels::{dirty_around_system::DirtyAroundSystem, ChunkRenderSystem},
+    voxels::{
+        dirty_around_system::DirtyAroundSystem,
+        generate_map_around_system::GenerateMapAroundSystem, ChunkRenderSystem,
+    },
     world_change_apply_system::WorldApplyChangesSystem,
 };
 
@@ -77,7 +80,8 @@ fn main() -> amethyst::Result<()> {
             ChunkRenderSystem,
             "chunks_system",
             &["world_apply_changes_system", "dirty_around_system"],
-        );
+        )
+        .with(GenerateMapAroundSystem, "generate_map_around_system", &[]);
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?

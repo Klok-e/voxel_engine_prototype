@@ -26,7 +26,8 @@ impl SimpleState for GameplayState {
         create_cube(data.world, transform);
 
         data.world.insert(GameConfig {
-            chunks_render_per_frame: 20,
+            chunks_render_per_frame: 10,
+            chunks_generate_per_frame:10,
         });
 
         data.world
