@@ -14,9 +14,8 @@ use amethyst::{
     derive::SystemDesc,
     ecs::prelude::*,
     renderer::{
-        debug_drawing::DebugLinesComponent, loaders, palette::LinSrgba, palette::Srgba,
-        resources::AmbientColor, types::MeshData, visibility::BoundingSphere, Material, Mesh,
-        Texture,
+        debug_drawing::DebugLinesComponent, palette::Srgba, types::MeshData,
+        visibility::BoundingSphere, Material, Mesh,
     },
 };
 use flurry::epoch::pin;
@@ -24,46 +23,6 @@ use std::collections::HashMap;
 
 #[derive(SystemDesc)]
 pub struct ChunkRenderSystem;
-
-impl ChunkRenderSystem {
-    fn init_materials(
-        &self,
-        tex_loader: AssetLoaderSystemData<Texture>,
-        mat_loader: AssetLoaderSystemData<Material>,
-    ) -> Materials {
-        use amethyst::renderer::{mtl::TextureOffset, ImageFormat};
-
-        //let albedo = loaders::load_from_srgba(Srgba::new(0.5, 0.7, 0.5, 1.0));
-        let emission = loaders::load_from_srgba(Srgba::new(0.0, 0.0, 0.0, 0.0));
-        let normal = loaders::load_from_linear_rgba(LinSrgba::new(0.5, 0.5, 1.0, 1.0));
-        let metallic_roughness = loaders::load_from_linear_rgba(LinSrgba::new(0.0, 0.5, 0.0, 0.0));
-        let ambient_occlusion = loaders::load_from_linear_rgba(LinSrgba::new(1.0, 1.0, 1.0, 1.0));
-        let cavity = loaders::load_from_linear_rgba(LinSrgba::new(1.0, 1.0, 1.0, 1.0));
-
-        //let albedo = tex_loader.load_from_data(albedo.into(), ());
-        let albedo = tex_loader.load("blocks/dirt.png", ImageFormat::default(), ());
-        let emission = tex_loader.load_from_data(emission.into(), ());
-        let normal = tex_loader.load_from_data(normal.into(), ());
-        let metallic_roughness = tex_loader.load_from_data(metallic_roughness.into(), ());
-        let ambient_occlusion = tex_loader.load_from_data(ambient_occlusion.into(), ());
-        let cavity = tex_loader.load_from_data(cavity.into(), ());
-
-        let chunks = mat_loader.load_from_data(
-            Material {
-                alpha_cutoff: 0.01,
-                albedo,
-                emission,
-                normal,
-                metallic_roughness,
-                ambient_occlusion,
-                cavity,
-                uv_offset: TextureOffset::default(),
-            },
-            (),
-        );
-        Materials { chunks }
-    }
-}
 
 impl<'a> System<'a> for ChunkRenderSystem {
     type SystemData = (
@@ -162,10 +121,5 @@ impl<'a> System<'a> for ChunkRenderSystem {
         <Self as System<'_>>::SystemData::setup(world);
         world.register::<RenderAround>();
         world.register::<ChunkPosition>();
-
-        world.insert(AmbientColor(Srgba::new(0.5, 0.5, 0.5, 1.0)));
-
-        let mats = world.exec(|(tex, mat)| self.init_materials(tex, mat));
-        world.insert(mats)
     }
 }
