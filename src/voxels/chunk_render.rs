@@ -1,23 +1,26 @@
-use super::chunk::Chunk;
-use super::chunk::{ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI};
-use super::materials::Materials;
-use super::{dirty_around_system::RenderAround, world::VoxelWorld};
-use crate::core::to_vecf;
-use crate::core::{EntityBuildExt, Vec3f, Vec3i};
-use crate::{directions::Directions, game_config::GameConfig};
-use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
-use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
-use amethyst::core::num::real::Real;
-use amethyst::renderer::palette::LinSrgba;
-use amethyst::renderer::resources::AmbientColor;
-use amethyst::renderer::types::MeshData;
-use amethyst::renderer::{
-    debug_drawing::DebugLinesComponent, loaders, palette::Srgba, visibility::BoundingSphere,
-    Material, MaterialDefaults, Mesh, Texture,
+use super::{
+    chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
+    dirty_around_system::RenderAround,
+    materials::Materials,
+    world::VoxelWorld,
 };
-use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
+use crate::{
+    core::{to_vecf, Vec3f},
+    game_config::GameConfig,
+};
+use amethyst::{
+    assets::{AssetLoaderSystemData, Handle},
+    core::components::Transform,
+    derive::SystemDesc,
+    ecs::prelude::*,
+    renderer::{
+        debug_drawing::DebugLinesComponent, loaders, palette::LinSrgba, palette::Srgba,
+        resources::AmbientColor, types::MeshData, visibility::BoundingSphere, Material, Mesh,
+        Texture,
+    },
+};
 use flurry::epoch::pin;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(SystemDesc)]
 pub struct ChunkRenderSystem;
@@ -28,7 +31,6 @@ impl ChunkRenderSystem {
         tex_loader: AssetLoaderSystemData<Texture>,
         mat_loader: AssetLoaderSystemData<Material>,
     ) -> Materials {
-        use amethyst::renderer::pod::Environment;
         use amethyst::renderer::{mtl::TextureOffset, ImageFormat};
 
         //let albedo = loaders::load_from_srgba(Srgba::new(0.5, 0.7, 0.5, 1.0));
@@ -65,35 +67,33 @@ impl ChunkRenderSystem {
 
 impl<'a> System<'a> for ChunkRenderSystem {
     type SystemData = (
-        Write<'a, VoxelWorld>,
-        ReadStorage<'a, RenderAround>,
+        Read<'a, VoxelWorld>,
         WriteStorage<'a, ChunkPosition>,
         WriteStorage<'a, Transform>,
-        Entities<'a>,
         AssetLoaderSystemData<'a, Mesh>,
         WriteStorage<'a, Handle<Mesh>>,
         WriteStorage<'a, Handle<Material>>,
         WriteStorage<'a, DebugLinesComponent>,
         WriteStorage<'a, BoundingSphere>,
-        WriteExpect<'a, Materials>,
         ReadExpect<'a, GameConfig>,
+        Entities<'a>,
+        ReadExpect<'a, Materials>,
     );
 
     fn run(
         &mut self,
         (
-            mut voxel_world,
-            load_around,
+            voxel_world,
             mut chunk_positions,
             mut transforms,
-            mut ents,
             mesh_loader,
             mut meshes,
             mut mats,
             mut debugs,
             mut bound_spheres,
-            mut materials,
             config,
+            ents,
+            materials,
         ): Self::SystemData,
     ) {
         let mut chunk_entities = HashMap::new();
@@ -102,7 +102,11 @@ impl<'a> System<'a> for ChunkRenderSystem {
         }
 
         let guard = pin();
-        for to_clean in voxel_world.dirty().iter(&guard).take(config.chunks_render_per_frame) {
+        for to_clean in voxel_world
+            .dirty()
+            .iter(&guard)
+            .take(config.chunks_render_per_frame)
+        {
             let chunk = voxel_world
                 .chunk_at_or_create(&to_clean, &guard)
                 .read()

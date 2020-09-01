@@ -1,6 +1,6 @@
-use amethyst::ecs::{prelude::*, world::EntityResBuilder};
 use amethyst::{
-    assets::Handle, core::math::Vector3, prelude::*, renderer::Material,
+    core::math::Vector3,
+    ecs::{prelude::*, world::EntityResBuilder},
     utils::application_root_dir,
 };
 use flurry;

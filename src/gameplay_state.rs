@@ -1,16 +1,8 @@
-use amethyst::{
-    core::{
-        math,
-        math::geometry::{Rotation, Rotation3},
-        Transform,
-    },
-    prelude::*,
+use crate::{
+    camera_move_system::init_camera, game_config::GameConfig, ui::init_fps_counter,
+    voxels::create_cube,
 };
-
-use crate::game_config::GameConfig;
-use crate::{camera_move_system::init_camera, ui::init_fps_counter, voxels::create_cube};
-use amethyst::input::StringBindings;
-use amethyst::window::ScreenDimensions;
+use amethyst::{core::Transform, prelude::*};
 
 pub struct GameplayState {}
 

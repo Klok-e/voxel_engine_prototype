@@ -1,23 +1,11 @@
-use super::chunk::Chunk;
-use super::chunk::{ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI};
-use super::materials::Materials;
-use super::world::VoxelWorld;
-use crate::core::to_vecf;
-use crate::core::{EntityBuildExt, Vec3f, Vec3i};
-use crate::directions::Directions;
-use amethyst::assets::{AssetLoaderSystemData, AssetStorage, Handle, Loader};
-use amethyst::core::math::{one, zero, Quaternion, UnitQuaternion};
-use amethyst::core::num::real::Real;
-use amethyst::renderer::palette::LinSrgba;
-use amethyst::renderer::resources::AmbientColor;
-use amethyst::renderer::types::MeshData;
-use amethyst::renderer::{
-    debug_drawing::DebugLinesComponent, loaders, palette::Srgba, visibility::BoundingSphere,
-    Material, MaterialDefaults, Mesh, Texture,
+use super::{
+    chunk::{ChunkPosition, CHSIZE},
+    world::VoxelWorld,
 };
-use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
+use crate::{core::Vec3i, directions::Directions};
+use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*};
 use flurry::epoch::pin;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 pub struct RenderAround {
     pub distance: i32,
@@ -38,35 +26,13 @@ pub struct DirtyAroundSystem;
 
 impl<'a> System<'a> for DirtyAroundSystem {
     type SystemData = (
-        Write<'a, VoxelWorld>,
+        Read<'a, VoxelWorld>,
         ReadStorage<'a, RenderAround>,
-        WriteStorage<'a, ChunkPosition>,
-        WriteStorage<'a, Transform>,
-        Entities<'a>,
-        AssetLoaderSystemData<'a, Mesh>,
-        WriteStorage<'a, Handle<Mesh>>,
-        WriteStorage<'a, Handle<Material>>,
-        WriteStorage<'a, DebugLinesComponent>,
-        WriteStorage<'a, BoundingSphere>,
-        WriteExpect<'a, Materials>,
+        ReadStorage<'a, ChunkPosition>,
+        ReadStorage<'a, Transform>,
     );
 
-    fn run(
-        &mut self,
-        (
-            mut voxel_world,
-            load_around,
-            mut chunk_positions,
-            mut transforms,
-            ents,
-            mesh_loader,
-            mut meshes,
-            mut mats,
-            mut debugs,
-            mut bound_spheres,
-            mut materials,
-        ): Self::SystemData,
-    ) {
+    fn run(&mut self, (voxel_world, load_around, chunk_positions, transforms): Self::SystemData) {
         let mut loaded_chunks = HashSet::new();
         let mut chunks_to_load = HashSet::new();
         for (loader, transform) in (&load_around, &transforms).join() {
@@ -76,13 +42,6 @@ impl<'a> System<'a> for DirtyAroundSystem {
                 pos.y.floor() as i32,
                 pos.z.floor() as i32,
             );
-            let index: Vec3f = transform.translation() - to_vecf(pos * CHSIZEI);
-            let index = [
-                index.x.floor() as usize,
-                index.y.floor() as usize,
-                index.z.floor() as usize,
-            ];
-            //dbg!(voxel_world.voxel_at(&ChunkPosition::new(pos), &index));
 
             for (chunk_pos,) in (&chunk_positions,).join() {
                 loaded_chunks.insert(*chunk_pos);

@@ -1,13 +1,14 @@
-use super::chunk::SChunk;
-use super::chunk::{ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI};
-use super::terrain_generation::ProceduralGenerator;
-use super::voxel::Voxel;
+use super::{
+    chunk::{ChunkPosition, SChunk, CHSIZEF, CHSIZEI},
+    terrain_generation::ProceduralGenerator,
+    voxel::Voxel,
+};
 use crate::core::{to_vecf, ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i};
-use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
 use flurry::epoch::Guard;
-use std::collections::VecDeque;
-use std::collections::{HashMap, HashSet};
-use std::sync::{Mutex, RwLock, RwLockWriteGuard};
+use std::{
+    collections::{HashSet, VecDeque},
+    sync::{Mutex, RwLock},
+};
 
 #[derive(Debug, Copy, Clone)]
 pub struct VoxChange {

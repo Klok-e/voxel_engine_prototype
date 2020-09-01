@@ -1,11 +1,10 @@
-use super::chunk::{Chunk, ChunkPosition, CHSIZEI};
-use super::Voxel;
-use crate::core::{to_vecf, Vec3f, Vec3i};
-use amethyst::core::math::{Point2, Vector2};
-use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*, prelude::*};
+use super::{
+    chunk::{ChunkPosition, CHSIZEI},
+    Voxel,
+};
+use crate::core::{to_vecf, Vec3i};
 use ndarray::prelude::*;
-use ndarray::Zip;
-use noise::{Fbm, NoiseFn, Perlin, Seedable};
+use noise::{Fbm, NoiseFn, Seedable};
 
 pub struct ProceduralGenerator {
     rng: Fbm,

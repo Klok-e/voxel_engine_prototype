@@ -1,6 +1,7 @@
-use crate::core::{Vec3f, Vec3i};
-use amethyst::core::math::{self, base::Scalar, Vector3};
-use amethyst::core::num::{NumAssignRef, PrimInt};
+use amethyst::core::{
+    math::{base::Scalar, Vector3},
+    num::{NumAssignRef, PrimInt},
+};
 use bitflags::_core::iter::from_fn;
 
 bitflags! {

@@ -1,12 +1,12 @@
 use super::Voxel;
-use crate::core::{to_uarr, to_vecf, Vec3f, Vec3i};
-use crate::directions::Directions;
-use crate::voxels::chunk_mesh::ChunkMeshData;
+use crate::{
+    core::{to_uarr, to_vecf, Vec3f, Vec3i},
+    directions::Directions,
+    voxels::chunk_mesh::ChunkMeshData,
+};
 use amethyst::ecs::prelude::*;
-use amethyst::renderer::rendy::mesh::MeshBuilder;
 use bitflags::_core::cmp::Ordering;
 use ndarray::prelude::*;
-use ndarray::Zip;
 use serde::{Deserialize, Serialize};
 use std::convert::identity;
 
@@ -132,9 +132,9 @@ impl<const N: usize> Chunk<N> {
     fn reverse_y((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
         (x, Self::NI - y - 1, z)
     }
-    fn reverse_z((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
-        (x, y, Self::NI - z - 1)
-    }
+    //fn reverse_z((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
+    //    (x, y, Self::NI - z - 1)
+    //}
     pub fn rotate90_xy((x, y, z): (i32, i32, i32)) -> (i32, i32, i32) {
         Self::reverse_x(Self::transpose_xy((x, y, z)))
     }
@@ -148,7 +148,7 @@ impl<const N: usize> Chunk<N> {
     /// Checks whether the provided idnex is on the chunk border
     /// and if it is, return border direction
     pub fn is_on_border(ind: &[usize; 3]) -> Option<Directions> {
-        let mut dir = Vec3i::new(ind[0] as i32, ind[1] as i32, ind[2] as i32);
+        let dir = Vec3i::new(ind[0] as i32, ind[1] as i32, ind[2] as i32);
         let dir = dir.map(|v| {
             if v == Self::NI - 1 {
                 1
@@ -217,9 +217,10 @@ impl Component for ChunkPosition {
 mod tests {
     use super::*;
     use rstest::rstest;
+    use ndarray::Zip;
 
     const SMALLCH: usize = 3;
-    const SMALLCHI: i32 = SMALLCH as i32;
+    //const SMALLCHI: i32 = SMALLCH as i32;
     type SmallChunk = Chunk<SMALLCH>;
 
     #[test]

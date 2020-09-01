@@ -1,12 +1,12 @@
-use crate::core::Vec3f;
-use crate::directions::Directions;
-use crate::{destroy_on_touch_system::DestroyVoxOnTouch, voxels::dirty_around_system::RenderAround,  };
-use amethyst::utils::auto_fov::AutoFov;
+use crate::{
+    core::Vec3f, destroy_on_touch_system::DestroyVoxOnTouch,
+    voxels::dirty_around_system::RenderAround,
+};
 use amethyst::{
-    core::{math, SystemDesc, Transform},
+    core::{math, Transform},
     derive::SystemDesc,
-    ecs::{Join, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
-    input::{ControllerButton, InputEvent, InputHandler, StringBindings, VirtualKeyCode},
+    ecs::{Join, Read, ReadStorage, System, SystemData, World, WriteStorage},
+    input::{InputEvent, InputHandler, StringBindings, VirtualKeyCode},
     prelude::*,
     renderer::{
         light::{DirectionalLight, Light},
@@ -14,6 +14,7 @@ use amethyst::{
         Camera,
     },
     shrev::{EventChannel, ReaderId},
+    utils::auto_fov::AutoFov,
 };
 
 type GameInputEvent = InputEvent<StringBindings>;

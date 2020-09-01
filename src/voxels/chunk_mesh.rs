@@ -1,12 +1,8 @@
-use crate::{directions::Directions, ui::init_fps_counter};
-use amethyst::renderer::types::Mesh;
+use crate::directions::Directions;
 use amethyst::{
     assets::AssetLoaderSystemData,
     core::{
-        math::{
-            self,
-            geometry::{Rotation, Rotation3},
-        },
+        math::{self},
         Transform,
     },
     prelude::*,
@@ -14,11 +10,10 @@ use amethyst::{
         loaders,
         palette::LinSrgba,
         rendy::mesh::{Indices, MeshBuilder, Normal, Position, TexCoord},
-        types::MeshData,
-        Camera, Material, MaterialDefaults, Texture,
+        types::{Mesh, MeshData},
+        Material, MaterialDefaults, Texture,
     },
 };
-use std::f32::consts::PI;
 
 #[derive(Debug)]
 pub struct ChunkMeshData {

@@ -3,24 +3,22 @@ use amethyst::{
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
-        plugins::{RenderDebugLines, RenderFlat3D, RenderShaded3D, RenderToWindow},
+        plugins::{RenderDebugLines, RenderShaded3D, RenderToWindow},
         types::DefaultBackend,
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
-    utils::application_root_dir,
-    utils::fps_counter::FpsCounterBundle,
-    LogLevelFilter, Logger, LoggerConfig, StdoutLog,
+    utils::{fps_counter::FpsCounterBundle, auto_fov::AutoFovSystem},
+    LogLevelFilter, Logger, LoggerConfig,
 };
-
-use amethyst::utils::auto_fov::AutoFovSystem;
-use std::{fs::OpenOptions, time::Duration};
-use voxel_engine_prototype_lib::voxels::{
-    dirty_around_system::DirtyAroundSystem, ChunkRenderSystem,
-};
+use std::time::Duration;
 use voxel_engine_prototype_lib::{
-    camera_move_system::CameraMoveSystem, core::APP_ROOT,
-    destroy_on_touch_system::DestroyOnTouchSystem, gameplay_state::GameplayState, ui::FpsUiSystem,
+    camera_move_system::CameraMoveSystem,
+    core::APP_ROOT,
+    destroy_on_touch_system::DestroyOnTouchSystem,
+    gameplay_state::GameplayState,
+    ui::FpsUiSystem,
+    voxels::{dirty_around_system::DirtyAroundSystem, ChunkRenderSystem},
     world_change_apply_system::WorldApplyChangesSystem,
 };
 
@@ -80,7 +78,6 @@ fn main() -> amethyst::Result<()> {
             "chunks_system",
             &["world_apply_changes_system", "dirty_around_system"],
         );
-        
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?

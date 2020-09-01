@@ -2,7 +2,6 @@ use amethyst::{
     assets::Loader,
     derive::SystemDesc,
     ecs::prelude::*,
-    prelude::*,
     ui::{Anchor, LineMode, TtfFormat, UiText, UiTransform},
     utils::fps_counter::FpsCounter,
 };
