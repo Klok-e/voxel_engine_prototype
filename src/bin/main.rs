@@ -17,7 +17,7 @@ use voxel_engine_prototype_lib::{
     core::APP_ROOT,
     destroy_on_touch_system::DestroyOnTouchSystem,
     gameplay_state::GameplayState,
-    ui::FpsUiSystem,
+    ui::{chunk_counter::ChunkCounterUiSystem, FpsUiSystem},
     voxels::{
         dirty_around_system::DirtyAroundSystem,
         generate_map_around_system::GenerateMapAroundSystem, ChunkRenderSystem,
@@ -81,7 +81,8 @@ fn main() -> amethyst::Result<()> {
             "chunks_system",
             &["world_apply_changes_system", "dirty_around_system"],
         )
-        .with(GenerateMapAroundSystem, "generate_map_around_system", &[]);
+        .with(GenerateMapAroundSystem, "generate_map_around_system", &[])
+        .with(ChunkCounterUiSystem, "chunk_counter_system", &[]);
 
     let assets_dir = APP_ROOT.join("assets");
     let mut game = Application::build(assets_dir, GameplayState {})?

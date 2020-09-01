@@ -1,5 +1,5 @@
 use super::{
-    chunk::{ChunkPosition, SChunk, CHSIZEF, CHSIZEI},
+    chunk::{ChunkPosition, SChunk, CHSIZEF},
     terrain_generation::ProceduralGenerator,
     voxel::Voxel,
 };
@@ -33,6 +33,10 @@ pub struct VoxelWorld {
 impl VoxelWorld {
     pub fn new() -> Self {
         Default::default()
+    }
+
+    pub fn chunks(&self) -> &ConcurrentHashMap<ChunkPosition, RwLock<SChunk>> {
+        &self.chunks
     }
 
     pub fn dirty(&self) -> &ConcurrentHashSet<ChunkPosition> {
@@ -146,13 +150,13 @@ impl VoxelWorld {
     }
 
     pub fn to_ch_pos_index(pos: &Vec3f) -> (ChunkPosition, [usize; 3]) {
-        let posch = pos / CHSIZEF;
+        let posch: Vec3f = pos / CHSIZEF;
         let ch_pos = Vec3i::new(
             posch.x.floor() as i32,
             posch.y.floor() as i32,
             posch.z.floor() as i32,
         );
-        let index = pos - to_vecf(ch_pos * CHSIZEI);
+        let index: Vec3f = (posch - to_vecf(ch_pos)) * CHSIZEF;
         let index = [
             index.x.floor() as usize,
             index.y.floor() as usize,

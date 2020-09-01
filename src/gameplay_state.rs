@@ -1,14 +1,17 @@
 use crate::{
     destroy_on_touch_system::DestroyVoxOnTouch,
     game_config::GameConfig,
-    ui::FpsText,
+    ui::{
+        chunk_counter::{GeneratedCounterText, RenderedCounterText},
+        FpsText,
+    },
     voxels::{
         dirty_around_system::RenderAround, generate_map_around_system::GenerateMapAround,
         materials::Materials,
     },
 };
 use amethyst::{
-    assets::{AssetLoaderSystemData, Loader},
+    assets::{AssetLoaderSystemData, Handle, Loader},
     core::Transform,
     prelude::*,
     renderer::{
@@ -19,7 +22,7 @@ use amethyst::{
         resources::AmbientColor,
         Camera, ImageFormat, Material, Texture,
     },
-    ui::{Anchor, LineMode, TtfFormat, UiText, UiTransform},
+    ui::{Anchor, FontAsset, LineMode, TtfFormat, UiText, UiTransform},
     utils::auto_fov::AutoFov,
 };
 pub struct GameplayState {}
@@ -27,7 +30,7 @@ pub struct GameplayState {}
 impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         init_camera(data.world);
-        init_fps_counter(data.world);
+
         let mut transform = Transform::default();
         transform.set_translation_xyz(0., 0., 0.);
 
@@ -41,7 +44,20 @@ impl SimpleState for GameplayState {
 
         let mats = data.world.exec(|(tex, mat)| init_materials(tex, mat));
         data.world.insert(mats);
+
+        // ui
+        let font = load_font(data.world);
+
+        init_fps_counter(data.world, font.clone());
+        init_chunk_generated_counter(data.world, font.clone());
+        init_chunk_rendered_counter(data.world, font.clone());
     }
+}
+
+fn load_font(world: &mut World) -> Handle<FontAsset> {
+    world
+        .read_resource::<Loader>()
+        .load("fonts/square.ttf", TtfFormat, (), &world.read_resource())
 }
 
 fn init_materials(
@@ -79,7 +95,7 @@ fn init_materials(
     Materials { chunks }
 }
 
-pub fn init_camera(world: &mut World) {
+fn init_camera(world: &mut World) {
     let mut light = DirectionalLight::default();
     light.color = Srgb::new(1., 1., 1.);
     world
@@ -101,7 +117,7 @@ pub fn init_camera(world: &mut World) {
         .build();
 }
 
-pub fn init_fps_counter(world: &mut World) {
+fn init_fps_counter(world: &mut World, font: Handle<FontAsset>) {
     let transform = UiTransform::new(
         "fps_counter".to_owned(),
         Anchor::TopLeft,
@@ -113,20 +129,62 @@ pub fn init_fps_counter(world: &mut World) {
         25.,
     );
 
-    let font = world.read_resource::<Loader>().load(
-        "fonts/square.ttf",
-        TtfFormat,
-        (),
-        &world.read_resource(),
-    );
     let text = UiText::new(
         font,
-        "0".to_owned(),
+        "".to_owned(),
         [1., 1., 1., 1.],
         14.,
         LineMode::Single,
         Anchor::Middle,
     );
     let fps_text_ent = world.create_entity().with(transform).with(text).build();
-    world.insert(FpsText { text: fps_text_ent })
+    world.insert(FpsText { text: fps_text_ent });
+}
+
+fn init_chunk_generated_counter(world: &mut World, font: Handle<FontAsset>) {
+    let transform = UiTransform::new(
+        "fps_counter".to_owned(),
+        Anchor::TopLeft,
+        Anchor::TopLeft,
+        100.,
+        -10.,
+        0.,
+        100.,
+        25.,
+    );
+
+    let text = UiText::new(
+        font,
+        "".to_owned(),
+        [1., 1., 1., 1.],
+        14.,
+        LineMode::Single,
+        Anchor::Middle,
+    );
+    let entity = world.create_entity().with(transform).with(text).build();
+    world.insert(GeneratedCounterText { entity });
+}
+
+fn init_chunk_rendered_counter(world: &mut World, font: Handle<FontAsset>) {
+    let transform = UiTransform::new(
+        "fps_counter".to_owned(),
+        Anchor::TopLeft,
+        Anchor::TopLeft,
+        200.,
+        -10.,
+        0.,
+        100.,
+        25.,
+    );
+
+    let text = UiText::new(
+        font,
+        "".to_owned(),
+        [1., 1., 1., 1.],
+        14.,
+        LineMode::Single,
+        Anchor::Middle,
+    );
+    let entity = world.create_entity().with(transform).with(text).build();
+    world.insert(RenderedCounterText { entity });
 }

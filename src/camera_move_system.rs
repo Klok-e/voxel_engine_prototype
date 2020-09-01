@@ -40,7 +40,6 @@ impl<'a> System<'a> for CameraMoveSystem {
     fn run(&mut self, (input, cameras, mut transforms, events, sensitivity): Self::SystemData) {
         let mut translation = math::Vector3::<f32>::zeros();
         if input.key_is_down(VirtualKeyCode::W) {
-            println!("W down");
             translation -= math::Vector3::z();
         }
         if input.key_is_down(VirtualKeyCode::S) {
