@@ -1,18 +1,7 @@
 use crate::directions::Directions;
 use amethyst::{
-    assets::AssetLoaderSystemData,
-    core::{
-        math::{self},
-        Transform,
-    },
-    prelude::*,
-    renderer::{
-        loaders,
-        palette::LinSrgba,
-        rendy::mesh::{Indices, MeshBuilder, Normal, Position, TexCoord},
-        types::{Mesh, MeshData},
-        Material, MaterialDefaults, Texture,
-    },
+    core::math::{self},
+    renderer::rendy::mesh::{Indices, MeshBuilder, Normal, Position, TexCoord},
 };
 
 #[derive(Debug)]
@@ -141,40 +130,4 @@ impl ChunkMeshData {
             )
         }
     }
-}
-
-pub fn create_cube(world: &mut World, pos: Transform) {
-    let default_mat = world.read_resource::<MaterialDefaults>().0.clone();
-
-    let mut chunk_mesh = ChunkMeshData::new();
-
-    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::UP);
-    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::DOWN);
-    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::EAST);
-    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::WEST);
-    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::SOUTH);
-    chunk_mesh.insert_quad([0., 0., 0.].into(), Directions::NORTH);
-
-    let mesh = world.exec(|loader: AssetLoaderSystemData<Mesh>| {
-        loader.load_from_data(MeshData(chunk_mesh.build_mesh().unwrap()), ())
-    });
-
-    let albedo = world.exec(|loader: AssetLoaderSystemData<Texture>| {
-        loader.load_from_data(
-            loaders::load_from_linear_rgba(LinSrgba::new(1.0, 0.0, 0.0, 0.5)).into(),
-            (),
-        )
-    });
-
-    let mat = world.exec(|loader: AssetLoaderSystemData<Material>| {
-        loader.load_from_data(
-            Material {
-                albedo,
-                ..default_mat.clone()
-            },
-            (),
-        )
-    });
-
-    world.create_entity().with(mesh).with(mat).with(pos).build();
 }

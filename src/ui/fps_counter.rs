@@ -1,44 +1,13 @@
 use amethyst::{
-    assets::Loader,
     derive::SystemDesc,
     ecs::prelude::*,
-    ui::{Anchor, LineMode, TtfFormat, UiText, UiTransform},
+    ui::{UiText},
     utils::fps_counter::FpsCounter,
 };
 use log;
 
 pub struct FpsText {
     pub text: Entity,
-}
-
-pub fn init_fps_counter(world: &mut World) {
-    let transform = UiTransform::new(
-        "fps_counter".to_owned(),
-        Anchor::TopLeft,
-        Anchor::TopLeft,
-        10.,
-        -10.,
-        0.,
-        40.,
-        25.,
-    );
-
-    let font = world.read_resource::<Loader>().load(
-        "fonts/square.ttf",
-        TtfFormat,
-        (),
-        &world.read_resource(),
-    );
-    let text = UiText::new(
-        font,
-        "0".to_owned(),
-        [1., 1., 1., 1.],
-        14.,
-        LineMode::Single,
-        Anchor::Middle,
-    );
-    let fps_text_ent = world.create_entity().with(transform).with(text).build();
-    world.insert(FpsText { text: fps_text_ent })
 }
 
 #[derive(SystemDesc)]

@@ -1,19 +1,26 @@
 use crate::{
-    camera_move_system::init_camera,
+    destroy_on_touch_system::DestroyVoxOnTouch,
     game_config::GameConfig,
-    ui::init_fps_counter,
-    voxels::{create_cube, materials::Materials},
+    ui::FpsText,
+    voxels::{
+        dirty_around_system::RenderAround, generate_map_around_system::GenerateMapAround,
+        materials::Materials,
+    },
 };
 use amethyst::{
-    assets::AssetLoaderSystemData,
+    assets::{AssetLoaderSystemData, Loader},
     core::Transform,
     prelude::*,
     renderer::{
+        light::{DirectionalLight, Light},
         loaders,
-        palette::{LinSrgba, Srgba},
-        Material, Texture, resources::AmbientColor,
+        mtl::TextureOffset,
+        palette::{LinSrgba, Srgb, Srgba},
+        resources::AmbientColor,
+        Camera, ImageFormat, Material, Texture,
     },
-    renderer::{mtl::TextureOffset, ImageFormat},
+    ui::{Anchor, LineMode, TtfFormat, UiText, UiTransform},
+    utils::auto_fov::AutoFov,
 };
 pub struct GameplayState {}
 
@@ -23,11 +30,10 @@ impl SimpleState for GameplayState {
         init_fps_counter(data.world);
         let mut transform = Transform::default();
         transform.set_translation_xyz(0., 0., 0.);
-        create_cube(data.world, transform);
 
         data.world.insert(GameConfig {
             chunks_render_per_frame: 10,
-            chunks_generate_per_frame:10,
+            chunks_generate_per_frame: 10,
         });
 
         data.world
@@ -71,4 +77,56 @@ fn init_materials(
         (),
     );
     Materials { chunks }
+}
+
+pub fn init_camera(world: &mut World) {
+    let mut light = DirectionalLight::default();
+    light.color = Srgb::new(1., 1., 1.);
+    world
+        .create_entity()
+        .with(Light::Directional(light))
+        .build();
+
+    let mut transform = Transform::default();
+    transform.set_translation_xyz(0., 0., 2.);
+
+    world
+        .create_entity()
+        .with(Camera::standard_3d(10., 10.))
+        .with(AutoFov::new())
+        .with(transform)
+        .with(RenderAround::new(1))
+        .with(GenerateMapAround::new(10))
+        .with(DestroyVoxOnTouch)
+        .build();
+}
+
+pub fn init_fps_counter(world: &mut World) {
+    let transform = UiTransform::new(
+        "fps_counter".to_owned(),
+        Anchor::TopLeft,
+        Anchor::TopLeft,
+        10.,
+        -10.,
+        0.,
+        40.,
+        25.,
+    );
+
+    let font = world.read_resource::<Loader>().load(
+        "fonts/square.ttf",
+        TtfFormat,
+        (),
+        &world.read_resource(),
+    );
+    let text = UiText::new(
+        font,
+        "0".to_owned(),
+        [1., 1., 1., 1.],
+        14.,
+        LineMode::Single,
+        Anchor::Middle,
+    );
+    let fps_text_ent = world.create_entity().with(transform).with(text).build();
+    world.insert(FpsText { text: fps_text_ent })
 }

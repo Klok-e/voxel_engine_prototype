@@ -1,20 +1,11 @@
-use crate::{
-    core::Vec3f, destroy_on_touch_system::DestroyVoxOnTouch,
-    voxels::{dirty_around_system::RenderAround,generate_map_around_system::GenerateMapAround},
-};
+use crate::core::Vec3f;
 use amethyst::{
     core::{math, Transform},
     derive::SystemDesc,
     ecs::{Join, Read, ReadStorage, System, SystemData, World, WriteStorage},
     input::{InputEvent, InputHandler, StringBindings, VirtualKeyCode},
-    prelude::*,
-    renderer::{
-        light::{DirectionalLight, Light},
-        palette::Srgb,
-        Camera,
-    },
+    renderer::Camera,
     shrev::{EventChannel, ReaderId},
-    utils::auto_fov::AutoFov,
 };
 
 type GameInputEvent = InputEvent<StringBindings>;
@@ -98,28 +89,4 @@ impl<'a> System<'a> for CameraMoveSystem {
                 .register_reader(),
         );
     }
-}
-
-pub fn init_camera(world: &mut World) {
-    world.register::<RenderAround>();
-
-    let mut light = DirectionalLight::default();
-    light.color = Srgb::new(1., 1., 1.);
-    world
-        .create_entity()
-        .with(Light::Directional(light))
-        .build();
-
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(0., 0., 2.);
-
-    world
-        .create_entity()
-        .with(Camera::standard_3d(10., 10.))
-        .with(AutoFov::new())
-        .with(transform)
-        .with(RenderAround::new(1))
-        .with(GenerateMapAround::new(10))
-        .with(DestroyVoxOnTouch)
-        .build();
 }
