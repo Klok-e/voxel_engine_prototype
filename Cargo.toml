@@ -13,6 +13,10 @@ criterion = "0.3"
 name = "meshing"
 harness = false
 
+[[bench]]
+name = "generation"
+harness = false
+
 [dependencies]
 amethyst = "0.15.1"
 bitflags = "1.2.1"
@@ -22,7 +26,7 @@ chrono = "0.4.15"
 ndarray = "0.13.1"
 rand = "0.7.3"
 noise = "0.6.0"
-flurry = "0.3.0"
+flurry = { version = "0.3.0", features = ["rayon"] }
 serde = "1.0.115"
 
 [features]

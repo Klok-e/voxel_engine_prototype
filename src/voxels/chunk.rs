@@ -14,8 +14,6 @@ pub const CHSIZE: usize = 32;
 pub const CHSIZEI: i32 = CHSIZE as i32;
 pub const CHSIZEF: f32 = CHSIZE as f32;
 
-pub type SChunk = Chunk<CHSIZE>;
-
 #[derive(Debug)]
 pub struct Chunk<const N: usize> {
     data: Array3<Voxel>,

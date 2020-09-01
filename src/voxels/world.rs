@@ -1,7 +1,8 @@
 use super::{
-    chunk::{ChunkPosition, SChunk, CHSIZEF},
+    chunk::{ChunkPosition, CHSIZEF},
     terrain_generation::ProceduralGenerator,
     voxel::Voxel,
+    Chunk, CHSIZE,
 };
 use crate::core::{to_vecf, ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i};
 use flurry::epoch::Guard;
@@ -24,10 +25,10 @@ impl VoxChange {
 
 #[derive(Default)]
 pub struct VoxelWorld {
-    chunks: ConcurrentHashMap<ChunkPosition, RwLock<SChunk>>,
+    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk<CHSIZE>>>,
     chunk_changes: ConcurrentHashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,
     dirty: ConcurrentHashSet<ChunkPosition>,
-    procedural: ProceduralGenerator,
+    procedural: ProceduralGenerator<CHSIZE>,
 }
 
 impl VoxelWorld {
@@ -35,7 +36,7 @@ impl VoxelWorld {
         Default::default()
     }
 
-    pub fn chunks(&self) -> &ConcurrentHashMap<ChunkPosition, RwLock<SChunk>> {
+    pub fn chunks(&self) -> &ConcurrentHashMap<ChunkPosition, RwLock<Chunk<CHSIZE>>> {
         &self.chunks
     }
 
@@ -47,7 +48,7 @@ impl VoxelWorld {
         &'a self,
         pos: &ChunkPosition,
         guard: &'a Guard,
-    ) -> Option<&'a RwLock<SChunk>> {
+    ) -> Option<&'a RwLock<Chunk<CHSIZE>>> {
         self.chunks.get(pos, guard)
     }
 
@@ -55,10 +56,10 @@ impl VoxelWorld {
         &'a self,
         pos: &ChunkPosition,
         guard: &'a Guard,
-    ) -> &'a RwLock<SChunk> {
+    ) -> &'a RwLock<Chunk<CHSIZE>> {
         let chunk = self.chunk_at(pos, guard).unwrap_or_else(|| {
             // or create and insert a new chunk
-            let mut c = SChunk::new();
+            let mut c = Chunk::<CHSIZE>::new();
             self.procedural.fill_random(&pos, &mut c.data_mut());
             self.chunks.try_insert(*pos, RwLock::new(c), guard).unwrap();
             self.chunks.get(pos, guard).unwrap()
@@ -112,7 +113,7 @@ impl VoxelWorld {
                 self.dirty.insert(*pos, guard);
 
                 // if on a border
-                let border = SChunk::is_on_border(&change.index);
+                let border = Chunk::<CHSIZE>::is_on_border(&change.index);
                 if let Some(border_dir) = border {
                     borders_changed.insert((*pos, border_dir));
                 }

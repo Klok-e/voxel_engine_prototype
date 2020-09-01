@@ -1301,14 +1301,15 @@ checksum = "ac0f7e83d14cccbf26e165d8881dcac5891af0d85a88543c09dd72ebd31d91ba"
 
 [[package]]
 name = "flurry"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "555b856ff32baeebd81bd19da2d35c48a73193be3ec8ae1745ae739fc99d61ee"
+checksum = "8c0a35f7b50e99185a2825541946252f669f3c3ca77801357cd682a1b356bb3e"
 dependencies = [
  "ahash",
  "crossbeam-epoch",
  "num_cpus",
  "parking_lot 0.10.2",
+ "rayon",
 ]
 
 [[package]]
@@ -1527,7 +1528,7 @@ dependencies = [
  "base64 0.11.0",
  "byteorder",
  "gltf-json",
- "image 0.23.8",
+ "image 0.23.9",
  "lazy_static",
 ]
 
@@ -1684,9 +1685,9 @@ dependencies = [
 
 [[package]]
 name = "image"
-version = "0.23.8"
+version = "0.23.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "543904170510c1b5fb65140485d84de4a57fddb2ed685481e9020ce3d2c9f64c"
+checksum = "974e194911d1f7efe3cd8a8f9db3b767e43536327e899e8bc9a12ef5711b74d2"
 dependencies = [
  "bytemuck",
  "byteorder",
