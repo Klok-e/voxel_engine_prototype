@@ -84,13 +84,12 @@ impl ChunkMeshData {
         ];
 
         let (vert0, vert1, vert2, vert3) = match dir {
-            // TODO: remove clones when Clion is happy without them
-            x if x.intersects(Directions::UP) => verts[2].clone(),
-            x if x.intersects(Directions::DOWN) => verts[3].clone(),
-            x if x.intersects(Directions::WEST) => verts[5].clone(),
-            x if x.intersects(Directions::EAST) => verts[4].clone(),
-            x if x.intersects(Directions::NORTH) => verts[1].clone(),
-            x if x.intersects(Directions::SOUTH) => verts[0].clone(),
+            x if x.intersects(Directions::UP) => verts[2],
+            x if x.intersects(Directions::DOWN) => verts[3],
+            x if x.intersects(Directions::WEST) => verts[5],
+            x if x.intersects(Directions::EAST) => verts[4],
+            x if x.intersects(Directions::NORTH) => verts[1],
+            x if x.intersects(Directions::SOUTH) => verts[0],
             _ => unreachable!(),
         };
 
