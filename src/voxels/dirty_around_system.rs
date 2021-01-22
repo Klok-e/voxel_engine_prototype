@@ -71,8 +71,6 @@ impl<'a> System<'a> for DirtyAroundSystem {
                     .chunk_at_or_create(&(to_load_pos.pos + dirvec).into(), &guard)
                     .read()
                     .unwrap();
-
-                chunk.copy_borders(&*neighb, dir);
             }
 
             voxel_world.dirty().insert(*to_load_pos, &guard);
