@@ -23,9 +23,9 @@ bitflags = "1.2.1"
 log = "0.4.11"
 lazy_static = "1.4.0"
 chrono = "0.4.15"
-ndarray = "0.13.1"
-rand = "0.7.3"
-noise = "0.6.0"
+ndarray = "0.14.0"
+rand = "0.8.0"
+noise = "0.7.0"
 flurry = { version = "0.3.0", features = ["rayon"] }
 serde = "1.0.115"
 
