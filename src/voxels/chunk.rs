@@ -214,8 +214,8 @@ impl Component for ChunkPosition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rstest::rstest;
     use ndarray::Zip;
+    use rstest::rstest;
 
     const SMALLCH: usize = 3;
     //const SMALLCHI: i32 = SMALLCH as i32;

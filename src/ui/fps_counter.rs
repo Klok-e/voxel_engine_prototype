@@ -1,9 +1,4 @@
-use amethyst::{
-    derive::SystemDesc,
-    ecs::prelude::*,
-    ui::{UiText},
-    utils::fps_counter::FpsCounter,
-};
+use amethyst::{derive::SystemDesc, ecs::prelude::*, ui::UiText, utils::fps_counter::FpsCounter};
 use log;
 
 pub struct FpsText {

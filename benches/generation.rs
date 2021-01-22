@@ -1,10 +1,7 @@
-#![feature(min_const_generics)]
-
 use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
     Criterion,
 };
-use std::time::Duration;
 use voxel_engine_prototype_lib::{
     core::Vec3i,
     voxels::{terrain_generation::ProceduralGenerator, Chunk, ChunkPosition},
@@ -26,13 +23,11 @@ pub fn generation(c: &mut Criterion) {
         });
     }
 
-    let mut group = c.benchmark_group("meshing");
+    let mut group = c.benchmark_group("generation");
 
-    group
-        .significance_level(0.01)
-        .measurement_time(Duration::from_secs(60))
-        .sample_size(300);
+    group.noise_threshold(0.1);
 
+    bench_const::<16>(&mut group, BenchmarkId::new("generate", 16));
     bench_const::<18>(&mut group, BenchmarkId::new("generate", 18));
     bench_const::<20>(&mut group, BenchmarkId::new("generate", 20));
     bench_const::<22>(&mut group, BenchmarkId::new("generate", 22));
