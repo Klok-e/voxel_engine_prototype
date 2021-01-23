@@ -15,14 +15,14 @@ use std::time::Duration;
 use voxel_engine_prototype_lib::{
     camera_move_system::CameraMoveSystem,
     core::APP_ROOT,
-    destroy_on_touch_system::DestroyOnTouchSystem,
     gameplay_state::GameplayState,
     ui::{chunk_counter::ChunkCounterUiSystem, FpsUiSystem},
-    voxels::{
+    voxels::systems::{
+        chunk_render::ChunkRenderSystem, destroy_on_touch_system::DestroyOnTouchSystem,
         dirty_around_system::DirtyAroundSystem,
-        generate_map_around_system::GenerateMapAroundSystem, ChunkRenderSystem,
+        generate_map_around_system::GenerateMapAroundSystem,
+        world_change_apply_system::WorldApplyChangesSystem,
     },
-    world_change_apply_system::WorldApplyChangesSystem,
 };
 
 fn main() -> amethyst::Result<()> {

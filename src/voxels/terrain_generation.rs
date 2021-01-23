@@ -1,4 +1,4 @@
-use super::{chunk::ChunkPosition, Voxel};
+use super::{chunk::ChunkPosition, voxel::Voxel};
 use crate::core::{to_vecf, Vec3i};
 use ndarray::prelude::*;
 use noise::{Fbm, NoiseFn, Seedable};

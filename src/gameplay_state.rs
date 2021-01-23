@@ -1,13 +1,15 @@
 use crate::{
-    destroy_on_touch_system::DestroyVoxOnTouch,
     game_config::GameConfig,
     ui::{
         chunk_counter::{GeneratedCounterText, RenderedCounterText},
         FpsText,
     },
     voxels::{
-        dirty_around_system::RenderAround, generate_map_around_system::GenerateMapAround,
         materials::Materials,
+        systems::{
+            destroy_on_touch_system::DestroyVoxOnTouch, dirty_around_system::RenderAround,
+            generate_map_around_system::GenerateMapAround,
+        },
     },
 };
 use amethyst::{

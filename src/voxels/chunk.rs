@@ -1,4 +1,3 @@
-use super::Voxel;
 use crate::{
     core::{to_uarr, to_vecf, Vec3f, Vec3i},
     directions::Directions,
@@ -9,6 +8,8 @@ use bitflags::_core::cmp::Ordering;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::convert::identity;
+
+use super::voxel::Voxel;
 
 pub const CHSIZE: usize = 32;
 pub const CHSIZEI: i32 = CHSIZE as i32;

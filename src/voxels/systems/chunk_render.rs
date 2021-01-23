@@ -1,12 +1,11 @@
-use super::{
-    chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
-    dirty_around_system::RenderAround,
-    materials::Materials,
-    world::VoxelWorld,
-};
 use crate::{
     core::{to_vecf, Vec3f},
     game_config::GameConfig,
+    voxels::{
+        chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
+        materials::Materials,
+        world::VoxelWorld,
+    },
 };
 use amethyst::{
     assets::{AssetLoaderSystemData, Handle},
@@ -20,6 +19,8 @@ use amethyst::{
 };
 use flurry::epoch::pin;
 use std::collections::HashMap;
+
+use super::dirty_around_system::RenderAround;
 
 #[derive(SystemDesc)]
 pub struct ChunkRenderSystem;

@@ -1,5 +1,8 @@
-use super::{world::VoxelWorld, ChunkPosition};
-use crate::{core::Vec3i, game_config::GameConfig};
+use crate::{
+    core::Vec3i,
+    game_config::GameConfig,
+    voxels::{chunk::ChunkPosition, world::VoxelWorld},
+};
 use amethyst::{
     core::Transform,
     derive::SystemDesc,

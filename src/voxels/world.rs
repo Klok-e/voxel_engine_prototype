@@ -1,8 +1,7 @@
 use super::{
-    chunk::{ChunkPosition, CHSIZEF},
+    chunk::{Chunk, ChunkPosition, CHSIZE, CHSIZEF},
     terrain_generation::ProceduralGenerator,
     voxel::Voxel,
-    Chunk, CHSIZE,
 };
 use crate::core::{to_vecf, ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i};
 use flurry::epoch::Guard;

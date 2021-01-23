@@ -1,8 +1,11 @@
-use super::{
-    chunk::{ChunkPosition, CHSIZE},
-    world::VoxelWorld,
+use crate::{
+    core::Vec3i,
+    directions::Directions,
+    voxels::{
+        chunk::{ChunkPosition, CHSIZE},
+        world::VoxelWorld,
+    },
 };
-use crate::{core::Vec3i, directions::Directions};
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*};
 use flurry::epoch::pin;
 use std::collections::HashSet;

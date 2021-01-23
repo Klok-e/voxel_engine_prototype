@@ -1,4 +1,4 @@
-use crate::voxels::{world::VoxelWorld, ChunkPosition};
+use crate::voxels::{chunk::ChunkPosition, world::VoxelWorld};
 use amethyst::{derive::SystemDesc, ecs::prelude::*, ui::UiText};
 use log;
 
