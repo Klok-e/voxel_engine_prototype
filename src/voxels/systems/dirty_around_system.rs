@@ -1,6 +1,5 @@
 use crate::{
     core::Vec3i,
-    directions::Directions,
     voxels::{
         chunk::{ChunkPosition, CHSIZE},
         world::VoxelWorld,
@@ -62,22 +61,6 @@ impl<'a> System<'a> for DirtyAroundSystem {
 
         let guard = pin();
         for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-            let mut chunk = voxel_world
-                .chunk_at_or_create(&to_load_pos, &guard)
-                .write()
-                .unwrap();
-            for (dir, dirvec) in Directions::all()
-                .into_iter()
-                .map(|d| (d, d.to_vec::<i32>()))
-            {
-                let neighb = voxel_world
-                    .chunk_at_or_create(&(to_load_pos.pos + dirvec).into(), &guard)
-                    .read()
-                    .unwrap();
-
-                chunk.copy_borders(&*neighb, dir);
-            }
-
             voxel_world.dirty().insert(*to_load_pos, &guard);
         }
     }

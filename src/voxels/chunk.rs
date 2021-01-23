@@ -144,7 +144,7 @@ impl<const N: usize> Chunk<N> {
         Self::reverse_y(Self::transpose_yz((x, y, z)))
     }
 
-    /// Checks whether the provided idnex is on the chunk border
+    /// Checks whether the provided index is on the chunk border
     /// and if it is, return border direction
     pub fn is_on_border(ind: &[usize; 3]) -> Option<Directions> {
         let dir = Vec3i::new(ind[0] as i32, ind[1] as i32, ind[2] as i32);
@@ -163,6 +163,21 @@ impl<const N: usize> Chunk<N> {
         } else {
             let dir = Directions::from(dir);
             Some(dir)
+        }
+    }
+
+    pub fn chunk_voxel_index_wrap(ind: &Vec3i) -> Option<Vec3i> {
+        let wrapped = ind.map(|v| match if v < 0 { v + CHSIZEI } else { v % CHSIZEI } {
+            x if x == v => (0, x),
+            x if x < 0 => (-1, x),
+            x => (1, x),
+        });
+        let dir_wrapped = Vec3i::new(wrapped[0].0, wrapped[1].0, wrapped[2].0);
+        let ind = Vec3i::new(wrapped[0].1, wrapped[1].1, wrapped[2].1);
+        if dir_wrapped == Vec3i::new(0, 0, 0) {
+            None
+        } else {
+            Some(ind)
         }
     }
 }

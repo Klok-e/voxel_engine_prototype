@@ -1,9 +1,13 @@
 use super::{
-    chunk::{Chunk, ChunkPosition, CHSIZE, CHSIZEF},
+    chunk::{Chunk, ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI},
+    chunk_mesh::ChunkMeshData,
     terrain_generation::ProceduralGenerator,
     voxel::Voxel,
 };
-use crate::core::{to_vecf, ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i};
+use crate::{
+    core::{to_uarr, to_vecf, ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i},
+    directions::Directions,
+};
 use flurry::epoch::Guard;
 use std::{
     collections::{HashSet, VecDeque},
@@ -97,6 +101,44 @@ impl VoxelWorld {
         };
         let mut ch_list = ch_list.try_lock().unwrap();
         ch_list.push_back(VoxChange::new(*ind, new_vox));
+    }
+
+    pub fn mesh(&self, chpos: &ChunkPosition, guard: &Guard) -> ChunkMeshData {
+        let onef: Vec3f = [1., 1., 1.].into();
+
+        let chunk = self.chunk_at_or_create(chpos, guard).try_read().unwrap();
+        let mut chunk_mesh = ChunkMeshData::new();
+        for x in 0..CHSIZEI {
+            for y in 0..CHSIZEI {
+                for z in 0..CHSIZEI {
+                    let pos: Vec3i = [x, y, z].into();
+                    if chunk.data()[to_uarr(pos)].is_transparent() {
+                        // if current voxel is transparent
+                        continue;
+                    }
+                    // if current voxel is solid
+                    for dir in Directions::all().into_iter() {
+                        let dir_vec = dir.to_vec::<i32>();
+                        let spos: Vec3i = pos + dir_vec;
+                        let adj_vox = match Chunk::<CHSIZE>::chunk_voxel_index_wrap(&spos) {
+                            Some(index) => self
+                                .chunk_at_or_create(&ChunkPosition::new(chpos.pos + dir_vec), guard)
+                                .try_read()
+                                .unwrap()
+                                .data()[to_uarr(index)],
+                            None => chunk.data()[to_uarr(spos)],
+                        };
+
+                        if adj_vox.is_transparent() {
+                            // if adjacent voxel is transparent
+                            chunk_mesh.insert_quad(to_vecf(pos) + onef / 2., dir);
+                        }
+                    }
+                }
+            }
+        }
+
+        chunk_mesh
     }
 
     pub fn apply_voxel_changes(&self, guard: &Guard) {
