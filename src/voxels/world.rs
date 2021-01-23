@@ -139,6 +139,8 @@ impl VoxelWorld {
                 .try_write()
                 .unwrap();
 
+            next_chunk.copy_borders(&*curr_chunk, copy_to_dir.invert());
+
             self.dirty.insert(
                 ChunkPosition {
                     pos: next_chunk_pos,
