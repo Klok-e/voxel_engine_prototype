@@ -4,7 +4,10 @@ use criterion::{
 };
 use voxel_engine_prototype_lib::{
     core::Vec3i,
-    voxels::{terrain_generation::ProceduralGenerator, Chunk, ChunkPosition},
+    voxels::{
+        chunk::{Chunk, ChunkPosition},
+        terrain_generation::ProceduralGenerator,
+    },
 };
 
 pub fn generation(c: &mut Criterion) {

@@ -3,7 +3,7 @@ use criterion::{
     Criterion,
 };
 use rand::prelude::*;
-use voxel_engine_prototype_lib::voxels::Chunk;
+use voxel_engine_prototype_lib::voxels::chunk::Chunk;
 
 fn create_random_chunk<const N: usize>(rng: &mut StdRng) -> Chunk<N> {
     let mut ch = Chunk::new();
