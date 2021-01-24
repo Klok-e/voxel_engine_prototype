@@ -1,6 +1,5 @@
 use amethyst::{
     core::math::{Vector2, Vector3},
-    ecs::{prelude::*, world::EntityResBuilder},
     utils::application_root_dir,
 };
 use flurry;
@@ -34,15 +33,15 @@ pub fn to_uarr(veci: Vec3i) -> [usize; 3] {
     [veci.x as usize, veci.y as usize, veci.z as usize]
 }
 
-pub trait EntityBuildExt: Sized {
-    fn with_opt<T: Component>(self, c: Option<T>, storage: &mut WriteStorage<T>) -> Self;
-}
+// pub trait EntityBuildExt: Sized {
+//     fn with_opt<T: Component>(self, c: Option<T>, storage: &mut WriteStorage<T>) -> Self;
+// }
 
-impl<'a> EntityBuildExt for EntityResBuilder<'a> {
-    fn with_opt<T: Component>(self, c: Option<T>, storage: &mut WriteStorage<T>) -> Self {
-        match c {
-            Some(c) => self.with(c, storage),
-            None => self,
-        }
-    }
-}
+// impl<'a> EntityBuildExt for EntityResBuilder<'a> {
+//     fn with_opt<T: Component>(self, c: Option<T>, storage: &mut WriteStorage<T>) -> Self {
+//         match c {
+//             Some(c) => self.with(c, storage),
+//             None => self,
+//         }
+//     }
+// }

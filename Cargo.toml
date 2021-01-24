@@ -18,7 +18,8 @@ name = "generation"
 harness = false
 
 [dependencies]
-amethyst = "0.15.1"
+amethyst = { git = "https://github.com/LokiVKlokeNaAndoke/amethyst", branch = "main", features = ["ui"] }
+legion = "0.3.0"
 bitflags = "1.2.1"
 log = "0.4.11"
 lazy_static = "1.4.0"
