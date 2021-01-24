@@ -5,11 +5,14 @@ use crate::{
         FpsText,
     },
     voxels::{
+        chunk::CHSIZE,
         materials::Materials,
         systems::{
             destroy_on_touch_system::DestroyVoxOnTouch, dirty_around_system::RenderAround,
             generate_map_around_system::GenerateMapAround,
         },
+        terrain_generation::ProceduralGenerator,
+        world::VoxelWorld,
     },
 };
 use amethyst::{
@@ -40,6 +43,9 @@ impl SimpleState for GameplayState {
             chunks_render_per_frame: 10,
             chunks_generate_per_frame: 10,
         });
+
+        data.world
+            .insert(VoxelWorld::new(ProceduralGenerator::<CHSIZE>::new(42)));
 
         data.world
             .insert(AmbientColor(Srgba::new(0.5, 0.5, 0.5, 1.0)));

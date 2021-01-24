@@ -1,4 +1,4 @@
-use crate::voxels::{chunk::ChunkPosition, world::VoxelWorld};
+use crate::voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural};
 use amethyst::{derive::SystemDesc, ecs::prelude::*, ui::UiText};
 use log;
 
@@ -15,7 +15,7 @@ pub struct ChunkCounterUiSystem;
 
 impl<'a> System<'a> for ChunkCounterUiSystem {
     type SystemData = (
-        Read<'a, VoxelWorld>,
+        ReadExpect<'a, VoxelWorldProcedural>,
         ReadExpect<'a, GeneratedCounterText>,
         ReadExpect<'a, RenderedCounterText>,
         WriteStorage<'a, UiText>,

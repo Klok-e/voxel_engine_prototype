@@ -2,7 +2,7 @@ use crate::{
     core::Vec3i,
     voxels::{
         chunk::{ChunkPosition, CHSIZE},
-        world::VoxelWorld,
+        world::VoxelWorldProcedural,
     },
 };
 use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*};
@@ -28,7 +28,7 @@ pub struct DirtyAroundSystem;
 
 impl<'a> System<'a> for DirtyAroundSystem {
     type SystemData = (
-        Read<'a, VoxelWorld>,
+        ReadExpect<'a, VoxelWorldProcedural>,
         ReadStorage<'a, RenderAround>,
         ReadStorage<'a, ChunkPosition>,
         ReadStorage<'a, Transform>,

@@ -3,25 +3,32 @@ use crate::core::{to_vecf, Vec3i};
 use ndarray::prelude::*;
 use noise::{Fbm, NoiseFn, Seedable};
 
+pub trait VoxelGenerator<const N: usize> {
+    fn fill_random(&self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>);
+}
+
 pub struct ProceduralGenerator<const N: usize> {
     rng: Fbm,
 }
 
 impl<const N: usize> Default for ProceduralGenerator<N> {
     fn default() -> Self {
-        ProceduralGenerator::new()
+        ProceduralGenerator::new(42)
     }
 }
 
 impl<const N: usize> ProceduralGenerator<N> {
     const NI: i32 = N as i32;
 
-    pub fn new() -> Self {
+    pub fn new(seed: u32) -> Self {
         Self {
-            rng: Fbm::new().set_seed(42),
+            rng: Fbm::new().set_seed(seed),
         }
     }
-    pub fn fill_random(&self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
+}
+
+impl<const N: usize> VoxelGenerator<N> for ProceduralGenerator<N> {
+    fn fill_random(&self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
         //let mut filled = 0;
         for x in 0..Self::NI {
             for y in 0..Self::NI {

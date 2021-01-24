@@ -4,7 +4,7 @@ use crate::{
     voxels::{
         chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
         materials::Materials,
-        world::VoxelWorld,
+        world::VoxelWorldProcedural,
     },
 };
 use amethyst::{
@@ -27,7 +27,7 @@ pub struct ChunkRenderSystem;
 
 impl<'a> System<'a> for ChunkRenderSystem {
     type SystemData = (
-        Read<'a, VoxelWorld>,
+        ReadExpect<'a, VoxelWorldProcedural>,
         WriteStorage<'a, ChunkPosition>,
         WriteStorage<'a, Transform>,
         AssetLoaderSystemData<'a, Mesh>,
@@ -67,14 +67,9 @@ impl<'a> System<'a> for ChunkRenderSystem {
             .iter(&guard)
             .take(config.chunks_render_per_frame)
         {
-            let chunk = voxel_world
-                .chunk_at_or_create(&to_clean, &guard)
-                .read()
-                .unwrap();
-
             // create mesh
-            let mesh = chunk
-                .mesh()
+            let mesh = voxel_world
+                .mesh(&to_clean, &guard)
                 .build_mesh()
                 .map(|m| MeshData(m.into_owned()))
                 .map(|m| mesh_loader.load_from_data(m, ()));

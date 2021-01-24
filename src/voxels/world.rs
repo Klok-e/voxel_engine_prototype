@@ -1,7 +1,7 @@
 use super::{
-    chunk::{Chunk, ChunkPosition, CHSIZE, CHSIZEF, CHSIZEI},
+    chunk::{Chunk, ChunkPosition, CHSIZE},
     chunk_mesh::ChunkMeshData,
-    terrain_generation::ProceduralGenerator,
+    terrain_generation::{ProceduralGenerator, VoxelGenerator},
     voxel::Voxel,
 };
 use crate::{
@@ -26,20 +26,29 @@ impl VoxChange {
     }
 }
 
-#[derive(Default)]
-pub struct VoxelWorld {
-    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk<CHSIZE>>>,
+pub type VoxelWorldProcedural = VoxelWorld<ProceduralGenerator<CHSIZE>, CHSIZE>;
+
+pub struct VoxelWorld<G: VoxelGenerator<N>, const N: usize> {
+    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk<N>>>,
     chunk_changes: ConcurrentHashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,
     dirty: ConcurrentHashSet<ChunkPosition>,
-    procedural: ProceduralGenerator<CHSIZE>,
+    procedural: G,
 }
 
-impl VoxelWorld {
-    pub fn new() -> Self {
-        Default::default()
+impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
+    const NI: i32 = N as i32;
+    const NF: f32 = N as f32;
+
+    pub fn new(generator: G) -> Self {
+        Self {
+            chunks: Default::default(),
+            chunk_changes: Default::default(),
+            dirty: Default::default(),
+            procedural: generator,
+        }
     }
 
-    pub fn chunks(&self) -> &ConcurrentHashMap<ChunkPosition, RwLock<Chunk<CHSIZE>>> {
+    pub fn chunks(&self) -> &ConcurrentHashMap<ChunkPosition, RwLock<Chunk<N>>> {
         &self.chunks
     }
 
@@ -51,7 +60,7 @@ impl VoxelWorld {
         &'a self,
         pos: &ChunkPosition,
         guard: &'a Guard,
-    ) -> Option<&'a RwLock<Chunk<CHSIZE>>> {
+    ) -> Option<&'a RwLock<Chunk<N>>> {
         self.chunks.get(pos, guard)
     }
 
@@ -59,10 +68,10 @@ impl VoxelWorld {
         &'a self,
         pos: &ChunkPosition,
         guard: &'a Guard,
-    ) -> &'a RwLock<Chunk<CHSIZE>> {
+    ) -> &'a RwLock<Chunk<N>> {
         let chunk = self.chunk_at(pos, guard).unwrap_or_else(|| {
             // or create and insert a new chunk
-            let mut c = Chunk::<CHSIZE>::new();
+            let mut c = Chunk::<N>::new();
             self.procedural.fill_random(&pos, &mut c.data_mut());
             self.chunks.try_insert(*pos, RwLock::new(c), guard).unwrap();
             self.chunks.get(pos, guard).unwrap()
@@ -108,9 +117,9 @@ impl VoxelWorld {
 
         let chunk = self.chunk_at_or_create(chpos, guard).try_read().unwrap();
         let mut chunk_mesh = ChunkMeshData::new();
-        for x in 0..CHSIZEI {
-            for y in 0..CHSIZEI {
-                for z in 0..CHSIZEI {
+        for x in 0..Self::NI {
+            for y in 0..Self::NI {
+                for z in 0..Self::NI {
                     let pos: Vec3i = [x, y, z].into();
                     if chunk.data()[to_uarr(pos)].is_transparent() {
                         // if current voxel is transparent
@@ -120,7 +129,7 @@ impl VoxelWorld {
                     for dir in Directions::all().into_iter() {
                         let dir_vec = dir.to_vec::<i32>();
                         let spos: Vec3i = pos + dir_vec;
-                        let adj_vox = match Chunk::<CHSIZE>::chunk_voxel_index_wrap(&spos) {
+                        let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => self
                                 .chunk_at_or_create(&ChunkPosition::new(chpos.pos + dir_vec), guard)
                                 .try_read()
@@ -154,7 +163,7 @@ impl VoxelWorld {
                 self.dirty.insert(*pos, guard);
 
                 // if on a border
-                let border = Chunk::<CHSIZE>::is_on_border(&change.index);
+                let border = Chunk::<N>::is_on_border(&change.index);
                 if let Some(border_dir) = border {
                     borders_changed.insert((*pos, border_dir));
                 }
@@ -192,13 +201,13 @@ impl VoxelWorld {
     }
 
     pub fn to_ch_pos_index(pos: &Vec3f) -> (ChunkPosition, [usize; 3]) {
-        let posch: Vec3f = pos / CHSIZEF;
+        let posch: Vec3f = pos / Self::NF;
         let ch_pos = Vec3i::new(
             posch.x.floor() as i32,
             posch.y.floor() as i32,
             posch.z.floor() as i32,
         );
-        let index: Vec3f = (posch - to_vecf(ch_pos)) * CHSIZEF;
+        let index: Vec3f = (posch - to_vecf(ch_pos)) * Self::NF;
         let index = [
             index.x.floor() as usize,
             index.y.floor() as usize,

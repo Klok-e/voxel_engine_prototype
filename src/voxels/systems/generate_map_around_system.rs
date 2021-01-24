@@ -1,13 +1,13 @@
 use crate::{
     core::Vec3i,
     game_config::GameConfig,
-    voxels::{chunk::ChunkPosition, world::VoxelWorld},
+    voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
 };
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
     ecs::prelude::*,
-    shred::{Read, System, World},
+    shred::{System, World},
 };
 use flurry::epoch::pin;
 
@@ -30,7 +30,7 @@ pub struct GenerateMapAroundSystem;
 
 impl<'a> System<'a> for GenerateMapAroundSystem {
     type SystemData = (
-        Read<'a, VoxelWorld>,
+        ReadExpect<'a, VoxelWorldProcedural>,
         ReadStorage<'a, GenerateMapAround>,
         ReadExpect<'a, GameConfig>,
         ReadStorage<'a, Transform>,
@@ -40,7 +40,7 @@ impl<'a> System<'a> for GenerateMapAroundSystem {
         let guard = pin();
         let mut generated = 0;
         'outer: for (around, transform) in (&generate_around, &transforms).join() {
-            let (pos, _) = VoxelWorld::to_ch_pos_index(transform.translation());
+            let (pos, _) = VoxelWorldProcedural::to_ch_pos_index(transform.translation());
             for z in -around.distance..=around.distance {
                 for y in -around.distance..=around.distance {
                     for x in -around.distance..=around.distance {

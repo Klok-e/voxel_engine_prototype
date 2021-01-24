@@ -1,4 +1,4 @@
-use crate::voxels::world::VoxelWorld;
+use crate::voxels::world::VoxelWorldProcedural;
 use amethyst::{derive::SystemDesc, ecs::prelude::*};
 use flurry::epoch::pin;
 
@@ -6,7 +6,7 @@ use flurry::epoch::pin;
 pub struct WorldApplyChangesSystem;
 
 impl<'a> System<'a> for WorldApplyChangesSystem {
-    type SystemData = (ReadExpect<'a, VoxelWorld>,);
+    type SystemData = (ReadExpect<'a, VoxelWorldProcedural>,);
 
     fn run(&mut self, (world,): Self::SystemData) {
         let guard = pin();

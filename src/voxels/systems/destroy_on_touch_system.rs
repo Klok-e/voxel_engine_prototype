@@ -1,4 +1,4 @@
-use crate::voxels::{voxel::Voxel, world::VoxelWorld};
+use crate::voxels::{voxel::Voxel, world::VoxelWorldProcedural};
 use amethyst::core::Transform;
 use amethyst::prelude::*;
 use amethyst::{derive::SystemDesc, ecs::prelude::*};
@@ -18,7 +18,7 @@ impl<'a> System<'a> for DestroyOnTouchSystem {
     type SystemData = (
         ReadStorage<'a, DestroyVoxOnTouch>,
         ReadStorage<'a, Transform>,
-        ReadExpect<'a, VoxelWorld>,
+        ReadExpect<'a, VoxelWorldProcedural>,
     );
 
     fn run(&mut self, (on_touch, transform, world): Self::SystemData) {

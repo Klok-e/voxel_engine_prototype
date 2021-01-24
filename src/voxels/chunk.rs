@@ -167,7 +167,7 @@ impl<const N: usize> Chunk<N> {
     }
 
     pub fn chunk_voxel_index_wrap(ind: &Vec3i) -> Option<Vec3i> {
-        let wrapped = ind.map(|v| match if v < 0 { v + CHSIZEI } else { v % CHSIZEI } {
+        let wrapped = ind.map(|v| match if v < 0 { v + Self::NI } else { v % Self::NI } {
             x if x == v => (0, x),
             x if x < 0 => (-1, x),
             x => (1, x),

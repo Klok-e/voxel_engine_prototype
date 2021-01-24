@@ -24,7 +24,7 @@ log = "0.4.11"
 lazy_static = "1.4.0"
 chrono = "0.4.15"
 ndarray = "0.14.0"
-rand = "0.8.0"
+rand = { version = "0.8.0", features = ["small_rng"] }
 noise = "0.7.0"
 flurry = { version = "0.3.0", features = ["rayon"] }
 serde = "1.0.115"
@@ -41,6 +41,9 @@ opt-level = 1
 
 [profile.release]
 lto = "thin"
+debug = true
+
+[profile.bench]
 debug = true
 
 [lib]
