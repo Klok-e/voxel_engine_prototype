@@ -171,25 +171,9 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
             list.clear()
         });
 
-        for (chunk_pos, copy_to_dir) in borders_changed {
-            let curr_chunk = self
-                .chunk_at_or_create(&chunk_pos, guard)
-                .try_read()
-                .unwrap();
-
-            let copy_to_vec = copy_to_dir.to_vec::<i32>();
-            let next_chunk_pos = chunk_pos.pos + copy_to_vec;
-            let mut next_chunk = self
-                .chunk_at_or_create(
-                    &ChunkPosition {
-                        pos: next_chunk_pos,
-                    },
-                    guard,
-                )
-                .try_write()
-                .unwrap();
-
-            next_chunk.copy_borders(&*curr_chunk, copy_to_dir.invert());
+        for (chunk_pos, adj_dir) in borders_changed {
+            let adj_vec = adj_dir.to_vec::<i32>();
+            let next_chunk_pos = chunk_pos.pos + adj_vec;
 
             self.dirty.insert(
                 ChunkPosition {
