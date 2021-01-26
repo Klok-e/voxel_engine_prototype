@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{IntoQuery, SubWorld,system, Entity},
+    ecs::{system, Entity, IntoQuery, SubWorld},
     ui::UiText,
     utils::fps_counter::FpsCounter,
 };

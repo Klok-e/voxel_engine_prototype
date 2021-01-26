@@ -4,3 +4,4 @@
 /.idea
 /perf.data*
 /flamegraph.svg
+/.assets_db

@@ -57,7 +57,7 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_animation",
  "amethyst_assets",
@@ -89,7 +89,7 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "alga",
  "amethyst_assets",
@@ -109,7 +109,7 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -142,7 +142,7 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -159,7 +159,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "encoding_rs_io",
  "ron",
@@ -169,7 +169,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -183,7 +183,7 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_error",
  "approx 0.4.0",
@@ -206,7 +206,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.8",
@@ -216,7 +216,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "backtrace",
 ]
@@ -224,7 +224,7 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -240,7 +240,7 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_assets",
  "amethyst_config",
@@ -268,7 +268,7 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_assets",
  "amethyst_audio",
@@ -288,7 +288,7 @@ dependencies = [
  "lazy_static",
  "log",
  "paste",
- "rand 0.8.2",
+ "rand 0.8.3",
  "ron",
  "serde",
  "smallvec",
@@ -301,7 +301,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -318,7 +318,7 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#c01354c44fc41b268686c4f4754a7144ea35da74"
+source = "git+https://github.com/amethyst/amethyst?branch=main#e60f89fe4a08dd43313402b3b04dccfedd9318cc"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -1795,7 +1795,7 @@ checksum = "c9495705279e7140bf035dde1f6e750c162df8b625267cd52cc44e0b156732c8"
 dependencies = [
  "cfg-if 1.0.0",
  "libc",
- "wasi 0.10.1+wasi-snapshot-preview1",
+ "wasi 0.10.0+wasi-snapshot-preview1",
 ]
 
 [[package]]
@@ -2165,9 +2165,9 @@ dependencies = [
 
 [[package]]
 name = "js-sys"
-version = "0.3.46"
+version = "0.3.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf3d7383929f7c9c7c2d0fa596f325832df98c3704f2c60553080f7127a58175"
+checksum = "5cfb73131c35423a367daf8cbd24100af0d077668c8c2943f0e7dd775fef0f65"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -3376,9 +3376,9 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18519b42a40024d661e1714153e9ad0c3de27cd495760ceb09710920f1098b1e"
+checksum = "0ef9e7e66b4468674bfcb0c81af8b7fa0bb154fa9f28eb840da5c447baeb8d7e"
 dependencies = [
  "libc",
  "rand_chacha 0.3.0",
@@ -4056,9 +4056,9 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "serde"
-version = "1.0.121"
+version = "1.0.123"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6159e3c76cab06f6bc466244d43b35e77e9500cd685da87620addadc2a4c40b1"
+checksum = "92d5161132722baa40d802cc70b15262b98258453e85e5d1d365c757c73869ae"
 dependencies = [
  "serde_derive",
 ]
@@ -4116,9 +4116,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.121"
+version = "1.0.123"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3fcab8778dc651bc65cfab2e4eb64996f3c912b74002fb379c94517e1f27c46"
+checksum = "9391c295d64fc0abb2c556bad848f33cb8296276b1ad2677d1ae1ace4f258f31"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.8",
@@ -4425,11 +4425,12 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.43"
+version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
+checksum = "6db9e6914ab8b1ae1c260a4ae7a49b6c5611b40328a735b21862567685e73255"
 dependencies = [
  "libc",
+ "wasi 0.10.0+wasi-snapshot-preview1",
  "winapi 0.3.9",
 ]
 
@@ -4445,9 +4446,9 @@ dependencies = [
 
 [[package]]
 name = "tinyvec"
-version = "1.1.0"
+version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccf8dbc19eb42fba10e8feaaec282fb50e2c14b2726d6301dbfeed0f73306a6f"
+checksum = "317cca572a0e89c3ce0ca1f1bdc9369547fe318a683418e42ac8f59d14701023"
 dependencies = [
  "tinyvec_macros",
 ]
@@ -4662,7 +4663,7 @@ dependencies = [
  "log",
  "ndarray",
  "noise",
- "rand 0.8.2",
+ "rand 0.8.3",
  "rstest",
  "serde",
 ]
@@ -4686,15 +4687,15 @@ checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
 name = "wasi"
-version = "0.10.1+wasi-snapshot-preview1"
+version = "0.10.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93c6c3420963c5c64bca373b25e77acb562081b9bb4dd5bb864187742186cea9"
+checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.69"
+version = "0.2.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3cd364751395ca0f68cafb17666eee36b63077fb5ecd972bbcd74c90c4bf736e"
+checksum = "55c0f7123de74f0dab9b7d00fd614e7b19349cd1e2f5252bbe9b1754b59433be"
 dependencies = [
  "cfg-if 1.0.0",
  "wasm-bindgen-macro",
@@ -4702,9 +4703,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.69"
+version = "0.2.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1114f89ab1f4106e5b55e688b828c0ab0ea593a1ea7c094b141b14cbaaec2d62"
+checksum = "7bc45447f0d4573f3d65720f636bbcc3dd6ce920ed704670118650bcd47764c7"
 dependencies = [
  "bumpalo",
  "lazy_static",
@@ -4717,9 +4718,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.69"
+version = "0.2.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a6ac8995ead1f084a8dea1e65f194d0973800c7f571f6edd70adf06ecf77084"
+checksum = "3b8853882eef39593ad4174dd26fc9865a64e84026d223f63bb2c42affcbba2c"
 dependencies = [
  "quote 1.0.8",
  "wasm-bindgen-macro-support",
@@ -4727,9 +4728,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.69"
+version = "0.2.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5a48c72f299d80557c7c62e37e7225369ecc0c963964059509fbafe917c7549"
+checksum = "4133b5e7f2a531fa413b3a1695e925038a05a71cf67e87dafa295cb645a01385"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.8",
@@ -4740,9 +4741,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.69"
+version = "0.2.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e7811dd7f9398f14cc76efd356f98f03aa30419dea46aa810d71e819fc97158"
+checksum = "dd4945e4943ae02d15c13962b38a5b1e81eadd4b71214eee75af64a4d6a4fd64"
 
 [[package]]
 name = "wavefront_obj"
@@ -4828,9 +4829,9 @@ dependencies = [
 
 [[package]]
 name = "web-sys"
-version = "0.3.46"
+version = "0.3.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "222b1ef9334f92a21d3fb53dc3fd80f30836959a90f9274a626d7e06315ba3c3"
+checksum = "c40dc691fc48003eba817c38da7113c15698142da971298003cac3ef175680b3"
 dependencies = [
  "js-sys",
  "wasm-bindgen",

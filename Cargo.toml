@@ -18,17 +18,17 @@ name = "generation"
 harness = false
 
 [dependencies]
-amethyst = { git = "https://github.com/LokiVKlokeNaAndoke/amethyst", branch = "main", features = ["ui"] }
-legion = "0.3.0"
+amethyst = { git = "https://github.com/amethyst/amethyst", branch = "main", features = ["ui"] }
+legion = "0.3.1"
 bitflags = "1.2.1"
-log = "0.4.11"
+log = "0.4.13"
 lazy_static = "1.4.0"
-chrono = "0.4.15"
+chrono = "0.4.19"
 ndarray = "0.14.0"
-rand = { version = "0.8.0", features = ["small_rng"] }
+rand = { version = "0.8.3", features = ["small_rng"] }
 noise = "0.7.0"
-flurry = { version = "0.3.0", features = ["rayon"] }
-serde = "1.0.115"
+flurry = { version = "0.3.1", features = ["rayon"] }
+serde = "1.0.123"
 
 [features]
 default = ["vulkan"]
