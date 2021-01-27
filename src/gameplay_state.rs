@@ -1,4 +1,4 @@
-use crate::game_config::GameConfig;
+use crate::{camera_move_system::CameraMoveSensitivity, game_config::GameConfig};
 use amethyst::{
     core::Transform,
     prelude::*,
@@ -77,6 +77,8 @@ impl SimpleState for GameplayState {
 // }
 
 fn init_camera(state: &mut StateData<GameData>) {
+    state.resources.insert(CameraMoveSensitivity::default());
+    
     let mut light = DirectionalLight::default();
     light.color = Srgb::new(1., 1., 1.);
     state.world.push((Light::Directional(light),));

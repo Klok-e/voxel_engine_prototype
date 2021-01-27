@@ -1,4 +1,5 @@
 use amethyst::{
+    assets::LoaderBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     ecs::DispatcherBuilder,
     input::{Bindings, InputBundle},
@@ -37,11 +38,14 @@ fn main() -> amethyst::Result<()> {
     )
     .start();
 
-    let display_config_path = APP_ROOT.join("config").join("display.ron");
-
+    let config_path = APP_ROOT.join("config");
+    let display_config_path = config_path.join("display.ron");
+dbg!(&*APP_ROOT);
     let mut game_data = DispatcherBuilder::default();
     game_data
-        .add_bundle(TransformBundle::default())
+        .add_bundle(LoaderBundle)    
+        .add_bundle(InputBundle::new().with_bindings_from_file(config_path.join("bindings.ron"))?)
+        .add_bundle(TransformBundle::default()) 
         .add_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
@@ -53,8 +57,7 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderDebugLines::default())
                 .with_plugin(RenderUi::default()),
         )
-        .add_bundle(InputBundle::new())
-        .add_bundle(FpsCounterBundle)
+        .add_bundle(FpsCounterBundle::default())
         .add_bundle(UiBundle::<u32>::new())
         .add_bundle(ControlsBundle::default())
         // .add_system(AutoFovSystem::new(), "auto_fov_system", &[])

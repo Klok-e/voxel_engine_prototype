@@ -18,7 +18,7 @@ name = "generation"
 harness = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst", branch = "main", features = ["ui"] }
+amethyst = { git = "https://github.com/LokiVKlokeNaAndoke/amethyst", branch = "main", features = ["ui"] }
 legion = "0.3.1"
 bitflags = "1.2.1"
 log = "0.4.13"
@@ -29,6 +29,10 @@ rand = { version = "0.8.3", features = ["small_rng"] }
 noise = "0.7.0"
 flurry = { version = "0.3.1", features = ["rayon"] }
 serde = "1.0.123"
+thiserror = "1.0"
+
+[patch.crates-io]
+legion = { git = "https://github.com/LokiVKlokeNaAndoke/legion" }
 
 [features]
 default = ["vulkan"]
