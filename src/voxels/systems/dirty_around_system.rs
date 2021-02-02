@@ -5,8 +5,9 @@ use crate::{
         world::VoxelWorldProcedural,
     },
 };
-use amethyst::{core::components::Transform, derive::SystemDesc, ecs::prelude::*};
+use amethyst::{core::Transform, ecs::{Runnable, SubWorld,IntoQuery}};
 use flurry::epoch::pin;
+use legion::{query::Query, SystemBuilder};
 use std::collections::HashSet;
 
 pub struct RenderAround {
@@ -19,55 +20,46 @@ impl RenderAround {
     }
 }
 
-impl Component for RenderAround {
-    type Storage = DenseVecStorage<Self>;
+fn dirty_around_system() -> impl Runnable {
+    SystemBuilder::new("dirty_around_system")
+        .read_resource::<VoxelWorldProcedural>()
+        .with_query(<(&RenderAround, &Transform)>::query())
+        .with_query(<(&ChunkPosition,)>::query())
+        .build(move |_, world, resources, query| dirty_around(world, resources, &mut query.0, &mut query.1))
 }
 
-#[derive(SystemDesc)]
-pub struct DirtyAroundSystem;
+fn dirty_around(
+    w: &mut SubWorld,
+    vox_world: &VoxelWorldProcedural,
+    q1:&mut Query<(&RenderAround, &Transform)>,
+    chunk_positions:&mut Query<(&ChunkPosition,)>,
+) {
+    let mut loaded_chunks = HashSet::new();
+    let mut chunks_to_load = HashSet::new();
+    for (loader, transform) in q1.iter(w) {
+        let pos = transform.translation() / CHSIZE as f32;
+        let pos = Vec3i::new(
+            pos.x.floor() as i32,
+            pos.y.floor() as i32,
+            pos.z.floor() as i32,
+        );
 
-impl<'a> System<'a> for DirtyAroundSystem {
-    type SystemData = (
-        ReadExpect<'a, VoxelWorldProcedural>,
-        ReadStorage<'a, RenderAround>,
-        ReadStorage<'a, ChunkPosition>,
-        ReadStorage<'a, Transform>,
-    );
+        for (chunk_pos,) in chunk_positions.iter(w) {
+            loaded_chunks.insert(*chunk_pos);
+        }
 
-    fn run(&mut self, (voxel_world, load_around, chunk_positions, transforms): Self::SystemData) {
-        let mut loaded_chunks = HashSet::new();
-        let mut chunks_to_load = HashSet::new();
-        for (loader, transform) in (&load_around, &transforms).join() {
-            let pos = transform.translation() / CHSIZE as f32;
-            let pos = Vec3i::new(
-                pos.x.floor() as i32,
-                pos.y.floor() as i32,
-                pos.z.floor() as i32,
-            );
-
-            for (chunk_pos,) in (&chunk_positions,).join() {
-                loaded_chunks.insert(*chunk_pos);
-            }
-
-            for z in -loader.distance..=loader.distance {
-                for y in -loader.distance..=loader.distance {
-                    for x in -loader.distance..=loader.distance {
-                        let pos = ChunkPosition::new(Vec3i::new(x, y, z) + pos.clone());
-                        chunks_to_load.insert(pos);
-                    }
+        for z in -loader.distance..=loader.distance {
+            for y in -loader.distance..=loader.distance {
+                for x in -loader.distance..=loader.distance {
+                    let pos = ChunkPosition::new(Vec3i::new(x, y, z) + pos.clone());
+                    chunks_to_load.insert(pos);
                 }
             }
         }
-
-        let guard = pin();
-        for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-            voxel_world.dirty().insert(*to_load_pos, &guard);
-        }
     }
 
-    fn setup(&mut self, world: &mut World) {
-        <Self as System<'_>>::SystemData::setup(world);
-        world.register::<RenderAround>();
-        world.register::<ChunkPosition>();
+    let guard = pin();
+    for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
+        vox_world.dirty().insert(*to_load_pos, &guard);
     }
 }

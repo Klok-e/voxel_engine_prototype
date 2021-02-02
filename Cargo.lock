@@ -57,7 +57,7 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_animation",
  "amethyst_assets",
@@ -89,7 +89,7 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "alga",
  "amethyst_assets",
@@ -109,7 +109,7 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -142,7 +142,7 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -159,7 +159,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "encoding_rs_io",
  "ron",
@@ -169,7 +169,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -183,7 +183,7 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_error",
  "approx 0.4.0",
@@ -206,7 +206,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.8",
@@ -216,7 +216,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "backtrace",
 ]
@@ -224,7 +224,7 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -240,7 +240,7 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_assets",
  "amethyst_config",
@@ -268,7 +268,7 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_assets",
  "amethyst_audio",
@@ -286,6 +286,7 @@ dependencies = [
  "glsl-layout",
  "glyph_brush",
  "lazy_static",
+ "legion-prefab",
  "log",
  "paste",
  "rand 0.8.3",
@@ -301,7 +302,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -318,7 +319,7 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#491b0693bb4eb6fdde25cf639b7aafe297098d3d"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -413,27 +414,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1996609732bde4a9988bc42125f55f2af5f3c36370e27c778d5191a4a1b63bfb"
 dependencies = [
  "event-listener",
-]
-
-[[package]]
-name = "async-stream"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3670df70cbc01729f901f94c887814b3c68db038aad1329a418bae178bc5295c"
-dependencies = [
- "async-stream-impl",
- "futures-core",
-]
-
-[[package]]
-name = "async-stream-impl"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3548b8efc9f8e8a5a0a2808c5bd8451a9031b9e5b879a79590304ae928b0a70"
-dependencies = [
- "proc-macro2 1.0.24",
- "quote 1.0.8",
- "syn 1.0.60",
 ]
 
 [[package]]
@@ -673,9 +653,9 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.5.0"
+version = "3.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f07aa6688c702439a1be0307b6a94dffe1168569e45b9500c1372bc580740d59"
+checksum = "099e596ef14349721d9016f6b80dd3419ea1bf289ab9b44df8e4dfd3a005d5d9"
 
 [[package]]
 name = "bytemuck"
@@ -1258,9 +1238,9 @@ dependencies = [
 
 [[package]]
 name = "ctor"
-version = "0.1.18"
+version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10bcb9d7dcbf7002aaffbb53eac22906b64cdcc127971dcc387d8eb7c95d5560"
+checksum = "e8f45d9ad417bcef4817d614a501ab55cdd96a6fdb24f49aab89a54acfd66b19"
 dependencies = [
  "quote 1.0.8",
  "syn 1.0.60",
@@ -2156,9 +2136,9 @@ checksum = "8eaf4bc02d17cbdd7ff4c7438cafcdf7fb9a4613313ad11b4f8fefe7d3fa0130"
 
 [[package]]
 name = "jpeg-decoder"
-version = "0.1.21"
+version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6187dc218616c3a222bae7b78938f5af5e7c27d9cbef4c30ebca709cd680bf8"
+checksum = "229d53d58899083193af11e15917b5640cd40b29ff475a1fe4ef725deb02d0f2"
 dependencies = [
  "rayon",
 ]
@@ -2287,9 +2267,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.82"
+version = "0.2.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89203f3fba0a3795506acaad8ebce3c80c0af93f994d5a1d7a0b1eeb23271929"
+checksum = "7ccac4b00700875e6a07c6cde370d44d32fa01c5a65cdd2fca6858c479d28bb3"
 
 [[package]]
 name = "libloading"
@@ -2583,9 +2563,9 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.24.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77fea728d5bead12fae18a36258f43f397c20850925cd84af2caf9b8fc7f5d49"
+checksum = "1a9002895a0de45e3cde58b36d0cf2f83249e7dba4a43ee64dafbf01bfd464ff"
 dependencies = [
  "approx 0.4.0",
  "generic-array",
@@ -3538,9 +3518,9 @@ dependencies = [
 
 [[package]]
 name = "range-alloc"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a871f1e45a3a3f0c73fb60343c811238bb5143a81642e27c2ac7aac27ff01a63"
+checksum = "63e935c45e09cc6dcf00d2f0b2d630a58f4095320223d47fc68918722f0538b6"
 
 [[package]]
 name = "raw-window-handle"
@@ -4459,9 +4439,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.1.0"
+version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8efab2086f17abcddb8f756117665c958feee6b2e39974c2f1600592ab3a4195"
+checksum = "6714d663090b6b0acb0fa85841c6d66233d150cdb2602c8f9b8abb03370beb3f"
 dependencies = [
  "autocfg 1.0.1",
  "bytes",
@@ -4485,23 +4465,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-stream"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76066865172052eb8796c686f0b441a93df8b08d40a950b062ffb9a426f00edd"
-dependencies = [
- "futures-core",
- "pin-project-lite",
- "tokio",
-]
-
-[[package]]
 name = "tokio-util"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "feb971a26599ffd28066d387f109746df178eff14d5ea1e235015c5601967a4b"
+checksum = "ebb7cb2f00c5ae8df755b252306272cd1790d39728363936e01827e11f0b017b"
 dependencies = [
- "async-stream",
  "bytes",
  "futures-core",
  "futures-io",
@@ -4509,7 +4477,6 @@ dependencies = [
  "log",
  "pin-project-lite",
  "tokio",
- "tokio-stream",
 ]
 
 [[package]]
@@ -4838,9 +4805,9 @@ dependencies = [
 
 [[package]]
 name = "weezl"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e2bb9fc8309084dd7cd651336673844c1d47f8ef6d2091ec160b27f5c4aa277"
+checksum = "4a32b378380f4e9869b22f0b5177c68a5519f03b3454fde0b291455ddbae266c"
 
 [[package]]
 name = "winapi"

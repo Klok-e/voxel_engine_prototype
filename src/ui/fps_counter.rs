@@ -3,6 +3,7 @@ use amethyst::{
     ui::UiText,
     utils::fps_counter::FpsCounter,
 };
+use legion::EntityStore;
 use log;
 
 pub struct FpsText {
@@ -17,7 +18,7 @@ pub fn fps_ui_system(
     #[resource] text_handle: &FpsText,
 ) {
     let mut q = <(&mut UiText,)>::query();
-
+    
     match q.get_mut(world, text_handle.text) {
         Ok(t) => {
             t.0.text = format!("{:.2}", counter.sampled_fps());

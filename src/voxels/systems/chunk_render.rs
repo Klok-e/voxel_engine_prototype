@@ -8,74 +8,103 @@ use crate::{
     },
 };
 use amethyst::{
-    assets::{AssetLoaderSystemData, Handle},
-    core::components::Transform,
-    derive::SystemDesc,
-    ecs::prelude::*,
+    assets::{DefaultLoader, Handle, Loader, ProcessingQueue},
+    core::Transform,
+    ecs::{CommandBuffer, IntoQuery, Runnable, SubWorld},
     renderer::{
         debug_drawing::DebugLinesComponent, palette::Srgba, types::MeshData,
         visibility::BoundingSphere, Material, Mesh,
     },
 };
 use flurry::epoch::pin;
+use legion::{query::Query, Entity, EntityStore, SystemBuilder};
 use std::collections::HashMap;
 
 use super::dirty_around_system::RenderAround;
 
-#[derive(SystemDesc)]
-pub struct ChunkRenderSystem;
+// #[derive(SystemDesc)]
+// pub struct ChunkRenderSystem;
 
-impl<'a> System<'a> for ChunkRenderSystem {
-    type SystemData = (
-        ReadExpect<'a, VoxelWorldProcedural>,
-        WriteStorage<'a, ChunkPosition>,
-        WriteStorage<'a, Transform>,
-        AssetLoaderSystemData<'a, Mesh>,
-        WriteStorage<'a, Handle<Mesh>>,
-        WriteStorage<'a, Handle<Material>>,
-        WriteStorage<'a, DebugLinesComponent>,
-        WriteStorage<'a, BoundingSphere>,
-        ReadExpect<'a, GameConfig>,
-        Entities<'a>,
-        ReadExpect<'a, Materials>,
-    );
+// impl<'a> System<'a> for ChunkRenderSystem {
+//     type SystemData = (
+//         ReadExpect<'a, VoxelWorldProcedural>,
+//         WriteStorage<'a, ChunkPosition>,
+//         WriteStorage<'a, Transform>,
+//         AssetLoaderSystemData<'a, Mesh>,
+//         WriteStorage<'a, Handle<Mesh>>,
+//         WriteStorage<'a, Handle<Material>>,
+//         WriteStorage<'a, DebugLinesComponent>,
+//         WriteStorage<'a, BoundingSphere>,
+//         ReadExpect<'a, GameConfig>,
+//         Entities<'a>,
+//         ReadExpect<'a, Materials>,
+//     );
+// }
 
-    fn run(
-        &mut self,
-        (
-            voxel_world,
-            mut chunk_positions,
-            mut transforms,
-            mesh_loader,
-            mut meshes,
-            mut mats,
-            mut debugs,
-            mut bound_spheres,
-            config,
-            ents,
-            materials,
-        ): Self::SystemData,
-    ) {
-        let mut chunk_entities = HashMap::new();
-        for (chunk_pos, ent) in (&chunk_positions, &ents).join() {
-            chunk_entities.insert(*chunk_pos, ent);
-        }
+fn chunk_render_system(/*mut readerid: ReaderId<InputEvent>*/) -> impl Runnable {
+    SystemBuilder::new("chunk_render_system")
+        .read_resource::<VoxelWorldProcedural>()
+        .read_resource::<GameConfig>()
+        .read_resource::<Materials>()
+        .read_resource::<DefaultLoader>()
+        .with_query(<(Entity, &mut ChunkPosition)>::query())
+        .with_query(<(&mut Handle<Mesh>,)>::query())
+        .with_query(<(
+            Entity,
+            &mut ChunkPosition,
+            &mut Transform,
+            &mut Handle<Mesh>,
+            &mut Handle<Material>,
+            &mut DebugLinesComponent,
+            &mut BoundingSphere,
+        )>::query())
+        .build(move |commands, world, resources, query| {
+            chunk_render(
+                commands,
+                world,
+                &resources.0,
+                &resources.1,
+                &resources.2,
+                &resources.3,
+                &mut query.0,
+                &mut query.1,
+            )
+        })
+}
 
-        let guard = pin();
-        for to_clean in voxel_world
-            .dirty()
-            .iter(&guard)
-            .take(config.chunks_render_per_frame)
-        {
-            // create mesh
-            let mesh = voxel_world
-                .mesh(&to_clean, &guard)
-                .build_mesh()
-                .map(|m| MeshData(m.into_owned()))
-                .map(|m| mesh_loader.load_from_data(m, ()));
+fn chunk_render(
+    commands: &mut CommandBuffer,
+    w: &mut SubWorld,
+    vox_world: &VoxelWorldProcedural,
+    config: &GameConfig,
+    materials: &Materials,
+    loader: &DefaultLoader,
+    q1: &mut Query<(Entity, &mut ChunkPosition)>,
+    meshes: &mut Query<(&mut Handle<Mesh>,)>,
+) {
+    let mut chunk_entities = HashMap::new();
+    for (ent, chunk_pos) in q1.iter_mut(w) {
+        chunk_entities.insert(*chunk_pos, ent);
+    }
 
-            // get entity from hashmap or create a new one
-            let entity = chunk_entities.get(to_clean).map(|v| *v).unwrap_or_else(|| {
+    let guard = pin();
+    for to_clean in vox_world
+        .dirty()
+        .iter(&guard)
+        .take(config.chunks_render_per_frame)
+    {
+        // create mesh
+        let mesh:Option<Handle<Mesh>> = vox_world
+            .mesh(&to_clean, &guard)
+            .build_mesh()
+            .map(|m| MeshData(m.into_owned()))
+            .map(|m| loader.load_from_data(m, (), &ProcessingQueue::default()));
+
+        // get entity from hashmap or create a new one
+        let entity: Entity = chunk_entities
+            .get(to_clean)
+            .map(|v| **v)
+            .unwrap_or_else(|| {
                 let mut transform = Transform::default();
                 transform.set_translation(to_vecf(to_clean.pos * CHSIZEI));
 
@@ -90,32 +119,22 @@ impl<'a> System<'a> for ChunkRenderSystem {
                 let def_mat = materials.chunks.clone();
 
                 // create entity
-                ents.build_entity()
-                    .with(*to_clean, &mut chunk_positions)
-                    .with(transform, &mut transforms)
-                    .with(def_mat, &mut mats)
-                    .with(debug_lines, &mut debugs)
-                    .with(
-                        BoundingSphere::new(
-                            (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
-                            // distance from center to outermost vertex of a cube
-                            CHSIZEF * 3. / 2.,
-                        ),
-                        &mut bound_spheres,
-                    )
-                    .build()
+                commands.push((
+                    *to_clean,
+                    transform,
+                    def_mat,
+                    debug_lines,
+                    BoundingSphere::new(
+                        (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
+                        // distance from center to outermost vertex of a cube
+                        CHSIZEF * 3. / 2.,
+                    ),
+                ))
             });
-            if let Some(m) = mesh {
-                meshes.insert(entity, m).unwrap();
-            }
-
-            voxel_world.dirty().remove(to_clean, &guard);
+        if let Some(m) = mesh {
+            commands.add_component(entity, m);
         }
-    }
 
-    fn setup(&mut self, world: &mut World) {
-        <Self as System<'_>>::SystemData::setup(world);
-        world.register::<RenderAround>();
-        world.register::<ChunkPosition>();
+        vox_world.dirty().remove(to_clean, &guard);
     }
 }

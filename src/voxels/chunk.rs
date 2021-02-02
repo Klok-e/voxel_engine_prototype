@@ -1,5 +1,4 @@
 use crate::{core::Vec3i, directions::Directions};
-use amethyst::ecs::prelude::*;
 use bitflags::_core::cmp::Ordering;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -108,10 +107,6 @@ impl PartialOrd for ChunkPosition {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
-}
-
-impl Component for ChunkPosition {
-    type Storage = DenseVecStorage<Self>;
 }
 
 #[cfg(test)]
