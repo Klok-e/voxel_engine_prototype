@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{system, systems, Entity, IntoQuery, Runnable, SubWorld},
+    ecs::{Entity, IntoQuery, Runnable, SubWorld},
     ui::UiText,
 };
 use legion::{query::Query, SystemBuilder};

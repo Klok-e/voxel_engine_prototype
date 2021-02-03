@@ -1,6 +1,3 @@
-use amethyst;
-use thiserror::Error;
-
 // #[derive(Error, Debug)]
 // pub enum GameError {
 //     #[error("amethyst error")]

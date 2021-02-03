@@ -17,10 +17,8 @@ use amethyst::{
     },
 };
 use flurry::epoch::pin;
-use legion::{query::Query, Entity, EntityStore, SystemBuilder};
+use legion::{query::Query, Entity, SystemBuilder};
 use std::collections::HashMap;
-
-use super::dirty_around_system::RenderAround;
 
 // #[derive(SystemDesc)]
 // pub struct ChunkRenderSystem;
@@ -83,7 +81,7 @@ fn chunk_render(
     loader: &DefaultLoader,
     mesh_queue: &ProcessingQueue<MeshData>,
     q1: &mut Query<(Entity, &mut ChunkPosition)>,
-    meshes: &mut Query<(&mut Handle<Mesh>,)>,
+    _meshes: &mut Query<(&mut Handle<Mesh>,)>,
 ) {
     let mut chunk_entities = HashMap::new();
     for (ent, chunk_pos) in q1.iter_mut(w) {

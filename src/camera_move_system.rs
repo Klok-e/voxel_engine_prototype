@@ -1,5 +1,3 @@
-use std::{cell::RefCell, ops::DerefMut, rc::Rc};
-
 use crate::core::Vec3f;
 use amethyst::{
     core::{dispatcher::ThreadLocalSystem, math, Transform},
@@ -8,11 +6,7 @@ use amethyst::{
     renderer::Camera,
     shrev::{EventChannel, ReaderId},
 };
-use legion::{
-    query::{And, ComponentFilter, Passthrough, Query},
-    storage::ConsFlatten,
-    SystemBuilder,
-};
+use legion::SystemBuilder;
 
 pub struct CameraMoveSensitivity {
     mouse: f32,
@@ -91,8 +85,8 @@ pub struct ControlsBundle;
 impl SystemBundle for ControlsBundle {
     fn load(
         &mut self,
-        world: &mut legion::World,
-        resources: &mut legion::Resources,
+        _world: &mut legion::World,
+        _resources: &mut legion::Resources,
         builder: &mut amethyst::ecs::DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         // let readerid = resources

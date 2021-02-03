@@ -2,7 +2,7 @@ use amethyst::{
     assets::LoaderBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     ecs::DispatcherBuilder,
-    input::{Bindings, InputBundle},
+    input::InputBundle,
     prelude::*,
     renderer::{
         plugins::{RenderDebugLines, RenderShaded3D, RenderToWindow},
