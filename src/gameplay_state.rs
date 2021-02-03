@@ -27,7 +27,7 @@ use amethyst::{
         palette::{LinSrgba, Srgb, Srgba},
         resources::AmbientColor,
         types::TextureData,
-        Camera, ImageFormat, Material, Texture,
+        Camera, Material,
     },
     ui::{Anchor, LineMode, UiText, UiTransform},
     utils::auto_fov::AutoFov,
