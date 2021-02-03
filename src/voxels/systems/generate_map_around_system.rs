@@ -20,7 +20,7 @@ impl GenerateMapAround {
     }
 }
 
-fn generate_map_around_system() -> impl Runnable {
+pub fn generate_map_around_system() -> impl Runnable {
     SystemBuilder::new("generate_map_around")
         .read_resource::<VoxelWorldProcedural>()
         .read_resource::<GameConfig>()

@@ -41,12 +41,13 @@ use super::dirty_around_system::RenderAround;
 //     );
 // }
 
-fn chunk_render_system(/*mut readerid: ReaderId<InputEvent>*/) -> impl Runnable {
+pub fn chunk_render_system(/*mut readerid: ReaderId<InputEvent>*/) -> impl Runnable {
     SystemBuilder::new("chunk_render_system")
         .read_resource::<VoxelWorldProcedural>()
         .read_resource::<GameConfig>()
         .read_resource::<Materials>()
         .read_resource::<DefaultLoader>()
+        .read_resource::<ProcessingQueue<MeshData>>()
         .with_query(<(Entity, &mut ChunkPosition)>::query())
         .with_query(<(&mut Handle<Mesh>,)>::query())
         .with_query(<(
@@ -66,6 +67,7 @@ fn chunk_render_system(/*mut readerid: ReaderId<InputEvent>*/) -> impl Runnable 
                 &resources.1,
                 &resources.2,
                 &resources.3,
+                &resources.4,
                 &mut query.0,
                 &mut query.1,
             )
@@ -79,6 +81,7 @@ fn chunk_render(
     config: &GameConfig,
     materials: &Materials,
     loader: &DefaultLoader,
+    mesh_queue: &ProcessingQueue<MeshData>,
     q1: &mut Query<(Entity, &mut ChunkPosition)>,
     meshes: &mut Query<(&mut Handle<Mesh>,)>,
 ) {
@@ -94,11 +97,11 @@ fn chunk_render(
         .take(config.chunks_render_per_frame)
     {
         // create mesh
-        let mesh:Option<Handle<Mesh>> = vox_world
+        let mesh: Option<Handle<Mesh>> = vox_world
             .mesh(&to_clean, &guard)
             .build_mesh()
             .map(|m| MeshData(m.into_owned()))
-            .map(|m| loader.load_from_data(m, (), &ProcessingQueue::default()));
+            .map(|m| loader.load_from_data(m, (), mesh_queue));
 
         // get entity from hashmap or create a new one
         let entity: Entity = chunk_entities

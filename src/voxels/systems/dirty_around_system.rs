@@ -5,7 +5,10 @@ use crate::{
         world::VoxelWorldProcedural,
     },
 };
-use amethyst::{core::Transform, ecs::{Runnable, SubWorld,IntoQuery}};
+use amethyst::{
+    core::Transform,
+    ecs::{IntoQuery, Runnable, SubWorld},
+};
 use flurry::epoch::pin;
 use legion::{query::Query, SystemBuilder};
 use std::collections::HashSet;
@@ -20,19 +23,21 @@ impl RenderAround {
     }
 }
 
-fn dirty_around_system() -> impl Runnable {
+pub fn dirty_around_system() -> impl Runnable {
     SystemBuilder::new("dirty_around_system")
         .read_resource::<VoxelWorldProcedural>()
         .with_query(<(&RenderAround, &Transform)>::query())
         .with_query(<(&ChunkPosition,)>::query())
-        .build(move |_, world, resources, query| dirty_around(world, resources, &mut query.0, &mut query.1))
+        .build(move |_, world, resources, query| {
+            dirty_around(world, resources, &mut query.0, &mut query.1)
+        })
 }
 
 fn dirty_around(
     w: &mut SubWorld,
     vox_world: &VoxelWorldProcedural,
-    q1:&mut Query<(&RenderAround, &Transform)>,
-    chunk_positions:&mut Query<(&ChunkPosition,)>,
+    q1: &mut Query<(&RenderAround, &Transform)>,
+    chunk_positions: &mut Query<(&ChunkPosition,)>,
 ) {
     let mut loaded_chunks = HashSet::new();
     let mut chunks_to_load = HashSet::new();

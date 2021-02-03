@@ -7,7 +7,7 @@ use legion::query::Query;
 #[derive(Debug, Default)]
 pub struct DestroyVoxOnTouch;
 
-fn destroy_on_touch_system() -> impl Runnable {
+pub fn destroy_on_touch_system() -> impl Runnable {
     SystemBuilder::new("destroy_on_touch_system")
         .read_resource::<VoxelWorldProcedural>()
         .with_query(<(&DestroyVoxOnTouch, &Transform)>::query())

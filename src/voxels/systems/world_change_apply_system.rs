@@ -3,7 +3,7 @@ use amethyst::ecs::{Runnable, SubWorld};
 use flurry::epoch::pin;
 use legion::SystemBuilder;
 
-fn world_apply_changes_system() -> impl Runnable {
+pub fn world_apply_changes_system() -> impl Runnable {
     SystemBuilder::new("world_apply_changes")
         .read_resource::<VoxelWorldProcedural>()
         .build(move |_, world, resources, query| world_apply_changes(world, resources))
