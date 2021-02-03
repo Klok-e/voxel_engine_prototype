@@ -21,18 +21,14 @@ impl Default for CameraMoveSensitivity {
     }
 }
 
-fn camera_move_system(mut readerid: ReaderId<InputEvent>) -> impl Runnable {
+fn camera_move_system() -> impl Runnable {
     SystemBuilder::new("camera_move_system")
         .read_resource::<InputHandler>()
-        .read_resource::<EventChannel<InputEvent>>()
         .read_resource::<CameraMoveSensitivity>()
         .with_query(<(&Camera, &mut Transform)>::query())
-        .build(move |_, world, (input, events, sensitivity), query| {
-            let (input, /*events,*/ sensitivity): (
-                &InputHandler,
-                //&EventChannel<InputEvent>,
-                &CameraMoveSensitivity,
-            ) = (input, /*events,*/ sensitivity);
+        .build(move |_, world, (input, sensitivity), query| {
+            let (input, sensitivity): (&InputHandler, &CameraMoveSensitivity) =
+                (input, sensitivity);
 
             let mut translation = math::Vector3::<f32>::zeros();
             if input.key_is_down(VirtualKeyCode::W) {
@@ -57,15 +53,8 @@ fn camera_move_system(mut readerid: ReaderId<InputEvent>) -> impl Runnable {
                 translation.normalize_mut();
             }
 
-            let (mut d_x, mut d_y) = (0., 0.);
-            for event in events.read(&mut readerid) {
-                if let InputEvent::MouseMoved { delta_x, delta_y } = *event {
-                    d_x -= delta_x;
-                    d_y -= delta_y;
-                }
-            }
-            d_x = input.axis_value("mouse_x").unwrap();
-            d_y = input.axis_value("mouse_y").unwrap();
+            let d_x = input.axis_value("mouse_x").unwrap();
+            let d_y = input.axis_value("mouse_y").unwrap();
 
             for (_, cam_trans) in query.iter_mut(world) {
                 cam_trans.append_translation(translation * sensitivity.translation);
@@ -86,15 +75,10 @@ impl SystemBundle for ControlsBundle {
     fn load(
         &mut self,
         _world: &mut legion::World,
-        resources: &mut legion::Resources,
+        _resources: &mut legion::Resources,
         builder: &mut amethyst::ecs::DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
-        let readerid = resources
-            .get_mut::<EventChannel<InputEvent>>()
-            .unwrap()
-            .register_reader();
-
-        builder.add_thread_local(Box::new(|| camera_move_system(readerid)));
+        builder.add_thread_local(Box::new(|| camera_move_system()));
         Ok(())
     }
 }

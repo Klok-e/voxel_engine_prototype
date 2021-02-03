@@ -1,5 +1,6 @@
 use amethyst::{
     assets::LoaderBundle,
+    controls::FlyControlBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     ecs::DispatcherBuilder,
     input::InputBundle,
@@ -50,6 +51,21 @@ fn main() -> amethyst::Result<()> {
         .add_bundle(LoaderBundle)
         .add_bundle(InputBundle::new().with_bindings_from_file(config_path.join("bindings.ron"))?)
         .add_bundle(TransformBundle::default())
+        .add_bundle(FpsCounterBundle::default())
+        .add_bundle(UiBundle::<u32>::new())
+        .add_bundle(
+            FlyControlBundle::new(
+                Some("move_x".into()),
+                Some("move_y".into()),
+                Some("move_z".into()),
+            )
+            .with_sensitivity(0.1, 0.1)
+            .with_speed(1.),
+        )
+        .add_bundle(VoxelBundle::default())
+        .add_system(AutoFovSystem)
+        .add_system(|| chunk_counter_ui_system())
+        .add_system(|| fps_ui_system())
         .add_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
@@ -61,14 +77,7 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderShaded3D::default())
                 .with_plugin(RenderDebugLines::default())
                 .with_plugin(RenderUi::default()),
-        )
-        .add_bundle(FpsCounterBundle::default())
-        .add_bundle(UiBundle::<u32>::new())
-        .add_bundle(ControlsBundle::default())
-        .add_bundle(VoxelBundle::default())
-        .add_system(AutoFovSystem)
-        .add_system(|| chunk_counter_ui_system())
-        .add_system(|| fps_ui_system());
+        );
 
     let assets_dir = APP_ROOT.join("assets");
     let game = Application::build(assets_dir, GameplayState {})?

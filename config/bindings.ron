@@ -1,23 +1,45 @@
 (
     axes: {
-        "vertical": Emulated(
-            pos: Key(Up),
-            neg: Key(Down)
+        "move_z": Multiple([
+            Emulated(
+                pos: Key(S),
+                neg: Key(W)
+            ),
+            Emulated(
+                pos: Key(Down),
+                neg: Key(Up)
+            )
+        ]),
+        "move_y": Multiple([
+            Emulated(
+                pos: Key(V),
+                neg: Key(C)
+            ),
+            Emulated(
+                pos: Key(PageUp),
+                neg: Key(PageDown)
+            )
+        ]),
+        "move_x": Multiple([
+            Emulated(
+                pos: Key(D),
+                neg: Key(A)
+            ),
+            Emulated(
+                pos: Key(Right),
+                neg: Key(Left)
+            )
+        ])/*,
+        "mouse_x": Mouse(
+            axis: X,
+            over_extendable: false,
+            radius: 1.0
         ),
-        "horizontal": Emulated(
-            pos: Key(Right),
-            neg: Key(Left)
-        ),
-        "mouse_x":Mouse(
-            axis:X,
-            over_extendable:false,
-            radius:1.0
-        ),
-        "mouse_y":Mouse(
-            axis:Y,
-            over_extendable:false,
-            radius:1.0
-        )
+        "mouse_y": Mouse(
+            axis: Y,
+            over_extendable: false,
+            radius: 1.0
+        )*/
     },
     actions:{}
 )

@@ -18,6 +18,7 @@ use crate::{
 };
 use amethyst::{
     assets::{DefaultLoader, Loader, ProcessingQueue},
+    controls::{FlyControl, HideCursor},
     core::Transform,
     prelude::*,
     renderer::{
@@ -62,6 +63,12 @@ impl SimpleState for GameplayState {
             mats = init_materials(&*loader, &*tex_queue, &*mat_queue);
         }
         data.resources.insert(mats);
+
+        // hide cursor
+        {
+            let mut hide = data.resources.get_mut::<HideCursor>().unwrap();
+            hide.hide = true;
+        }
 
         // ui
         init_fps_counter(&mut data);
@@ -119,6 +126,7 @@ fn init_camera(state: &mut StateData<GameData>) {
 
     state.world.push((
         Camera::standard_3d(10., 10.),
+        FlyControl,
         AutoFov::new(),
         transform,
         RenderAround::new(1),
