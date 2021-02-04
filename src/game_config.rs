@@ -1,4 +1,40 @@
+use amethyst::ecs::SystemBundle;
+use serde::{Deserialize, Serialize};
+
+use std::path::Path;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GameConfig {
     pub chunks_render_per_frame: usize,
     pub chunks_generate_per_frame: usize,
+}
+
+impl GameConfig {
+    pub fn from_file_ron<P: AsRef<Path>>(path: P) -> Result<Self, crate::Error> {
+        let str = std::fs::read_to_string(path)?;
+        Ok(ron::from_str(str.as_ref())?)
+    }
+}
+
+pub struct ConfigsBundle {
+    game_config: GameConfig,
+}
+
+impl ConfigsBundle {
+    pub fn new(game_config: GameConfig) -> Self {
+        Self { game_config }
+    }
+}
+
+impl SystemBundle for ConfigsBundle {
+    fn load(
+        &mut self,
+        _world: &mut legion::World,
+        resources: &mut legion::Resources,
+        _builder: &mut amethyst::ecs::DispatcherBuilder,
+    ) -> Result<(), amethyst::Error> {
+        resources.insert(self.game_config.clone());
+
+        Ok(())
+    }
 }

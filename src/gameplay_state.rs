@@ -42,11 +42,6 @@ impl SimpleState for GameplayState {
         let mut transform = Transform::default();
         transform.set_translation_xyz(0., 0., 0.);
 
-        data.resources.insert(GameConfig {
-            chunks_render_per_frame: 10,
-            chunks_generate_per_frame: 10,
-        });
-
         data.resources
             .insert(VoxelWorld::new(ProceduralGenerator::<CHSIZE>::new(42)));
 

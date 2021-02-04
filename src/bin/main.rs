@@ -19,6 +19,7 @@ use std::time::Duration;
 use voxel_engine_prototype_lib::{
     camera_move_system::ControlsBundle,
     core::APP_ROOT,
+    game_config::{ConfigsBundle, GameConfig},
     gameplay_state::GameplayState,
     ui::{chunk_counter::chunk_counter_ui_system, fps_counter::fps_ui_system},
     voxels::systems::VoxelBundle,
@@ -50,6 +51,9 @@ fn main() -> amethyst::Result<()> {
     game_data
         .add_bundle(LoaderBundle)
         .add_bundle(InputBundle::new().with_bindings_from_file(config_path.join("bindings.ron"))?)
+        .add_bundle(ConfigsBundle::new(GameConfig::from_file_ron(
+            config_path.join("game_configs.ron"),
+        )?))
         .add_bundle(TransformBundle::default())
         .add_bundle(FpsCounterBundle::default())
         .add_bundle(UiBundle::<u32>::new())

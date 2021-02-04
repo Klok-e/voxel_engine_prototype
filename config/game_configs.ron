@@ -1,0 +1,4 @@
+(
+    chunks_render_per_frame: 10,
+    chunks_generate_per_frame: 10,
+)

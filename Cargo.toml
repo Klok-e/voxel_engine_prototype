@@ -28,7 +28,8 @@ ndarray = "0.14.0"
 rand = { version = "0.8.3", features = ["small_rng"] }
 noise = "0.7.0"
 flurry = { version = "0.3.1", features = ["rayon"] }
-serde = "1.0.123"
+serde = { version = "1.0", features = ["derive"] }
+ron = "0.6.4"
 thiserror = "1.0"
 
 [patch.crates-io]
