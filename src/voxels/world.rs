@@ -8,7 +8,8 @@ use crate::{
     core::{to_uarr, to_vecf, ConcurrentHashMap, ConcurrentHashSet, Vec3f, Vec3i},
     directions::Directions,
 };
-use flurry::epoch::Guard;
+use flurry::epoch::{pin, Guard};
+use rayon::prelude::*;
 use std::{
     collections::{HashMap, HashSet, VecDeque},
     sync::{Mutex, RwLock},
@@ -28,14 +29,20 @@ impl VoxChange {
 
 pub type VoxelWorldProcedural = VoxelWorld<ProceduralGenerator<CHSIZE>, CHSIZE>;
 
-pub struct VoxelWorld<G: VoxelGenerator<N>, const N: usize> {
-    chunks: HashMap<ChunkPosition, RwLock<Chunk<N>>>,
+pub struct VoxelWorld<G, const N: usize>
+where
+    G: VoxelGenerator<N> + Send + Sync,
+{
+    chunks: HashMap<ChunkPosition, Chunk<N>>,
     chunk_changes: ConcurrentHashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,
     dirty: ConcurrentHashSet<ChunkPosition>,
     procedural: G,
 }
 
-impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
+impl<G, const N: usize> VoxelWorld<G, N>
+where
+    G: VoxelGenerator<N> + Send + Sync,
+{
     const NI: i32 = N as i32;
     const NF: f32 = N as f32;
 
@@ -48,7 +55,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         }
     }
 
-    pub fn chunks(&self) -> &HashMap<ChunkPosition, RwLock<Chunk<N>>> {
+    pub fn chunks(&self) -> &HashMap<ChunkPosition, Chunk<N>> {
         &self.chunks
     }
 
@@ -56,15 +63,19 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         &self.dirty
     }
 
-    pub fn chunk_at<'a>(&'a self, pos: &ChunkPosition) -> Option<&'a RwLock<Chunk<N>>> {
+    pub fn chunk_at<'a>(&'a self, pos: &ChunkPosition) -> Option<&'a Chunk<N>> {
         self.chunks.get(pos)
+    }
+
+    pub fn chunk_at_mut<'a>(&'a mut self, pos: &ChunkPosition) -> Option<&'a mut Chunk<N>> {
+        self.chunks.get_mut(pos)
     }
 
     pub fn generate_at<'a>(&'a mut self, pos: &ChunkPosition) {
         // or create and insert a new chunk
         let mut c = Chunk::<N>::new();
         self.procedural.fill_random(&pos, &mut c.data_mut());
-        self.chunks.insert(*pos, RwLock::new(c));
+        self.chunks.insert(*pos, c);
     }
 
     pub fn voxel_at_pos(&self, pos: &Vec3f) -> Option<Voxel> {
@@ -72,7 +83,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         self.voxel_at(&ch, &ind)
     }
     pub fn voxel_at(&self, chunk: &ChunkPosition, ind: &[usize; 3]) -> Option<Voxel> {
-        self.chunk_at(chunk).map(|c| c.read().unwrap().data()[*ind])
+        self.chunk_at(chunk).map(|c| c.data()[*ind])
     }
 
     pub fn set_voxel_at_pos(&self, pos: &Vec3f, new_vox: Voxel, guard: &Guard) {
@@ -102,7 +113,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
     pub fn mesh(&self, chpos: &ChunkPosition, guard: &Guard) -> Option<ChunkMeshData> {
         let onef: Vec3f = [1., 1., 1.].into();
 
-        let chunk = self.chunk_at(chpos)?.try_read().unwrap();
+        let chunk = self.chunk_at(chpos)?;
         let mut chunk_mesh = ChunkMeshData::new();
         for x in 0..Self::NI {
             for y in 0..Self::NI {
@@ -119,8 +130,6 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
                         let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => self
                                 .chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))?
-                                .try_read()
-                                .unwrap()
                                 .data()[to_uarr(index)],
                             None => chunk.data()[to_uarr(spos)],
                         };
@@ -137,28 +146,38 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         Some(chunk_mesh)
     }
 
-    pub fn apply_voxel_changes(&self, guard: &Guard) {
-        let mut borders_changed = HashSet::new();
+    pub fn apply_voxel_changes(&mut self) {
+        let borders_changed = ConcurrentHashSet::new();
 
-        // TODO: when flurry supports rayon use parallel iterators
-        self.chunk_changes.iter(guard).for_each(|(pos, list)| {
-            let mut chunk = self.chunk_at(pos).unwrap().try_write().unwrap();
-            let mut list = list.try_lock().unwrap();
-            list.iter().for_each(|change| {
-                chunk.data_mut()[change.index] = change.new_vox;
+        let chunks = &mut self.chunks;
+        let chunk_changes = &self.chunk_changes;
+        let dirty = &self.dirty;
 
-                self.dirty.insert(*pos, guard);
+        chunks.par_iter_mut().for_each_init(
+            || pin(),
+            |guard, (pos, chunk)| {
+                let changes = match chunk_changes.get(pos, guard) {
+                    Some(x) => x,
+                    None => return,
+                };
+                let mut list = changes.try_lock().unwrap();
+                list.iter().for_each(|change| {
+                    chunk.data_mut()[change.index] = change.new_vox;
 
-                // if on a border
-                let border = Chunk::<N>::is_on_border(&change.index);
-                if let Some(border_dir) = border {
-                    borders_changed.insert((*pos, border_dir));
-                }
-            });
-            list.clear()
-        });
+                    dirty.insert(*pos, guard);
 
-        for (chunk_pos, adj_dir) in borders_changed {
+                    // if on a border
+                    let border = Chunk::<N>::is_on_border(&change.index);
+                    if let Some(border_dir) = border {
+                        borders_changed.insert((*pos, border_dir), guard);
+                    }
+                });
+                list.clear();
+            },
+        );
+
+        let guard = pin();
+        for (chunk_pos, adj_dir) in borders_changed.iter(&guard) {
             let adj_vec = adj_dir.to_vec::<i32>();
             let next_chunk_pos = chunk_pos.pos + adj_vec;
 
@@ -166,7 +185,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
                 ChunkPosition {
                     pos: next_chunk_pos,
                 },
-                guard,
+                &guard,
             );
         }
     }

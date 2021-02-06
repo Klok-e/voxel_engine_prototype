@@ -4649,6 +4649,7 @@ dependencies = [
  "ndarray",
  "noise",
  "rand 0.8.3",
+ "rayon",
  "ron",
  "rstest",
  "serde",
