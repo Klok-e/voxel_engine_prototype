@@ -17,7 +17,6 @@ use amethyst::{
 };
 use std::time::Duration;
 use voxel_engine_prototype_lib::{
-    camera_move_system::ControlsBundle,
     core::APP_ROOT,
     game_config::{ConfigsBundle, GameConfig},
     gameplay_state::GameplayState,

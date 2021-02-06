@@ -1,6 +1,5 @@
 use crate::{
     camera_move_system::CameraMoveSensitivity,
-    game_config::GameConfig,
     ui::{
         chunk_counter::{GeneratedCounterText, RenderedCounterText},
         fps_counter::FpsText,
@@ -124,8 +123,8 @@ fn init_camera(state: &mut StateData<GameData>) {
         FlyControl,
         AutoFov::new(),
         transform,
-        RenderAround::new(1),
-        GenerateMapAround::new(10),
+        RenderAround,
+        GenerateMapAround,
         DestroyVoxOnTouch,
     ));
 }

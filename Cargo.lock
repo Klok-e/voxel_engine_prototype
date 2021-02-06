@@ -34,6 +34,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8fd72866655d1904d6b0997d0b07ba561047d070fbe29de039031c641b61217"
 
 [[package]]
+name = "aho-corasick"
+version = "0.7.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7404febffaa47dac81aa44dba71523c9d069b1bdc50a77db41195149e17f68e5"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "alga"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -57,7 +66,7 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_animation",
  "amethyst_assets",
@@ -89,7 +98,7 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "alga",
  "amethyst_assets",
@@ -109,16 +118,16 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
- "atelier-assets",
  "bincode",
  "crossbeam-channel 0.5.0",
  "crossbeam-queue",
  "derivative",
  "derive-new",
+ "distill",
  "dyn-clone",
  "encoding_rs_io",
  "erased-serde",
@@ -142,7 +151,7 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -159,7 +168,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "encoding_rs_io",
  "ron",
@@ -169,7 +178,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -183,7 +192,7 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_error",
  "approx 0.4.0",
@@ -206,17 +215,19 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
+ "glob",
  "proc-macro2 1.0.24",
  "quote 1.0.8",
+ "regex",
  "syn 1.0.60",
 ]
 
 [[package]]
 name = "amethyst_error"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "backtrace",
 ]
@@ -224,7 +235,7 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -240,7 +251,7 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_assets",
  "amethyst_config",
@@ -268,7 +279,7 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_assets",
  "amethyst_audio",
@@ -302,7 +313,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -319,7 +330,7 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#fb70bd8fcc07a829763d1277061ee8fda36fe7fe"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -414,113 +425,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1996609732bde4a9988bc42125f55f2af5f3c36370e27c778d5191a4a1b63bfb"
 dependencies = [
  "event-listener",
-]
-
-[[package]]
-name = "atelier-assets"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "atelier-core",
- "atelier-daemon",
- "atelier-importer",
- "atelier-loader",
-]
-
-[[package]]
-name = "atelier-core"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "dunce",
- "futures-core",
- "path-clean",
- "path-slash",
- "serde",
- "type-uuid",
- "uuid",
-]
-
-[[package]]
-name = "atelier-daemon"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "async-channel",
- "async-lock",
- "atelier-core",
- "atelier-importer",
- "atelier-loader",
- "atelier-schema",
- "bincode",
- "capnp",
- "capnp-rpc",
- "dunce",
- "erased-serde",
- "event-listener",
- "futures",
- "lmdb-rkv",
- "log",
- "notify",
- "num_cpus",
- "path-clean",
- "path-slash",
- "pin-project",
- "rayon",
- "ron",
- "serde",
- "serde_derive",
- "tokio",
- "tokio-util",
- "uuid",
-]
-
-[[package]]
-name = "atelier-importer"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "atelier-core",
- "erased-serde",
- "futures",
- "log",
- "ron",
- "serde",
- "serde-importable-derive",
- "typetag",
- "uuid",
-]
-
-[[package]]
-name = "atelier-loader"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "atelier-core",
- "atelier-schema",
- "capnp",
- "capnp-rpc",
- "crossbeam-channel 0.5.0",
- "dashmap",
- "futures-channel",
- "futures-core",
- "futures-util",
- "log",
- "memmap",
- "serde",
- "thread_local",
- "tokio",
- "tokio-util",
- "uuid",
-]
-
-[[package]]
-name = "atelier-schema"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "atelier-core",
- "capnp",
 ]
 
 [[package]]
@@ -1380,6 +1284,151 @@ name = "dispatch"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd0c93bb4b0c6d9b77f4435b0ae98c24d17f1c45b2ff844c6151a07256ca923b"
+
+[[package]]
+name = "distill"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93688bb3f135699f191e9a877349ee8c91b7a779977a06be0b3b4c66c9e5ac82"
+dependencies = [
+ "distill-core",
+ "distill-daemon",
+ "distill-importer",
+ "distill-loader",
+]
+
+[[package]]
+name = "distill-core"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8077520956abdcb79f8be22ce3a0bdb0619a1a5436be138dfa47efda2468816"
+dependencies = [
+ "dunce",
+ "futures-core",
+ "path-clean",
+ "path-slash",
+ "serde",
+ "type-uuid",
+ "uuid",
+]
+
+[[package]]
+name = "distill-daemon"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c9d8497e2cb054384d63e7faa0ef69f6c6baf65b7752f0426bece7338145ba4a"
+dependencies = [
+ "async-channel",
+ "async-lock",
+ "bincode",
+ "capnp",
+ "capnp-rpc",
+ "distill-core",
+ "distill-downstream-lmdb-rkv",
+ "distill-importer",
+ "distill-loader",
+ "distill-schema",
+ "dunce",
+ "erased-serde",
+ "event-listener",
+ "futures",
+ "log",
+ "notify",
+ "num_cpus",
+ "path-clean",
+ "path-slash",
+ "pin-project",
+ "rayon",
+ "ron",
+ "serde",
+ "serde_derive",
+ "tokio",
+ "tokio-util",
+ "uuid",
+]
+
+[[package]]
+name = "distill-downstream-lmdb-rkv"
+version = "0.11.0-windows-fix"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f521d21c73b73f442373d5df9f59cd5f910972d2f58bd9e8c07f1b0167c30ac9"
+dependencies = [
+ "bitflags",
+ "distill-downstream-lmdb-sys",
+ "libc",
+]
+
+[[package]]
+name = "distill-downstream-lmdb-sys"
+version = "0.8.0-windows-fix"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "156916ee4ddd084e3f77bbfa0fab994e7eba65e7c25523aa45edcd96a8f66c83"
+dependencies = [
+ "cc",
+ "libc",
+ "pkg-config",
+]
+
+[[package]]
+name = "distill-importer"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b48c8a3706a5659e404e621b1c742fad69cecc6954879961aa616a91e640c862"
+dependencies = [
+ "distill-core",
+ "distill-serde-importable-derive",
+ "erased-serde",
+ "futures",
+ "log",
+ "ron",
+ "serde",
+ "typetag",
+ "uuid",
+]
+
+[[package]]
+name = "distill-loader"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6b9697449568e722b01ba774426df9fad2636b0205703200c5e6c3204d076a3f"
+dependencies = [
+ "capnp",
+ "capnp-rpc",
+ "crossbeam-channel 0.5.0",
+ "dashmap",
+ "distill-core",
+ "distill-schema",
+ "futures-channel",
+ "futures-core",
+ "futures-util",
+ "log",
+ "memmap",
+ "serde",
+ "thread_local",
+ "tokio",
+ "tokio-util",
+ "uuid",
+]
+
+[[package]]
+name = "distill-schema"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfab33bf062b65e9d75c2b8a30dc70b9d420a60ab5a5fb1edc5c472429f1a395"
+dependencies = [
+ "capnp",
+ "distill-core",
+]
+
+[[package]]
+name = "distill-serde-importable-derive"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0a9b9f7420cda9904d35de0ffef7d6ee6cb17719e6f471810a5b3e5f95568ceb"
+dependencies = [
+ "quote 1.0.8",
+ "syn 1.0.60",
+]
 
 [[package]]
 name = "dlib"
@@ -2292,29 +2341,6 @@ name = "linked-hash-map"
 version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
-
-[[package]]
-name = "lmdb-rkv"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "447a296f7aca299cfbb50f4e4f3d49451549af655fb7215d7f8c0c3d64bad42b"
-dependencies = [
- "bitflags",
- "byteorder",
- "libc",
- "lmdb-rkv-sys",
-]
-
-[[package]]
-name = "lmdb-rkv-sys"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b27470ac25167b3afdfb6af8fcd3bc1be67de50ffbdaf4073378cfded6ae24a5"
-dependencies = [
- "cc",
- "libc",
- "pkg-config",
-]
 
 [[package]]
 name = "lock_api"
@@ -3613,7 +3639,10 @@ version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9251239e129e16308e70d853559389de218ac275b515068abc96829d05b948a"
 dependencies = [
+ "aho-corasick",
+ "memchr",
  "regex-syntax",
+ "thread_local",
 ]
 
 [[package]]
@@ -4065,15 +4094,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde-importable-derive"
-version = "0.1.0"
-source = "git+https://github.com/radium-io/atelier-assets.git?rev=702e9d95495d30816f04978e3cd0297278d2f945#702e9d95495d30816f04978e3cd0297278d2f945"
-dependencies = [
- "quote 1.0.8",
- "syn 1.0.60",
-]
-
-[[package]]
 name = "serde_bytes"
 version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4105,9 +4125,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.61"
+version = "1.0.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fceb2595057b6891a4ee808f70054bd2d12f0e97f1cbb78689b59f676df325a"
+checksum = "ea1c6153794552ea7cf7cf63b1231a25de00ec90db326ba6264440fa08e31486"
 dependencies = [
  "itoa",
  "ryu",
@@ -4439,9 +4459,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.1.1"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6714d663090b6b0acb0fa85841c6d66233d150cdb2602c8f9b8abb03370beb3f"
+checksum = "e8190d04c665ea9e6b6a0dc45523ade572c088d2e6566244c1122671dbf4ae3a"
 dependencies = [
  "autocfg 1.0.1",
  "bytes",
@@ -4455,9 +4475,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-macros"
-version = "1.0.0"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42517d2975ca3114b22a16192634e8241dc5cc1f130be194645970cc1c371494"
+checksum = "caf7b11a536f46a809a8a9f0bb4237020f70ecbf115b842360afb127ea2fda57"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.8",
