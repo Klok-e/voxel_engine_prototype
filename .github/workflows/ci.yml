@@ -7,6 +7,10 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
+      - name: install linux deps
+        run: |
+          sudo apt update
+          sudo apt install pulseaudio
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@master
         with:
@@ -22,6 +26,10 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-latest
     steps:
+      - name: install linux deps
+        run: |
+          sudo apt update
+          sudo apt install pulseaudio
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@master
         with:
@@ -37,6 +45,10 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
+      - name: install linux deps
+        run: |
+          sudo apt update
+          sudo apt install pulseaudio
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@master
         with:
