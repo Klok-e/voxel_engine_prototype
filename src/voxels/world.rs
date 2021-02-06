@@ -10,7 +10,7 @@ use crate::{
 };
 use flurry::epoch::Guard;
 use std::{
-    collections::{HashSet, VecDeque},
+    collections::{HashMap, HashSet, VecDeque},
     sync::{Mutex, RwLock},
 };
 
@@ -29,7 +29,7 @@ impl VoxChange {
 pub type VoxelWorldProcedural = VoxelWorld<ProceduralGenerator<CHSIZE>, CHSIZE>;
 
 pub struct VoxelWorld<G: VoxelGenerator<N>, const N: usize> {
-    chunks: ConcurrentHashMap<ChunkPosition, RwLock<Chunk<N>>>,
+    chunks: HashMap<ChunkPosition, RwLock<Chunk<N>>>,
     chunk_changes: ConcurrentHashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,
     dirty: ConcurrentHashSet<ChunkPosition>,
     procedural: G,
@@ -48,7 +48,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         }
     }
 
-    pub fn chunks(&self) -> &ConcurrentHashMap<ChunkPosition, RwLock<Chunk<N>>> {
+    pub fn chunks(&self) -> &HashMap<ChunkPosition, RwLock<Chunk<N>>> {
         &self.chunks
     }
 
@@ -56,36 +56,23 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         &self.dirty
     }
 
-    pub fn chunk_at<'a>(
-        &'a self,
-        pos: &ChunkPosition,
-        guard: &'a Guard,
-    ) -> Option<&'a RwLock<Chunk<N>>> {
-        self.chunks.get(pos, guard)
+    pub fn chunk_at<'a>(&'a self, pos: &ChunkPosition) -> Option<&'a RwLock<Chunk<N>>> {
+        self.chunks.get(pos)
     }
 
-    pub fn chunk_at_or_create<'a>(
-        &'a self,
-        pos: &ChunkPosition,
-        guard: &'a Guard,
-    ) -> &'a RwLock<Chunk<N>> {
-        let chunk = self.chunk_at(pos, guard).unwrap_or_else(|| {
-            // or create and insert a new chunk
-            let mut c = Chunk::<N>::new();
-            self.procedural.fill_random(&pos, &mut c.data_mut());
-            self.chunks.try_insert(*pos, RwLock::new(c), guard).unwrap();
-            self.chunks.get(pos, guard).unwrap()
-        });
-        chunk
+    pub fn generate_at<'a>(&'a mut self, pos: &ChunkPosition) {
+        // or create and insert a new chunk
+        let mut c = Chunk::<N>::new();
+        self.procedural.fill_random(&pos, &mut c.data_mut());
+        self.chunks.insert(*pos, RwLock::new(c));
     }
 
-    pub fn voxel_at_pos(&self, pos: &Vec3f, guard: &Guard) -> Voxel {
+    pub fn voxel_at_pos(&self, pos: &Vec3f) -> Option<Voxel> {
         let (ch, ind) = Self::to_ch_pos_index(pos);
-        self.voxel_at(&ch, &ind, guard)
+        self.voxel_at(&ch, &ind)
     }
-    pub fn voxel_at(&self, chunk: &ChunkPosition, ind: &[usize; 3], guard: &Guard) -> Voxel {
-        let chunk = self.chunk_at_or_create(chunk, guard).read().unwrap();
-        chunk.data()[*ind]
+    pub fn voxel_at(&self, chunk: &ChunkPosition, ind: &[usize; 3]) -> Option<Voxel> {
+        self.chunk_at(chunk).map(|c| c.read().unwrap().data()[*ind])
     }
 
     pub fn set_voxel_at_pos(&self, pos: &Vec3f, new_vox: Voxel, guard: &Guard) {
@@ -112,10 +99,10 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
         ch_list.push_back(VoxChange::new(*ind, new_vox));
     }
 
-    pub fn mesh(&self, chpos: &ChunkPosition, guard: &Guard) -> ChunkMeshData {
+    pub fn mesh(&self, chpos: &ChunkPosition, guard: &Guard) -> Option<ChunkMeshData> {
         let onef: Vec3f = [1., 1., 1.].into();
 
-        let chunk = self.chunk_at_or_create(chpos, guard).try_read().unwrap();
+        let chunk = self.chunk_at(chpos)?.try_read().unwrap();
         let mut chunk_mesh = ChunkMeshData::new();
         for x in 0..Self::NI {
             for y in 0..Self::NI {
@@ -131,7 +118,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
                         let spos: Vec3i = pos + dir_vec;
                         let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => self
-                                .chunk_at_or_create(&ChunkPosition::new(chpos.pos + dir_vec), guard)
+                                .chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))?
                                 .try_read()
                                 .unwrap()
                                 .data()[to_uarr(index)],
@@ -147,7 +134,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
             }
         }
 
-        chunk_mesh
+        Some(chunk_mesh)
     }
 
     pub fn apply_voxel_changes(&self, guard: &Guard) {
@@ -155,7 +142,7 @@ impl<G: VoxelGenerator<N>, const N: usize> VoxelWorld<G, N> {
 
         // TODO: when flurry supports rayon use parallel iterators
         self.chunk_changes.iter(guard).for_each(|(pos, list)| {
-            let mut chunk = self.chunk_at_or_create(pos, guard).try_write().unwrap();
+            let mut chunk = self.chunk_at(pos).unwrap().try_write().unwrap();
             let mut list = list.try_lock().unwrap();
             list.iter().for_each(|change| {
                 chunk.data_mut()[change.index] = change.new_vox;

@@ -20,10 +20,13 @@ fn destroy_on_touch(
     q1: &mut Query<(&DestroyVoxOnTouch, &Transform)>,
 ) {
     let guard = pin();
-    for (_, transform) in q1.iter(w) {
-        match vox_world.voxel_at_pos(&transform.translation(), &guard) {
-            Voxel { id: 0 } => {}
-            _ => vox_world.set_voxel_at_pos(&transform.translation(), Voxel { id: 0 }, &guard),
+    for (destr_on_touch, transform) in q1.iter(w) {
+        match vox_world.voxel_at_pos(&transform.translation()) {
+            Some(Voxel { id: 0 }) => {}
+            Some(_) => {
+                vox_world.set_voxel_at_pos(&transform.translation(), Voxel { id: 0 }, &guard)
+            }
+            None => {}
         }
     }
 }

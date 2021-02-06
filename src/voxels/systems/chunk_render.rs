@@ -20,25 +20,6 @@ use flurry::epoch::pin;
 use legion::{query::Query, Entity, SystemBuilder};
 use std::collections::HashMap;
 
-// #[derive(SystemDesc)]
-// pub struct ChunkRenderSystem;
-
-// impl<'a> System<'a> for ChunkRenderSystem {
-//     type SystemData = (
-//         ReadExpect<'a, VoxelWorldProcedural>,
-//         WriteStorage<'a, ChunkPosition>,
-//         WriteStorage<'a, Transform>,
-//         AssetLoaderSystemData<'a, Mesh>,
-//         WriteStorage<'a, Handle<Mesh>>,
-//         WriteStorage<'a, Handle<Material>>,
-//         WriteStorage<'a, DebugLinesComponent>,
-//         WriteStorage<'a, BoundingSphere>,
-//         ReadExpect<'a, GameConfig>,
-//         Entities<'a>,
-//         ReadExpect<'a, Materials>,
-//     );
-// }
-
 pub fn chunk_render_system(/*mut readerid: ReaderId<InputEvent>*/) -> impl Runnable {
     SystemBuilder::new("chunk_render_system")
         .read_resource::<VoxelWorldProcedural>()
@@ -95,11 +76,13 @@ fn chunk_render(
         .take(config.chunks_render_per_frame)
     {
         // create mesh
-        let mesh: Option<Handle<Mesh>> = vox_world
-            .mesh(&to_clean, &guard)
-            .build_mesh()
-            .map(|m| MeshData(m.into_owned()))
-            .map(|m| loader.load_from_data(m, (), mesh_queue));
+        let mesh: Option<Handle<Mesh>> = match vox_world.mesh(&to_clean, &guard) {
+            Some(m) => m
+                .build_mesh()
+                .map(|m| MeshData(m.into_owned()))
+                .map(|m| loader.load_from_data(m, (), mesh_queue)),
+            None => continue,
+        };
 
         // get entity from hashmap or create a new one
         let entity: Entity = chunk_entities

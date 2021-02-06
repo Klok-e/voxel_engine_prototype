@@ -63,7 +63,7 @@ fn main() -> amethyst::Result<()> {
                 Some("move_z".into()),
             )
             .with_sensitivity(0.1, 0.1)
-            .with_speed(1.),
+            .with_speed(2.),
         )
         .add_bundle(VoxelBundle::default())
         .add_system(AutoFovSystem)
