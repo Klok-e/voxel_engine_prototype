@@ -29,7 +29,7 @@ jobs:
       - name: install linux deps
         run: |
           sudo apt update
-          sudo apt install pulseaudio libsdl2-dev
+          sudo apt install -y gcc pkg-config openssl libasound2-dev cmake build-essential python3 libfreetype6-dev libexpat1-dev libxcb-composite0-dev libssl-dev libx11-dev pulseaudio
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@master
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: install linux deps
         run: |
           sudo apt update
-          sudo apt install pulseaudio
+          sudo apt install -y gcc pkg-config openssl libasound2-dev cmake build-essential python3 libfreetype6-dev libexpat1-dev libxcb-composite0-dev libssl-dev libx11-dev pulseaudio
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@master
         with:
