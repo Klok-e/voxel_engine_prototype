@@ -1,6 +1,6 @@
 (
-    chunks_render_per_frame: 4,
-    chunks_generate_per_frame: 5,
-    render_around_bubble: 2,
-    generate_around_bubble: 5,
+    chunks_render_per_frame: 5,
+    chunks_generate_per_frame: 10,
+    render_around_bubble: 5,
+    generate_around_bubble: 4,
 )

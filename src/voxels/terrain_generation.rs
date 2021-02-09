@@ -36,7 +36,7 @@ impl<const N: usize> VoxelGenerator<N> for ProceduralGenerator<N> {
                 let p = to_vec2d(p + pos.pos.xz() * Self::NI);
                 let value = self.rng.get([p.x / 100., p.y / 100.]);
                 for y in 0..Self::NI {
-                    let height = y + pos.pos[0] * Self::NI;
+                    let height = y + pos.pos[1] * Self::NI;
                     arr[(x as usize, y as usize, z as usize)] = match value {
                         value if height as f64 + 5. > value * 10. => Voxel { id: 0 },
                         _ => {

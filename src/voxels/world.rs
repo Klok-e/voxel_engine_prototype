@@ -106,7 +106,7 @@ where
                 self.chunk_changes.get(chunk, guard).unwrap()
             }
         };
-        let mut ch_list = ch_list.try_lock().unwrap();
+        let mut ch_list = ch_list.lock().unwrap();
         ch_list.push_back(VoxChange::new(*ind, new_vox));
     }
 

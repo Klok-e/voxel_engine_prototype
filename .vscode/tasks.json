@@ -74,10 +74,14 @@
 		{
 			"type": "cargo",
 			"command": "flamegraph",
+			"args": [
+				"--bin",
+				"voxel_engine_prototype"
+			],
 			"problemMatcher": [
 				"$rustc"
 			],
-			"label": "rust: cargo flamegraph"
+			"label": "rust: cargo flamegraph --bin voxel_engine_prototype"
 		}
 	]
 }

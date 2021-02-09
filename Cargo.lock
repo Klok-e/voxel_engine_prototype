@@ -66,7 +66,7 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_animation",
  "amethyst_assets",
@@ -98,7 +98,7 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "alga",
  "amethyst_assets",
@@ -118,7 +118,7 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -151,7 +151,7 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -168,7 +168,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "encoding_rs_io",
  "ron",
@@ -178,7 +178,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -192,7 +192,7 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_error",
  "approx 0.4.0",
@@ -215,7 +215,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "glob",
  "proc-macro2 1.0.24",
@@ -227,7 +227,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "backtrace",
 ]
@@ -235,7 +235,7 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -251,7 +251,7 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_assets",
  "amethyst_config",
@@ -279,7 +279,7 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_assets",
  "amethyst_audio",
@@ -313,7 +313,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -330,7 +330,7 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.15.3"
-source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#616fdaf0db2b755bdff9b89926b901b5a4e3e5a6"
+source = "git+https://github.com/LokiVKlokeNaAndoke/amethyst?branch=main#5b0614c82ad9f05ac8ba1d2a54eab9ba2b78f74a"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -545,9 +545,9 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
 name = "bstr"
-version = "0.2.14"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "473fc6b38233f9af7baa94fb5852dca389e3d95b8e21c8e3719301462c5d9faf"
+checksum = "a40b47ad93e1a5404e6c18dec46b628214fee441c70f4ab5d6942142cc268a3d"
 dependencies = [
  "lazy_static",
  "memchr",
@@ -2232,11 +2232,10 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 [[package]]
 name = "legion"
 version = "0.3.1"
-source = "git+https://github.com/LokiVKlokeNaAndoke/legion#007373f7575d20507fc47d3476ada7eb82a4af36"
+source = "git+https://github.com/LokiVKlokeNaAndoke/legion#5f5bfba6aba14ae8d981bca742d18a4bdd27d1c4"
 dependencies = [
  "bit-set",
  "crossbeam-channel 0.4.4",
- "derivative",
  "downcast-rs",
  "erased-serde",
  "itertools 0.9.0",
@@ -2271,7 +2270,7 @@ dependencies = [
 [[package]]
 name = "legion_codegen"
 version = "0.3.0"
-source = "git+https://github.com/LokiVKlokeNaAndoke/legion#007373f7575d20507fc47d3476ada7eb82a4af36"
+source = "git+https://github.com/LokiVKlokeNaAndoke/legion#5f5bfba6aba14ae8d981bca742d18a4bdd27d1c4"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.8",
@@ -2316,9 +2315,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.85"
+version = "0.2.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ccac4b00700875e6a07c6cde370d44d32fa01c5a65cdd2fca6858c479d28bb3"
+checksum = "b7282d924be3275cec7f6756ff4121987bc6481325397dde6ba3e7802b1a8b1c"
 
 [[package]]
 name = "libloading"
