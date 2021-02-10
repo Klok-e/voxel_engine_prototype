@@ -18,6 +18,8 @@ use legion::{
 };
 use std::collections::HashSet;
 
+pub struct RenderedTag;
+
 pub struct RenderAround;
 
 pub fn dirty_around_system() -> impl Runnable {
@@ -25,7 +27,7 @@ pub fn dirty_around_system() -> impl Runnable {
         .read_resource::<VoxelWorldProcedural>()
         .read_resource::<GameConfig>()
         .with_query(<&Transform>::query().filter(component::<RenderAround>()))
-        .with_query(<&ChunkPosition>::query())
+        .with_query(<&ChunkPosition>::query().filter(component::<RenderedTag>()))
         .build(move |_, world, resources, query| {
             dirty_around(
                 world,
@@ -41,18 +43,24 @@ fn dirty_around(
     w: &mut SubWorld,
     vox_world: &VoxelWorldProcedural,
     config: &GameConfig,
-    q1: &mut Query<
+    render_bubbles: &mut Query<
         &Transform,
         EntityFilterTuple<
             And<(ComponentFilter<Transform>, ComponentFilter<RenderAround>)>,
             Passthrough,
         >,
     >,
-    chunk_positions: &mut Query<&ChunkPosition>,
+    rendered_chunks: &mut Query<
+        &ChunkPosition,
+        EntityFilterTuple<
+            And<(ComponentFilter<ChunkPosition>, ComponentFilter<RenderedTag>)>,
+            Passthrough,
+        >,
+    >,
 ) {
     let mut loaded_chunks = HashSet::new();
     let mut chunks_to_load = HashSet::new();
-    for transform in q1.iter(w) {
+    for transform in render_bubbles.iter(w) {
         let pos = transform.translation() / CHSIZE as f32;
         let pos = Vec3i::new(
             pos.x.floor() as i32,
@@ -60,7 +68,7 @@ fn dirty_around(
             pos.z.floor() as i32,
         );
 
-        for chunk_pos in chunk_positions.iter(w) {
+        for chunk_pos in rendered_chunks.iter(w) {
             loaded_chunks.insert(*chunk_pos);
         }
 
