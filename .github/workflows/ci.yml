@@ -4,45 +4,7 @@ name: CI
 
 jobs:
   check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: install linux deps
-        run: |
-          sudo apt update
-          sudo apt install -y gcc pkg-config openssl libasound2-dev cmake build-essential python3 libfreetype6-dev libexpat1-dev libxcb-composite0-dev libssl-dev libx11-dev pulseaudio
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@master
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-
-      - name: Run cargo check
-        uses: actions-rs/cargo@master
-        with:
-          command: check
-  test:
-    name: Test Suite
-    runs-on: ubuntu-latest
-    steps:
-      - name: install linux deps
-        run: |
-          sudo apt update
-          sudo apt install -y gcc pkg-config openssl libasound2-dev cmake build-essential python3 libfreetype6-dev libexpat1-dev libxcb-composite0-dev libssl-dev libx11-dev pulseaudio
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@master
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-
-      - name: Run cargo test
-        uses: actions-rs/cargo@master
-        with:
-          command: test
-  clippy:
-    name: Clippy
+    name: Check, clippy, fmt
     runs-on: ubuntu-latest
     steps:
       - name: install linux deps
@@ -56,10 +18,25 @@ jobs:
           toolchain: nightly
           override: true
           components: rustfmt, clippy
-      - uses: actions-rs/cargo@master
+
+      - name: Run cargo check
+        uses: actions-rs/cargo@master
         with:
-          command: fmt
-          args: --all -- --check
-      - uses: actions-rs/cargo@master
+          command: check
+      
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@master
         with:
           command: clippy
+          
+      - name: Run cargo test
+        uses: actions-rs/cargo@master
+        with:
+          command: test 
+          
+      - name: Run cargo fmt
+        uses: actions-rs/cargo@master
+        with:
+          command: fmt
+          args: -- --check
+    
