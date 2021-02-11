@@ -23,11 +23,14 @@ impl<const N: usize> Chunk<N> {
         }
     }
 
-    pub fn data_mut(&mut self) -> ArrayViewMut3<Voxel> {
-        self.data.view_mut()
+    #[inline]
+    pub fn data_mut(&mut self) -> &mut Array3<Voxel> {
+        &mut self.data
     }
-    pub fn data(&self) -> ArrayView3<Voxel> {
-        self.data.view()
+
+    #[inline]
+    pub fn data(&self) -> &Array3<Voxel> {
+        &self.data
     }
 
     /// Checks whether the provided index is on the chunk border
@@ -52,7 +55,20 @@ impl<const N: usize> Chunk<N> {
         }
     }
 
+    #[inline]
+    fn wrap_index(v: i32) -> (i32, i32) {
+        match if v < 0 { v + Self::NI } else { v % Self::NI } {
+            x if x == v => (0, x),
+            x if x < 0 => (-1, x),
+            x => (1, x),
+        }
+    }
+
     pub fn chunk_voxel_index_wrap(ind: &Vec3i) -> Option<Vec3i> {
+        let v1 = Self::wrap_index(ind.x);
+        let v2 = Self::wrap_index(ind.y);
+        let v3 = Self::wrap_index(ind.z);
+
         let wrapped = ind.map(|v| match if v < 0 { v + Self::NI } else { v % Self::NI } {
             x if x == v => (0, x),
             x if x < 0 => (-1, x),
@@ -112,6 +128,7 @@ impl PartialOrd for ChunkPosition {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
     const SMALLCH: usize = 3;
     //const SMALLCHI: i32 = SMALLCH as i32;
@@ -119,6 +136,19 @@ mod tests {
 
     #[test]
     fn chunk_data_dimensions() {
+        let mut chunk = SmallChunk::new();
+
+        let data_mut = chunk.data_mut().shape().to_owned();
+        let data = chunk.data().shape().to_owned();
+        let data_inn = chunk.data.shape().to_owned();
+
+        assert_eq!(data, vec![SMALLCH, SMALLCH, SMALLCH]);
+        assert_eq!(data, data_mut);
+        assert_eq!(data, data_inn);
+    }
+
+    #[rstest]
+    fn chunk_voxel_index_wrap() {
         let mut chunk = SmallChunk::new();
 
         let data_mut = chunk.data_mut().shape().to_owned();

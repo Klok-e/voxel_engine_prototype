@@ -4,7 +4,7 @@ use ndarray::prelude::*;
 use noise::{Fbm, NoiseFn, Seedable};
 
 pub trait VoxelGenerator<const N: usize> {
-    fn fill_random(&self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>);
+    fn fill_random(&self, pos: &ChunkPosition, arr: &mut Array3<Voxel>);
 }
 
 pub struct ProceduralGenerator<const N: usize> {
@@ -28,7 +28,7 @@ impl<const N: usize> ProceduralGenerator<N> {
 }
 
 impl<const N: usize> VoxelGenerator<N> for ProceduralGenerator<N> {
-    fn fill_random(&self, pos: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
+    fn fill_random(&self, pos: &ChunkPosition, arr: &mut Array3<Voxel>) {
         //let mut filled = 0;
         for x in 0..Self::NI {
             for z in 0..Self::NI {

@@ -74,7 +74,7 @@ where
     pub fn generate_at<'a>(&'a mut self, pos: &ChunkPosition) {
         // or create and insert a new chunk
         let mut c = Chunk::<N>::new();
-        self.procedural.fill_random(&pos, &mut c.data_mut());
+        self.procedural.fill_random(&pos,  c.data_mut());
         self.chunks.insert(*pos, c);
     }
 

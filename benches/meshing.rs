@@ -1,11 +1,14 @@
-use std::{cell::RefCell, sync::{Arc, Mutex}};
+use std::{
+    cell::RefCell,
+    sync::{Arc, Mutex},
+};
 
 use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
     Criterion,
 };
 use flurry::epoch::pin;
-use ndarray::ArrayViewMut3;
+use ndarray::{Array3, ArrayViewMut3};
 use rand::prelude::*;
 use voxel_engine_prototype_lib::{
     core::Vec3i,
@@ -28,7 +31,7 @@ impl<const N: usize> RandomGenerator<N> {
 }
 
 impl<const N: usize> VoxelGenerator<N> for RandomGenerator<N> {
-    fn fill_random(&self, _: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
+    fn fill_random(&self, _: &ChunkPosition, arr: &mut Array3<Voxel>) {
         arr.map_inplace(|v| v.id = self.rng.lock().unwrap().gen());
     }
 }
@@ -39,7 +42,7 @@ fn setup<const N: usize>() -> VoxelWorld<RandomGenerator<N>, N> {
     world.generate_at(&ChunkPosition::new(pos));
     for dir in Directions::all().into_iter() {
         let dir_vec = dir.to_vec::<i32>();
-        world.generate_at(&ChunkPosition::new(pos + dir_vec), );
+        world.generate_at(&ChunkPosition::new(pos + dir_vec));
     }
     world
 }
@@ -49,9 +52,7 @@ pub fn meshing(c: &mut Criterion) {
         group.bench_function(id, |b| {
             b.iter_batched(
                 || setup::<N>(),
-                |world| {
-                    world.mesh(&ChunkPosition::new([0, 0, 0].into()))
-                },
+                |world| world.mesh(&ChunkPosition::new([0, 0, 0].into())),
                 BatchSize::SmallInput,
             )
         });
