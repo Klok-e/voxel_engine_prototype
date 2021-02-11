@@ -49,6 +49,30 @@
 		},
 		{
 			"type": "cargo",
+			"command": "criterion",
+			"args": [
+				"--bench",
+				"meshing"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo criterion --bench meshing"
+		},
+		{
+			"type": "cargo",
+			"command": "criterion",
+			"args": [
+				"--bench",
+				"generation"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo criterion --bench generation"
+		},
+		{
+			"type": "cargo",
 			"command": "test",
 			"problemMatcher": [
 				"$rustc"

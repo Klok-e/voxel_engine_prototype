@@ -56,30 +56,12 @@ impl<const N: usize> Chunk<N> {
     }
 
     #[inline]
-    fn wrap_index(v: i32) -> (i32, i32) {
-        match if v < 0 { v + Self::NI } else { v % Self::NI } {
-            x if x == v => (0, x),
-            x if x < 0 => (-1, x),
-            x => (1, x),
-        }
-    }
-
     pub fn chunk_voxel_index_wrap(ind: &Vec3i) -> Option<Vec3i> {
-        let v1 = Self::wrap_index(ind.x);
-        let v2 = Self::wrap_index(ind.y);
-        let v3 = Self::wrap_index(ind.z);
-
-        let wrapped = ind.map(|v| match if v < 0 { v + Self::NI } else { v % Self::NI } {
-            x if x == v => (0, x),
-            x if x < 0 => (-1, x),
-            x => (1, x),
-        });
-        let dir_wrapped = Vec3i::new(wrapped.x.0, wrapped.y.0, wrapped.z.0);
-        let ind = Vec3i::new(wrapped.x.1, wrapped.y.1, wrapped.z.1);
-        if dir_wrapped == Vec3i::new(0, 0, 0) {
+        let wrapped = ind.map(|v|  if v < 0 { v + Self::NI } else { v % Self::NI } );
+        if &wrapped == ind {
             None
         } else {
-            Some(ind)
+            Some(wrapped)
         }
     }
 }
@@ -162,6 +144,6 @@ mod tests {
     fn chunk_voxel_index_wrap(to_wrap: Vec3i, exp_wrapped: Option<Vec3i>) {
         let actual_wrp = SmallChunk::chunk_voxel_index_wrap(&to_wrap);
 
-        assert_eq!(actual_wrp, exp_wrapped);
+        assert_eq!(exp_wrapped, actual_wrp);
     }
 }
