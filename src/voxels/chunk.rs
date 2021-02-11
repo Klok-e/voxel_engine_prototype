@@ -74,8 +74,8 @@ impl<const N: usize> Chunk<N> {
             x if x < 0 => (-1, x),
             x => (1, x),
         });
-        let dir_wrapped = Vec3i::new(wrapped[0].0, wrapped[1].0, wrapped[2].0);
-        let ind = Vec3i::new(wrapped[0].1, wrapped[1].1, wrapped[2].1);
+        let dir_wrapped = Vec3i::new(wrapped.x.0, wrapped.y.0, wrapped.z.0);
+        let ind = Vec3i::new(wrapped.x.1, wrapped.y.1, wrapped.z.1);
         if dir_wrapped == Vec3i::new(0, 0, 0) {
             None
         } else {
