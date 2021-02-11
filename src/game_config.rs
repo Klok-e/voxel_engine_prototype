@@ -1,4 +1,5 @@
 use amethyst::ecs::SystemBundle;
+use log::warn;
 use serde::{Deserialize, Serialize};
 
 use std::path::Path;
@@ -14,7 +15,15 @@ pub struct GameConfig {
 impl GameConfig {
     pub fn from_file_ron<P: AsRef<Path>>(path: P) -> Result<Self, crate::Error> {
         let str = std::fs::read_to_string(path)?;
-        Ok(ron::from_str(str.as_ref())?)
+        let config: GameConfig = ron::from_str(str.as_ref())?;
+        if config.render_around_bubble <= config.generate_around_bubble {
+            warn!(
+                "It isn't recommended to have render bubble be bigger than generate bubble. 
+                Render bubble size: {}. Generate bubble size: {}.",
+                config.render_around_bubble, config.generate_around_bubble
+            );
+        }
+        Ok(config)
     }
 }
 

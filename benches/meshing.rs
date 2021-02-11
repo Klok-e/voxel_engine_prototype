@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, sync::{Arc, Mutex}};
 
 use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
@@ -16,31 +16,30 @@ use voxel_engine_prototype_lib::{
 };
 
 struct RandomGenerator<const N: usize> {
-    rng: RefCell<SmallRng>,
+    rng: Arc<Mutex<SmallRng>>,
 }
 
 impl<const N: usize> RandomGenerator<N> {
     fn new(seed: u64) -> Self {
         Self {
-            rng: RefCell::new(SmallRng::seed_from_u64(seed)),
+            rng: Arc::new(Mutex::new(SmallRng::seed_from_u64(seed))),
         }
     }
 }
 
 impl<const N: usize> VoxelGenerator<N> for RandomGenerator<N> {
     fn fill_random(&self, _: &ChunkPosition, arr: &mut ArrayViewMut3<Voxel>) {
-        arr.map_inplace(|v| v.id = self.rng.borrow_mut().gen());
+        arr.map_inplace(|v| v.id = self.rng.lock().unwrap().gen());
     }
 }
 
 fn setup<const N: usize>() -> VoxelWorld<RandomGenerator<N>, N> {
-    let world = VoxelWorld::new(RandomGenerator::new(42));
+    let mut world = VoxelWorld::new(RandomGenerator::new(42));
     let pos = Vec3i::new(0, 0, 0);
-    let guard = pin();
-    world.chunk_at_or_create(&ChunkPosition::new(pos), &guard);
+    world.generate_at(&ChunkPosition::new(pos));
     for dir in Directions::all().into_iter() {
         let dir_vec = dir.to_vec::<i32>();
-        world.chunk_at_or_create(&ChunkPosition::new(pos + dir_vec), &guard);
+        world.generate_at(&ChunkPosition::new(pos + dir_vec), );
     }
     world
 }

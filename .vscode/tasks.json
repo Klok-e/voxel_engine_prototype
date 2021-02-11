@@ -41,11 +41,11 @@
 		},
 		{
 			"type": "cargo",
-			"command": "bench",
+			"command": "criterion",
 			"problemMatcher": [
 				"$rustc"
 			],
-			"label": "rust: cargo bench"
+			"label": "rust: cargo criterion"
 		},
 		{
 			"type": "cargo",
