@@ -15,6 +15,7 @@ use amethyst::{
     utils::{auto_fov::AutoFovSystem, fps_counter::FpsCounterBundle},
     LogLevelFilter, Logger, LoggerConfig,
 };
+use log::info;
 use std::time::Duration;
 use voxel_engine_prototype_lib::{
     core::APP_ROOT,
@@ -27,8 +28,14 @@ use voxel_engine_prototype_lib::{
 fn main() -> amethyst::Result<()> {
     Logger::from_config_formatter(
         LoggerConfig {
-            level_filter: LogLevelFilter::Warn,
+            level_filter: LogLevelFilter::Info,
             log_file: Some("./output.log".parse()?),
+            module_levels: vec![
+                ("amethyst".to_string(), LogLevelFilter::Warn),
+                ("amethyst_assets".to_string(), LogLevelFilter::Warn),
+                ("distill_daemon".to_string(), LogLevelFilter::Warn),
+                ("winit".to_string(), LogLevelFilter::Warn),
+            ],
             ..LoggerConfig::default()
         },
         |out, message, record| {
@@ -45,7 +52,8 @@ fn main() -> amethyst::Result<()> {
 
     let config_path = APP_ROOT.join("config");
     let display_config_path = config_path.join("display.ron");
-    dbg!(&*APP_ROOT);
+    info!("App root: {}", APP_ROOT.to_string_lossy());
+
     let mut game_data = DispatcherBuilder::default();
     game_data
         .add_bundle(LoaderBundle)

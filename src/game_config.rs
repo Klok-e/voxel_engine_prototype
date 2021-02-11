@@ -16,7 +16,7 @@ impl GameConfig {
     pub fn from_file_ron<P: AsRef<Path>>(path: P) -> Result<Self, crate::Error> {
         let str = std::fs::read_to_string(path)?;
         let config: GameConfig = ron::from_str(str.as_ref())?;
-        if config.render_around_bubble <= config.generate_around_bubble {
+        if config.render_around_bubble >= config.generate_around_bubble {
             warn!(
                 "It isn't recommended to have render bubble be bigger than generate bubble. 
                 Render bubble size: {}. Generate bubble size: {}.",
