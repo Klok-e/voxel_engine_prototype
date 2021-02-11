@@ -49,6 +49,14 @@
 		},
 		{
 			"type": "cargo",
+			"command": "test",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo test"
+		},
+		{
+			"type": "cargo",
 			"command": "flamegraph",
 			"args": [
 				"--bench",
@@ -79,7 +87,7 @@
 				"voxel_engine_prototype"
 			],
 			"env": {
-				"CARGO_MANIFEST_DIR":"${workspaceFolder}"
+				"CARGO_MANIFEST_DIR": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$rustc"

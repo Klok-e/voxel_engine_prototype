@@ -147,16 +147,21 @@ mod tests {
         assert_eq!(data, data_inn);
     }
 
-    #[rstest]
-    fn chunk_voxel_index_wrap() {
-        let mut chunk = SmallChunk::new();
+    #[rstest(to_wrap, exp_wrapped,
+        // no wrap
+        case(Vec3i::from([0,0,0]), None),
+        case(Vec3i::from([0,2,0]), None),
+        case(Vec3i::from([0,2,1]), None),
+        // wrap
+        case(Vec3i::from([-1,2,1]), Some(Vec3i::from([2,2,1]))),
+        case(Vec3i::from([-1,-1,1]), Some(Vec3i::from([2,2,1]))),
+        case(Vec3i::from([-1,3,1]), Some(Vec3i::from([2,0,1]))),
+        // overwrap
+        case(Vec3i::from([-1,4,1]), Some(Vec3i::from([2,1,1]))),
+    )]
+    fn chunk_voxel_index_wrap(to_wrap: Vec3i, exp_wrapped: Option<Vec3i>) {
+        let actual_wrp = SmallChunk::chunk_voxel_index_wrap(&to_wrap);
 
-        let data_mut = chunk.data_mut().shape().to_owned();
-        let data = chunk.data().shape().to_owned();
-        let data_inn = chunk.data.shape().to_owned();
-
-        assert_eq!(data, vec![SMALLCH, SMALLCH, SMALLCH]);
-        assert_eq!(data, data_mut);
-        assert_eq!(data, data_inn);
+        assert_eq!(actual_wrp, exp_wrapped);
     }
 }
