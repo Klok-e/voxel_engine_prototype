@@ -84,7 +84,9 @@
 			"command": "flamegraph",
 			"args": [
 				"--bench",
-				"meshing"
+				"meshing",
+				"--freq",
+				"10000"
 			],
 			"problemMatcher": [
 				"$rustc"
