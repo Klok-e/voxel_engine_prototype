@@ -4,6 +4,7 @@ pub struct Voxel {
 }
 
 impl Voxel {
+    #[inline]
     pub fn is_transparent(&self) -> bool {
         match self.id {
             0 => true,
