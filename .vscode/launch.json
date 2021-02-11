@@ -8,6 +8,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug executable 'voxel_engine_prototype'",
+            "env": {
+                "CARGO_MANIFEST_DIR": "${workspaceFolder}"
+            },
             "cargo": {
                 "args": [
                     "build",
