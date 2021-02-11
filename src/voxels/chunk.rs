@@ -55,13 +55,24 @@ impl<const N: usize> Chunk<N> {
         }
     }
 
+    #[inline(always)]
+    fn wrap(v: i32) -> i32 {
+        if v < 0 {
+            v + Self::NI
+        } else {
+            v % Self::NI
+        }
+    }
+
     #[inline]
     pub fn chunk_voxel_index_wrap(ind: &Vec3i) -> Option<Vec3i> {
-        let wrapped = ind.map(|v|  if v < 0 { v + Self::NI } else { v % Self::NI } );
-        if &wrapped == ind {
+        let x = Self::wrap(ind.x);
+        let y = Self::wrap(ind.y);
+        let z = Self::wrap(ind.z);
+        if x == ind.x && y == ind.y && z == ind.z {
             None
         } else {
-            Some(wrapped)
+            Some([x, y, z].into())
         }
     }
 }
