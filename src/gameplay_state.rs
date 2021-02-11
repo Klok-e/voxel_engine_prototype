@@ -32,6 +32,8 @@ use amethyst::{
     ui::{Anchor, LineMode, UiText, UiTransform},
     utils::auto_fov::AutoFov,
 };
+
+#[derive(Debug)]
 pub struct GameplayState {}
 
 impl SimpleState for GameplayState {

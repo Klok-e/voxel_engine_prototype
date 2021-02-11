@@ -97,6 +97,7 @@ fn main() -> amethyst::Result<()> {
             144,
         )
         .build(game_data)?;
+
     game.run();
 
     Ok(())
