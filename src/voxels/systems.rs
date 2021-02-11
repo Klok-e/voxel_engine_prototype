@@ -21,11 +21,11 @@ impl SystemBundle for VoxelBundle {
         _resources: &mut legion::Resources,
         builder: &mut amethyst::ecs::DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
-        builder.add_system(Box::new(|| chunk_render_system()));
-        builder.add_system(Box::new(|| destroy_on_touch_system()));
-        builder.add_system(Box::new(|| dirty_around_system()));
         builder.add_system(Box::new(|| generate_map_around_system()));
+        builder.add_system(Box::new(|| destroy_on_touch_system()));
         builder.add_system(Box::new(|| world_apply_changes_system()));
+        builder.add_system(Box::new(|| dirty_around_system()));
+        builder.add_system(Box::new(|| chunk_render_system()));
 
         Ok(())
     }

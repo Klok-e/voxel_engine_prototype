@@ -41,7 +41,6 @@ fn generate_map_around(
         >,
     >,
 ) {
-    let guard = pin();
     let mut generated = 0;
     'outer: for transform in q1.iter(w) {
         let (pos, _) = VoxelWorldProcedural::to_ch_pos_index(transform.translation());
@@ -53,7 +52,6 @@ fn generate_map_around(
                     match vox_world.chunk_at(&pos) {
                         Some(_) => {}
                         None => {
-                            vox_world.chunk_at(&pos);
                             vox_world.generate_at(&pos);
                             generated += 1;
                             if generated > config.chunks_generate_per_frame {
