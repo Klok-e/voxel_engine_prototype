@@ -100,7 +100,7 @@ fn chunk_render(
         .for_each_init(
             || pin(),
             |guard, (sender, to_clean)| {
-                let mesh = if let Some(m) = vox_world.mesh(&to_clean, &guard) {
+                let mesh = if let Some(m) = vox_world.mesh(&to_clean) {
                     m
                 } else {
                     return;

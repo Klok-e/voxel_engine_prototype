@@ -50,8 +50,7 @@ pub fn meshing(c: &mut Criterion) {
             b.iter_batched(
                 || setup::<N>(),
                 |world| {
-                    let guard = pin();
-                    world.mesh(&ChunkPosition::new([0, 0, 0].into()), &guard)
+                    world.mesh(&ChunkPosition::new([0, 0, 0].into()))
                 },
                 BatchSize::SmallInput,
             )

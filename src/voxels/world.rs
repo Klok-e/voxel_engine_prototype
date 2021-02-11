@@ -110,7 +110,7 @@ where
         ch_list.push_back(VoxChange::new(*ind, new_vox));
     }
 
-    pub fn mesh(&self, chpos: &ChunkPosition, guard: &Guard) -> Option<ChunkMeshData> {
+    pub fn mesh(&self, chpos: &ChunkPosition) -> Option<ChunkMeshData> {
         let onef: Vec3f = [1., 1., 1.].into();
 
         let chunk = self.chunk_at(chpos)?;

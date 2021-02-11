@@ -16,6 +16,7 @@ bitflags! {
 }
 
 impl Directions {
+    #[inline]
     pub fn to_vec<T>(&self) -> Vector3<T>
     where
         T: NumAssignRef + Scalar,
@@ -51,6 +52,7 @@ impl<T> From<Directions> for Vector3<T>
 where
     T: NumAssignRef + Scalar,
 {
+    #[inline]
     fn from(dir: Directions) -> Self {
         let mut res = Vector3::<T>::zeros();
         if dir.intersects(Directions::UP) {
@@ -79,6 +81,7 @@ impl<T> From<Vector3<T>> for Directions
 where
     T: PrimInt + Scalar + NumAssignRef,
 {
+    #[inline]
     fn from(vec: Vector3<T>) -> Self {
         let mut res = Directions::empty();
         if vec.x == Vector3::<T>::from(Directions::EAST).x {
