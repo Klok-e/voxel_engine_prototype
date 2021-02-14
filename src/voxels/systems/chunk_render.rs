@@ -1,6 +1,6 @@
 use crate::{
     core::{to_vecf, Vec3f},
-    game_config::GameConfig,
+    game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
         materials::Materials,
@@ -24,10 +24,10 @@ use std::{collections::HashMap, sync::mpsc::channel};
 
 use super::dirty_around_system::RenderedTag;
 
-pub fn chunk_render_system(/*mut readerid: ReaderId<InputEvent>*/) -> impl Runnable {
+pub fn chunk_render_system() -> impl Runnable {
     SystemBuilder::new("chunk_render_system")
         .read_resource::<VoxelWorldProcedural>()
-        .read_resource::<GameConfig>()
+        .read_resource::<RuntimeGameConfig>()
         .read_resource::<Materials>()
         .read_resource::<DefaultLoader>()
         .read_resource::<ProcessingQueue<MeshData>>()
@@ -61,7 +61,7 @@ fn chunk_render(
     commands: &mut CommandBuffer,
     w: &mut SubWorld,
     vox_world: &VoxelWorldProcedural,
-    config: &GameConfig,
+    config: &RuntimeGameConfig,
     materials: &Materials,
     loader: &DefaultLoader,
     mesh_queue: &ProcessingQueue<MeshData>,
@@ -95,7 +95,7 @@ fn chunk_render(
         .collect::<Vec<_>>()
         .into_par_iter()
         .copied()
-        .take(config.chunks_render_per_frame)
+        .take(config.config.chunks_render_per_frame)
         .map_with(sender, |sender, to_clean| (sender.clone(), to_clean))
         .for_each_init(
             || pin(),

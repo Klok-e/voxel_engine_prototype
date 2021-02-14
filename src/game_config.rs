@@ -27,6 +27,22 @@ impl GameConfig {
     }
 }
 
+pub struct RuntimeGameConfig {
+    pub chunks_generate_per_frame: usize,
+    pub render_around_bubble: usize,
+    pub config: GameConfig,
+}
+
+impl From<GameConfig> for RuntimeGameConfig {
+    fn from(conf: GameConfig) -> Self {
+        Self {
+            config: conf,
+            chunks_generate_per_frame: 1,
+            render_around_bubble: 1,
+        }
+    }
+}
+
 pub struct ConfigsBundle {
     game_config: GameConfig,
 }
@@ -44,7 +60,7 @@ impl SystemBundle for ConfigsBundle {
         resources: &mut legion::Resources,
         _builder: &mut amethyst::ecs::DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
-        resources.insert(self.game_config.clone());
+        resources.insert(RuntimeGameConfig::from(self.game_config.clone()));
 
         Ok(())
     }

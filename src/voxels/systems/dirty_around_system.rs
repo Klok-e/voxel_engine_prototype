@@ -1,6 +1,6 @@
 use crate::{
     core::Vec3i,
-    game_config::GameConfig,
+    game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZE},
         world::VoxelWorldProcedural,
@@ -25,7 +25,7 @@ pub struct RenderAround;
 pub fn dirty_around_system() -> impl Runnable {
     SystemBuilder::new("dirty_around_system")
         .read_resource::<VoxelWorldProcedural>()
-        .read_resource::<GameConfig>()
+        .read_resource::<RuntimeGameConfig>()
         .with_query(<&Transform>::query().filter(component::<RenderAround>()))
         .with_query(<&ChunkPosition>::query().filter(component::<RenderedTag>()))
         .build(move |_, world, resources, query| {
@@ -42,7 +42,7 @@ pub fn dirty_around_system() -> impl Runnable {
 fn dirty_around(
     w: &mut SubWorld,
     vox_world: &VoxelWorldProcedural,
-    config: &GameConfig,
+    config: &RuntimeGameConfig,
     render_bubbles: &mut Query<
         &Transform,
         EntityFilterTuple<
@@ -72,7 +72,7 @@ fn dirty_around(
             loaded_chunks.insert(*chunk_pos);
         }
 
-        let render_around = config.render_around_bubble as i32;
+        let render_around = config.config.render_around_bubble as i32;
         for z in -render_around..=render_around {
             for y in -render_around..=render_around {
                 for x in -render_around..=render_around {

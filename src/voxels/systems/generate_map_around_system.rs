@@ -1,6 +1,6 @@
 use crate::{
     core::Vec3i,
-    game_config::GameConfig,
+    game_config::RuntimeGameConfig,
     voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
 };
 use amethyst::{
@@ -19,7 +19,7 @@ pub struct GenerateMapAround;
 pub fn generate_map_around_system() -> impl Runnable {
     SystemBuilder::new("generate_map_around")
         .write_resource::<VoxelWorldProcedural>()
-        .read_resource::<GameConfig>()
+        .read_resource::<RuntimeGameConfig>()
         .with_query(<&Transform>::query().filter(component::<GenerateMapAround>()))
         .build(move |_, world, resources, query| {
             generate_map_around(world, &mut resources.0, &resources.1, query)
@@ -29,7 +29,7 @@ pub fn generate_map_around_system() -> impl Runnable {
 fn generate_map_around(
     w: &mut SubWorld,
     vox_world: &mut VoxelWorldProcedural,
-    config: &GameConfig,
+    config: &RuntimeGameConfig,
     q1: &mut Query<
         &Transform,
         EntityFilterTuple<
@@ -44,7 +44,7 @@ fn generate_map_around(
     let mut generated = 0;
     'outer: for transform in q1.iter(w) {
         let (pos, _) = VoxelWorldProcedural::to_ch_pos_index(transform.translation());
-        let generate_around = config.generate_around_bubble as i32;
+        let generate_around = config.config.generate_around_bubble as i32;
         for z in -generate_around..=generate_around {
             for y in -generate_around..=generate_around {
                 for x in -generate_around..=generate_around {
