@@ -1,10 +1,4 @@
-use crate::{
-    camera_move_system::CameraMoveSensitivity,
-    ui::{
-        chunk_counter::{GeneratedCounterText, RenderedCounterText},
-        fps_counter::FpsText,
-    },
-    voxels::{
+use crate::{camera_move_system::CameraMoveSensitivity, ui::{chunk_counter::{DirtyCounterText, GeneratedCounterText, RenderedCounterText}, fps_counter::FpsText}, voxels::{
         chunk::CHSIZE,
         materials::Materials,
         systems::{
@@ -13,8 +7,7 @@ use crate::{
         },
         terrain_generation::ProceduralGenerator,
         world::VoxelWorld,
-    },
-};
+    }};
 use amethyst::{
     assets::{DefaultLoader, Loader, ProcessingQueue},
     controls::{FlyControl, HideCursor},
@@ -70,6 +63,7 @@ impl SimpleState for GameplayState {
         init_fps_counter(&mut data);
         init_chunk_generated_counter(&mut data);
         init_chunk_rendered_counter(&mut data);
+        init_chunk_dirty_counter(&mut data);
     }
 }
 
@@ -201,4 +195,28 @@ fn init_chunk_rendered_counter(state: &mut StateData<GameData>) {
     );
     let entity = state.world.push((transform, text));
     state.resources.insert(RenderedCounterText { entity });
+}
+
+fn init_chunk_dirty_counter(state: &mut StateData<GameData>) {
+    let transform = UiTransform::new(
+        "fps_counter".to_owned(),
+        Anchor::TopLeft,
+        Anchor::TopLeft,
+        300.,
+        -10.,
+        0.,
+        100.,
+        25.,
+    );
+
+    let text = UiText::new(
+        None,
+        "".to_owned(),
+        [1., 1., 1., 1.],
+        14.,
+        LineMode::Single,
+        Anchor::Middle,
+    );
+    let entity = state.world.push((transform, text));
+    state.resources.insert(DirtyCounterText { entity });
 }

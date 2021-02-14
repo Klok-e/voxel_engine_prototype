@@ -1,13 +1,15 @@
-use amethyst::ecs::SystemBundle;
+use amethyst::ecs::{DispatcherBuilder, SystemBundle};
+use legion::{Resources, World};
 use log::warn;
 use serde::{Deserialize, Serialize};
 
 use std::path::Path;
 
+use crate::chunk_per_frame_system::chunk_per_frame_system;
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GameConfig {
-    pub chunks_render_per_frame: usize,
-    pub chunks_generate_per_frame: usize,
+    pub generation_maintain_fps: f32,
     pub render_around_bubble: usize,
     pub generate_around_bubble: usize,
 }
@@ -28,8 +30,8 @@ impl GameConfig {
 }
 
 pub struct RuntimeGameConfig {
+    pub chunks_render_per_frame: usize,
     pub chunks_generate_per_frame: usize,
-    pub render_around_bubble: usize,
     pub config: GameConfig,
 }
 
@@ -38,7 +40,7 @@ impl From<GameConfig> for RuntimeGameConfig {
         Self {
             config: conf,
             chunks_generate_per_frame: 1,
-            render_around_bubble: 1,
+            chunks_render_per_frame: 1,
         }
     }
 }
@@ -56,11 +58,12 @@ impl ConfigsBundle {
 impl SystemBundle for ConfigsBundle {
     fn load(
         &mut self,
-        _world: &mut legion::World,
-        resources: &mut legion::Resources,
-        _builder: &mut amethyst::ecs::DispatcherBuilder,
+        _world: &mut World,
+        resources: &mut Resources,
+        builder: &mut DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         resources.insert(RuntimeGameConfig::from(self.game_config.clone()));
+        builder.add_system(|| chunk_per_frame_system());
 
         Ok(())
     }

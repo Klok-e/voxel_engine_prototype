@@ -95,7 +95,7 @@ fn chunk_render(
         .collect::<Vec<_>>()
         .into_par_iter()
         .copied()
-        .take(config.config.chunks_render_per_frame)
+        .take(config.chunks_render_per_frame)
         .map_with(sender, |sender, to_clean| (sender.clone(), to_clean))
         .for_each_init(
             || pin(),
