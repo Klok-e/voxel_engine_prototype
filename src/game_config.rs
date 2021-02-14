@@ -30,8 +30,8 @@ impl GameConfig {
 }
 
 pub struct RuntimeGameConfig {
-    pub chunks_render_per_frame: usize,
-    pub chunks_generate_per_frame: usize,
+    pub chunks_render_per_frame: u32,
+    pub chunks_generate_per_frame: u32,
     pub config: GameConfig,
 }
 

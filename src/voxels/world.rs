@@ -71,11 +71,14 @@ where
         self.chunks.get_mut(pos)
     }
 
-    pub fn generate_at<'a>(&'a mut self, pos: &ChunkPosition) {
-        // or create and insert a new chunk
+    pub fn gen_chunk(&self, pos: &ChunkPosition) -> Chunk<N> {
         let mut c = Chunk::<N>::new();
         self.procedural.fill_random(&pos, c.data_mut());
-        self.chunks.insert(*pos, c);
+        c
+    }
+
+    pub fn insert_at(&mut self, pos: &ChunkPosition, chunk: Chunk<N>) {
+        self.chunks.insert(*pos, chunk);
     }
 
     pub fn voxel_at_pos(&self, pos: &Vec3f) -> Option<Voxel> {

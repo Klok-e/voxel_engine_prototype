@@ -13,6 +13,7 @@ use legion::{
     query::{And, ComponentFilter, EntityFilterTuple, Passthrough, Query},
     IntoQuery, SystemBuilder,
 };
+use rayon::prelude::*;
 
 pub struct GenerateMapAround;
 
@@ -41,26 +42,31 @@ fn generate_map_around(
         >,
     >,
 ) {
-    let mut generated = 0;
-    'outer: for transform in q1.iter(w) {
+    // TODO:: consider using binary heap ()
+    let mut positions = Vec::new();
+    for transform in q1.iter(w) {
         let (pos, _) = VoxelWorldProcedural::to_ch_pos_index(transform.translation());
         let generate_around = config.config.generate_around_bubble as i32;
         for z in -generate_around..=generate_around {
             for y in -generate_around..=generate_around {
                 for x in -generate_around..=generate_around {
-                    let pos = ChunkPosition::new(pos.pos + Vec3i::from([x, y, z]));
-                    match vox_world.chunk_at(&pos) {
-                        Some(_) => {}
-                        None => {
-                            vox_world.generate_at(&pos);
-                            generated += 1;
-                            if generated > config.chunks_generate_per_frame {
-                                break 'outer;
-                            }
-                        }
-                    };
+                    positions.push((x, y, z, pos));
                 }
             }
         }
     }
+    positions.sort_unstable_by_key(|&(x, y, z, pos)| (pos.pos - Vec3i::from([x, y, z])).abs().sum());
+    positions
+        .into_par_iter()
+        .take(config.chunks_generate_per_frame as usize)
+        .flat_map(|(x, y, z, pos)| {
+            let pos = ChunkPosition::new(pos.pos + Vec3i::from([x, y, z]));
+            match vox_world.chunk_at(&pos) {
+                Some(_) => None,
+                None => Some((vox_world.gen_chunk(&pos), pos)),
+            }
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
+        .for_each(|(c, pos)| vox_world.insert_at(&pos, c));
 }

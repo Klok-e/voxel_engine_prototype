@@ -20,7 +20,14 @@ use crossbeam::queue::SegQueue;
 use flurry::epoch::pin;
 use legion::{query::Query, Entity, SystemBuilder};
 use rayon::prelude::*;
-use std::{collections::HashMap, sync::mpsc::channel};
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicU32, Ordering},
+        mpsc::channel,
+        Arc, Mutex,
+    },
+};
 
 use super::dirty_around_system::RenderedTag;
 
@@ -87,7 +94,9 @@ fn chunk_render(
     };
 
     let (sender, receiver) = channel();
+    let sender = Arc::new(Mutex::new(sender));
 
+    let rendered = AtomicU32::new(0);
     let guard = pin();
     vox_world
         .dirty()
@@ -95,11 +104,12 @@ fn chunk_render(
         .collect::<Vec<_>>()
         .into_par_iter()
         .copied()
-        .take(config.chunks_render_per_frame)
-        .map_with(sender, |sender, to_clean| (sender.clone(), to_clean))
         .for_each_init(
-            || pin(),
-            |guard, (sender, to_clean)| {
+            || (pin(), sender.try_lock().unwrap().clone()),
+            |(guard, sender), to_clean| {
+                if rendered.load(Ordering::SeqCst) >= config.chunks_render_per_frame {
+                    return;
+                }
                 let mesh = if let Some(m) = vox_world.mesh(&to_clean) {
                     m
                 } else {
@@ -152,6 +162,9 @@ fn chunk_render(
                 sender.send(command).unwrap();
 
                 vox_world.dirty().remove(&to_clean, &guard);
+
+                let r = rendered.load(Ordering::SeqCst);
+                rendered.store(r + 1, Ordering::SeqCst)
             },
         );
 
