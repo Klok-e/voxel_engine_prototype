@@ -1,5 +1,4 @@
 use std::{
-    cell::RefCell,
     sync::{Arc, Mutex},
 };
 
@@ -7,8 +6,8 @@ use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
     Criterion,
 };
-use flurry::epoch::pin;
-use ndarray::{Array3, ArrayViewMut3};
+
+use ndarray::{Array3};
 use rand::prelude::*;
 use voxel_engine_prototype_lib::{
     core::Vec3i,
@@ -37,7 +36,7 @@ impl<const N: usize> VoxelGenerator<N> for RandomGenerator<N> {
 }
 
 fn setup<const N: usize>() -> VoxelWorld<RandomGenerator<N>, N> {
-    let mut world = VoxelWorld::new(RandomGenerator::new(42));
+    let world = VoxelWorld::new(RandomGenerator::new(42));
     let pos = Vec3i::new(0, 0, 0);
     world.gen_chunk(&ChunkPosition::new(pos));
     for dir in Directions::all().into_iter() {
