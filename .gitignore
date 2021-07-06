@@ -5,3 +5,4 @@
 /perf.data*
 /flamegraph.svg
 /.assets_db
+.vscode/settings.json
