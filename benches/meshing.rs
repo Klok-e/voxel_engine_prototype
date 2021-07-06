@@ -39,10 +39,10 @@ impl<const N: usize> VoxelGenerator<N> for RandomGenerator<N> {
 fn setup<const N: usize>() -> VoxelWorld<RandomGenerator<N>, N> {
     let mut world = VoxelWorld::new(RandomGenerator::new(42));
     let pos = Vec3i::new(0, 0, 0);
-    world.generate_at(&ChunkPosition::new(pos));
+    world.gen_chunk(&ChunkPosition::new(pos));
     for dir in Directions::all().into_iter() {
         let dir_vec = dir.to_vec::<i32>();
-        world.generate_at(&ChunkPosition::new(pos + dir_vec));
+        world.gen_chunk(&ChunkPosition::new(pos + dir_vec));
     }
     world
 }

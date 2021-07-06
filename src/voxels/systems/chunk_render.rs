@@ -16,7 +16,7 @@ use amethyst::{
         visibility::BoundingSphere, Material, Mesh,
     },
 };
-use crossbeam::queue::SegQueue;
+
 use flurry::epoch::pin;
 use amethyst::ecs::{query::Query, Entity, SystemBuilder};
 use rayon::prelude::*;

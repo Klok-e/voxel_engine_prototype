@@ -1,5 +1,5 @@
 use amethyst::ecs::{DispatcherBuilder, SystemBundle};
-use amethyst::ecs::{Resources, World};
+
 use log::warn;
 use serde::{Deserialize, Serialize};
 

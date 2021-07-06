@@ -11,8 +11,8 @@ use crate::{
 use flurry::epoch::{pin, Guard};
 use rayon::prelude::*;
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
-    sync::{Mutex, RwLock},
+    collections::{HashMap, VecDeque},
+    sync::{Mutex},
 };
 
 #[derive(Debug, Copy, Clone)]
@@ -30,8 +30,6 @@ impl VoxChange {
 pub type VoxelWorldProcedural = VoxelWorld<ProceduralGenerator<CHSIZE>, CHSIZE>;
 
 pub struct VoxelWorld<G, const N: usize>
-where
-    G: VoxelGenerator<N> + Send + Sync,
 {
     chunks: HashMap<ChunkPosition, Chunk<N>>,
     chunk_changes: ConcurrentHashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,

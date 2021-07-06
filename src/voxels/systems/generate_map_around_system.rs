@@ -7,7 +7,7 @@ use amethyst::{
     core::Transform,
     ecs::{Runnable, SubWorld},
 };
-use flurry::epoch::pin;
+
 use amethyst::ecs::{
     component,
     query::{And, ComponentFilter, Passthrough, Query,EntityFilterTuple},

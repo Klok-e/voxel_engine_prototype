@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Runnable, SubWorld},
+    ecs::{Runnable},
     utils::fps_counter::FpsCounter,
 };
 use flurry::epoch::pin;

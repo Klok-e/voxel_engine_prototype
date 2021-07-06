@@ -2,9 +2,8 @@ use crate::core::Vec3f;
 use amethyst::{
     core::{math, Transform},
     ecs::{IntoQuery, Runnable, SystemBundle},
-    input::{InputEvent, InputHandler, VirtualKeyCode},
+    input::{InputHandler, VirtualKeyCode},
     renderer::Camera,
-    shrev::{EventChannel, ReaderId},
 };
 use amethyst::ecs::SystemBuilder;
 
