@@ -6,7 +6,7 @@ use amethyst::{
     renderer::Camera,
     shrev::{EventChannel, ReaderId},
 };
-use legion::SystemBuilder;
+use amethyst::ecs::SystemBuilder;
 
 pub struct CameraMoveSensitivity {
     mouse: f32,
@@ -74,8 +74,8 @@ pub struct ControlsBundle;
 impl SystemBundle for ControlsBundle {
     fn load(
         &mut self,
-        _world: &mut legion::World,
-        _resources: &mut legion::Resources,
+        _world: &mut amethyst::prelude::World,
+        _resources: &mut amethyst::prelude::Resources,
         builder: &mut amethyst::ecs::DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         builder.add_thread_local(Box::new(|| camera_move_system()));

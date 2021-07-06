@@ -3,13 +3,13 @@ use amethyst::{
     utils::fps_counter::FpsCounter,
 };
 use flurry::epoch::pin;
-use legion::SystemBuilder;
+use amethyst::ecs::SystemBuilder;
 use log::info;
 
 use crate::{game_config::RuntimeGameConfig, voxels::world::VoxelWorldProcedural};
 
 pub fn chunk_per_frame_system() -> impl Runnable {
-    SystemBuilder::new("destroy_on_touch_system")
+    SystemBuilder::new("chunk_per_frame_system")
         .read_resource::<VoxelWorldProcedural>()
         .read_resource::<FpsCounter>()
         .write_resource::<RuntimeGameConfig>()

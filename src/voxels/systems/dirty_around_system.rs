@@ -11,7 +11,7 @@ use amethyst::{
     ecs::{IntoQuery, Runnable, SubWorld},
 };
 use flurry::epoch::pin;
-use legion::{
+use amethyst::ecs::{
     component,
     query::{And, ComponentFilter, EntityFilterTuple, Passthrough, Query},
     SystemBuilder,

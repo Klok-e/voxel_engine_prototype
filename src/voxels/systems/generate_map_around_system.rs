@@ -8,9 +8,9 @@ use amethyst::{
     ecs::{Runnable, SubWorld},
 };
 use flurry::epoch::pin;
-use legion::{
+use amethyst::ecs::{
     component,
-    query::{And, ComponentFilter, EntityFilterTuple, Passthrough, Query},
+    query::{And, ComponentFilter, Passthrough, Query,EntityFilterTuple},
     IntoQuery, SystemBuilder,
 };
 use rayon::prelude::*;

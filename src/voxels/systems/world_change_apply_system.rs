@@ -1,7 +1,7 @@
 use crate::voxels::world::VoxelWorldProcedural;
 use amethyst::ecs::{Runnable, SubWorld};
 use flurry::epoch::pin;
-use legion::SystemBuilder;
+use amethyst::ecs::SystemBuilder;
 
 pub fn world_apply_changes_system() -> impl Runnable {
     SystemBuilder::new("world_apply_changes")

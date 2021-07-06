@@ -1,5 +1,5 @@
 use amethyst::ecs::{DispatcherBuilder, SystemBundle};
-use legion::{Resources, World};
+use amethyst::ecs::{Resources, World};
 use log::warn;
 use serde::{Deserialize, Serialize};
 
@@ -58,8 +58,8 @@ impl ConfigsBundle {
 impl SystemBundle for ConfigsBundle {
     fn load(
         &mut self,
-        _world: &mut World,
-        resources: &mut Resources,
+        _world: &mut amethyst::ecs::World,
+        resources: &mut amethyst::prelude::Resources,
         builder: &mut DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         resources.insert(RuntimeGameConfig::from(self.game_config.clone()));

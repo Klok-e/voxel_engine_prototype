@@ -56,7 +56,7 @@ impl SimpleState for GameplayState {
         // hide cursor
         {
             let mut hide = data.resources.get_mut::<HideCursor>().unwrap();
-            hide.hide = true;
+            hide.hide = false;
         }
 
         // ui

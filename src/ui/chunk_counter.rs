@@ -1,8 +1,5 @@
-use amethyst::{
-    ecs::{Entity, IntoQuery, Runnable, SubWorld},
-    ui::UiText,
-};
-use legion::{query::Query, SystemBuilder};
+use amethyst::{ecs::{Entity, IntoQuery, Runnable, SubWorld, }, ui::UiText};
+use amethyst::ecs::{query::Query, SystemBuilder};
 use log;
 
 use crate::voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural};

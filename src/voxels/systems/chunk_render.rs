@@ -18,7 +18,7 @@ use amethyst::{
 };
 use crossbeam::queue::SegQueue;
 use flurry::epoch::pin;
-use legion::{query::Query, Entity, SystemBuilder};
+use amethyst::ecs::{query::Query, Entity, SystemBuilder};
 use rayon::prelude::*;
 use std::{
     collections::HashMap,

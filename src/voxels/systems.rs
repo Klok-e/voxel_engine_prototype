@@ -17,8 +17,8 @@ pub struct VoxelBundle;
 impl SystemBundle for VoxelBundle {
     fn load(
         &mut self,
-        _world: &mut legion::World,
-        _resources: &mut legion::Resources,
+        _world: &mut amethyst::ecs::World,
+        _resources: &mut amethyst::ecs::Resources,
         builder: &mut amethyst::ecs::DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         builder.add_system(|| generate_map_around_system());

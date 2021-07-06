@@ -2,7 +2,7 @@ use crate::voxels::{voxel::Voxel, world::VoxelWorldProcedural};
 use amethyst::core::Transform;
 use amethyst::prelude::*;
 use flurry::epoch::pin;
-use legion::query::Query;
+use amethyst::ecs::query::Query;
 
 #[derive(Debug, Default)]
 pub struct DestroyVoxOnTouch;

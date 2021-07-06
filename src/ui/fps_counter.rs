@@ -3,7 +3,7 @@ use amethyst::{
     ui::UiText,
     utils::fps_counter::FpsCounter,
 };
-use legion::{query::Query, SystemBuilder};
+use amethyst::ecs::{query::Query, SystemBuilder};
 use log;
 
 pub struct FpsText {
