@@ -23,6 +23,9 @@
 		{
 			"type": "cargo",
 			"command": "run",
+			"env": {
+				"DEBUG":"debug"
+			},
 			"args": [
 				"--release"
 			],

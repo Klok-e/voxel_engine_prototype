@@ -31,6 +31,8 @@ pub struct GameplayState {}
 
 impl SimpleState for GameplayState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
+        log::info!("Starting state setup...");
+
         init_camera(&mut data);
 
         let mut transform = Transform::default();
@@ -64,6 +66,8 @@ impl SimpleState for GameplayState {
         init_chunk_generated_counter(&mut data);
         init_chunk_rendered_counter(&mut data);
         init_chunk_dirty_counter(&mut data);
+
+        log::info!("State setup completed.");
     }
 }
 

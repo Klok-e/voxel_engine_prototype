@@ -16,7 +16,7 @@ use amethyst::{
     LogLevelFilter, Logger, LoggerConfig,
 };
 use log::info;
-use std::time::Duration;
+use std::{str::FromStr, time::Duration};
 use voxel_engine_prototype_lib::{
     core::APP_ROOT,
     game_config::{ConfigsBundle, GameConfig},
@@ -28,13 +28,13 @@ use voxel_engine_prototype_lib::{
 fn main() -> amethyst::Result<()> {
     Logger::from_config_formatter(
         LoggerConfig {
-            level_filter: LogLevelFilter::Info,
+            level_filter: LogLevelFilter::from_str(&std::env::var("DEBUG").unwrap_or("warn".to_string()))?,
             log_file: Some("./output.log".parse()?),
             module_levels: vec![
-                ("amethyst".to_string(), LogLevelFilter::Warn),
-                ("amethyst_assets".to_string(), LogLevelFilter::Warn),
-                ("distill_daemon".to_string(), LogLevelFilter::Warn),
-                ("winit".to_string(), LogLevelFilter::Warn),
+                ("amethyst".to_string(), LogLevelFilter::Info),
+                ("amethyst_assets".to_string(), LogLevelFilter::Info),
+                ("distill_daemon".to_string(), LogLevelFilter::Info),
+                ("winit".to_string(), LogLevelFilter::Info),
             ],
             ..LoggerConfig::default()
         },
