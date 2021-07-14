@@ -4882,6 +4882,7 @@ dependencies = [
  "rstest",
  "serde",
  "thiserror",
+ "toml",
 ]
 
 [[package]]

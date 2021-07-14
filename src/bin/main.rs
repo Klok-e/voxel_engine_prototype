@@ -17,27 +17,28 @@ use amethyst::{
 };
 use log::info;
 use std::{str::FromStr, time::Duration};
+use toml;
 use voxel_engine_prototype_lib::{
     core::APP_ROOT,
     game_config::{ConfigsBundle, GameConfig},
     gameplay_state::GameplayState,
+    log_config::LogConfig,
     ui::{chunk_counter::chunk_counter_ui_system, fps_counter::fps_ui_system},
     voxels::systems::VoxelBundle,
 };
 
 fn main() -> amethyst::Result<()> {
+    log::info!("App root: {}", APP_ROOT.to_string_lossy());
+    let config_path = APP_ROOT.join("config");
+
+    let log_levels_config_path = config_path.join("log-levels.toml");
+    let log_levels_config = LogConfig::from_file_toml(log_levels_config_path)?;
+
     Logger::from_config_formatter(
         LoggerConfig {
-            level_filter: LogLevelFilter::from_str(
-                &std::env::var("DEBUG").unwrap_or("warn".to_string()),
-            )?,
+            level_filter: log_levels_config.level_filter,
             log_file: Some("./output.log".parse()?),
-            module_levels: vec![
-                ("amethyst".to_string(), LogLevelFilter::Info),
-                ("amethyst_assets".to_string(), LogLevelFilter::Info),
-                ("distill_daemon".to_string(), LogLevelFilter::Info),
-                ("winit".to_string(), LogLevelFilter::Info),
-            ],
+            module_levels: log_levels_config.module_levels,
             ..LoggerConfig::default()
         },
         |out, message, record| {
@@ -52,9 +53,7 @@ fn main() -> amethyst::Result<()> {
     )
     .start();
 
-    let config_path = APP_ROOT.join("config");
     let display_config_path = config_path.join("display.ron");
-    info!("App root: {}", APP_ROOT.to_string_lossy());
 
     let mut game_data = DispatcherBuilder::default();
     game_data

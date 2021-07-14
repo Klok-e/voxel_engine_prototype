@@ -9,6 +9,7 @@ pub mod directions;
 mod error;
 pub mod game_config;
 pub mod gameplay_state;
+pub mod log_config;
 pub mod ui;
 pub mod voxels;
 
