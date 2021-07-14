@@ -58,7 +58,7 @@ impl SystemBundle for ConfigsBundle {
         &mut self,
         _world: &mut amethyst::ecs::World,
         resources: &mut amethyst::prelude::Resources,
-        builder: &mut DispatcherBuilder,
+        _builder: &mut DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         resources.insert(RuntimeGameConfig::from(self.game_config.clone()));
 

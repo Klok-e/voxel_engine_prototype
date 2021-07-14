@@ -25,7 +25,6 @@ use std::{
     sync::{
         atomic::{AtomicU32, Ordering},
         mpsc::channel,
-        Arc, Mutex,
     },
 };
 
