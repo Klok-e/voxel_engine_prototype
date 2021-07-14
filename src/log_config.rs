@@ -1,6 +1,5 @@
 use std::path::Path;
 
-use amethyst::LogLevelFilter;
 use serde::{Deserialize, Serialize};
 
 use crate::error;

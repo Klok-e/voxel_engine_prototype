@@ -13,11 +13,11 @@ use amethyst::{
     },
     ui::{RenderUi, UiBundle},
     utils::{auto_fov::AutoFovSystem, fps_counter::FpsCounterBundle},
-    LogLevelFilter, Logger, LoggerConfig,
+    Logger, LoggerConfig,
 };
-use log::info;
-use std::{str::FromStr, time::Duration};
-use toml;
+
+use std::time::Duration;
+
 use voxel_engine_prototype_lib::{
     core::APP_ROOT,
     game_config::{ConfigsBundle, GameConfig},
