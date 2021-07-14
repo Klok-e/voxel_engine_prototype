@@ -1,7 +1,6 @@
 use amethyst::ecs::SystemBuilder;
 use amethyst::{ecs::Runnable, utils::fps_counter::FpsCounter};
 use flurry::epoch::pin;
-use log::info;
 
 use crate::{game_config::RuntimeGameConfig, voxels::world::VoxelWorldProcedural};
 
@@ -32,8 +31,9 @@ fn chunk_per_frame(
             config.chunks_generate_per_frame += 1;
         }
     }
-    info!(
+    log::debug!(
         "chunks_generate_per_frame: {}; chunks_render_per_frame: {}.",
-        config.chunks_generate_per_frame, config.chunks_render_per_frame
+        config.chunks_generate_per_frame,
+        config.chunks_render_per_frame
     );
 }

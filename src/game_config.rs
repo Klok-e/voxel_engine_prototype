@@ -5,8 +5,6 @@ use serde::{Deserialize, Serialize};
 
 use std::path::Path;
 
-use crate::chunk_per_frame_system::chunk_per_frame_system;
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GameConfig {
     pub generation_maintain_fps: f32,
@@ -63,7 +61,6 @@ impl SystemBundle for ConfigsBundle {
         builder: &mut DispatcherBuilder,
     ) -> Result<(), amethyst::Error> {
         resources.insert(RuntimeGameConfig::from(self.game_config.clone()));
-        builder.add_system(|| chunk_per_frame_system());
 
         Ok(())
     }

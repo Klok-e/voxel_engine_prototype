@@ -4,7 +4,6 @@ extern crate bitflags;
 extern crate lazy_static;
 
 pub mod camera_move_system;
-pub mod chunk_per_frame_system;
 pub mod core;
 pub mod directions;
 mod error;

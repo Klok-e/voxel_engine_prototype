@@ -1,10 +1,12 @@
 use amethyst::ecs::SystemBundle;
+use chunk_per_frame_system::chunk_per_frame_system;
 use chunk_render::chunk_render_system;
 use destroy_on_touch_system::destroy_on_touch_system;
 use dirty_around_system::dirty_around_system;
 use generate_map_around_system::generate_map_around_system;
 use world_change_apply_system::world_apply_changes_system;
 
+pub mod chunk_per_frame_system;
 pub mod chunk_render;
 pub mod destroy_on_touch_system;
 pub mod dirty_around_system;
@@ -26,6 +28,7 @@ impl SystemBundle for VoxelBundle {
         builder.add_system(|| world_apply_changes_system());
         builder.add_system(|| dirty_around_system());
         builder.add_system(|| chunk_render_system());
+        builder.add_system(|| chunk_per_frame_system());
 
         Ok(())
     }
