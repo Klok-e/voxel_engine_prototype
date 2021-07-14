@@ -10,7 +10,7 @@ use amethyst::{
 
 use amethyst::ecs::{
     component,
-    query::{And, ComponentFilter, Passthrough, Query,EntityFilterTuple},
+    query::{And, ComponentFilter, EntityFilterTuple, Passthrough, Query},
     IntoQuery, SystemBuilder,
 };
 use rayon::prelude::*;
@@ -55,7 +55,8 @@ fn generate_map_around(
             }
         }
     }
-    positions.sort_unstable_by_key(|&(x, y, z, pos)| (pos.pos - Vec3i::from([x, y, z])).abs().sum());
+    positions
+        .sort_unstable_by_key(|&(x, y, z, pos)| (pos.pos - Vec3i::from([x, y, z])).abs().sum());
     positions
         .into_par_iter()
         .take(config.chunks_generate_per_frame as usize)

@@ -28,7 +28,9 @@ use voxel_engine_prototype_lib::{
 fn main() -> amethyst::Result<()> {
     Logger::from_config_formatter(
         LoggerConfig {
-            level_filter: LogLevelFilter::from_str(&std::env::var("DEBUG").unwrap_or("warn".to_string()))?,
+            level_filter: LogLevelFilter::from_str(
+                &std::env::var("DEBUG").unwrap_or("warn".to_string()),
+            )?,
             log_file: Some("./output.log".parse()?),
             module_levels: vec![
                 ("amethyst".to_string(), LogLevelFilter::Info),

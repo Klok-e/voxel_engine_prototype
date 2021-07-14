@@ -4,6 +4,7 @@ extern crate bitflags;
 extern crate lazy_static;
 
 pub mod camera_move_system;
+pub mod chunk_per_frame_system;
 pub mod core;
 pub mod directions;
 mod error;
@@ -11,6 +12,5 @@ pub mod game_config;
 pub mod gameplay_state;
 pub mod ui;
 pub mod voxels;
-pub mod chunk_per_frame_system;
 
 pub use error::Error;

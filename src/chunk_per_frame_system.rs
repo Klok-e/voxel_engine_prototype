@@ -1,9 +1,6 @@
-use amethyst::{
-    ecs::{Runnable},
-    utils::fps_counter::FpsCounter,
-};
-use flurry::epoch::pin;
 use amethyst::ecs::SystemBuilder;
+use amethyst::{ecs::Runnable, utils::fps_counter::FpsCounter};
+use flurry::epoch::pin;
 use log::info;
 
 use crate::{game_config::RuntimeGameConfig, voxels::world::VoxelWorldProcedural};

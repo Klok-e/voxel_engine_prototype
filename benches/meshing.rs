@@ -1,13 +1,11 @@
-use std::{
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
     Criterion,
 };
 
-use ndarray::{Array3};
+use ndarray::Array3;
 use rand::prelude::*;
 use voxel_engine_prototype_lib::{
     core::Vec3i,

@@ -12,7 +12,7 @@ use flurry::epoch::{pin, Guard};
 use rayon::prelude::*;
 use std::{
     collections::{HashMap, VecDeque},
-    sync::{Mutex},
+    sync::Mutex,
 };
 
 #[derive(Debug, Copy, Clone)]
@@ -29,8 +29,7 @@ impl VoxChange {
 
 pub type VoxelWorldProcedural = VoxelWorld<ProceduralGenerator<CHSIZE>, CHSIZE>;
 
-pub struct VoxelWorld<G, const N: usize>
-{
+pub struct VoxelWorld<G, const N: usize> {
     chunks: HashMap<ChunkPosition, Chunk<N>>,
     chunk_changes: ConcurrentHashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,
     dirty: ConcurrentHashSet<ChunkPosition>,

@@ -1,9 +1,9 @@
+use amethyst::ecs::{query::Query, SystemBuilder};
 use amethyst::{
     ecs::{Entity, IntoQuery, Runnable, SubWorld},
     ui::UiText,
     utils::fps_counter::FpsCounter,
 };
-use amethyst::ecs::{query::Query, SystemBuilder};
 use log;
 
 pub struct FpsText {

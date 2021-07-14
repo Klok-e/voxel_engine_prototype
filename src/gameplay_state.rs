@@ -1,4 +1,10 @@
-use crate::{camera_move_system::CameraMoveSensitivity, ui::{chunk_counter::{DirtyCounterText, GeneratedCounterText, RenderedCounterText}, fps_counter::FpsText}, voxels::{
+use crate::{
+    camera_move_system::CameraMoveSensitivity,
+    ui::{
+        chunk_counter::{DirtyCounterText, GeneratedCounterText, RenderedCounterText},
+        fps_counter::FpsText,
+    },
+    voxels::{
         chunk::CHSIZE,
         materials::Materials,
         systems::{
@@ -7,7 +13,8 @@ use crate::{camera_move_system::CameraMoveSensitivity, ui::{chunk_counter::{Dirt
         },
         terrain_generation::ProceduralGenerator,
         world::VoxelWorld,
-    }};
+    },
+};
 use amethyst::{
     assets::{DefaultLoader, Loader, ProcessingQueue},
     controls::{FlyControl, HideCursor},

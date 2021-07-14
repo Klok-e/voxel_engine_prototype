@@ -17,8 +17,8 @@ use amethyst::{
     },
 };
 
-use flurry::epoch::pin;
 use amethyst::ecs::{query::Query, Entity, SystemBuilder};
+use flurry::epoch::pin;
 use rayon::prelude::*;
 use std::{
     collections::HashMap,
@@ -85,6 +85,8 @@ fn chunk_render(
     );
     struct SetMesh(Handle<Mesh>, Option<Entity>);
 
+    log::debug!("chunk_render");
+
     let chunk_entities = {
         let mut map = HashMap::new();
         for (ent, chunk_pos) in q1.iter_mut(w) {
@@ -94,7 +96,6 @@ fn chunk_render(
     };
 
     let (sender, receiver) = channel();
-    let sender = Arc::new(Mutex::new(sender));
 
     let rendered = AtomicU32::new(0);
     let guard = pin();
@@ -104,9 +105,10 @@ fn chunk_render(
         .collect::<Vec<_>>()
         .into_par_iter()
         .copied()
+        .map_with(sender, |s, pos| (pos, s.clone()))
         .for_each_init(
-            || (pin(), sender.try_lock().unwrap().clone()),
-            |(guard, sender), to_clean| {
+            || pin(),
+            |guard, (to_clean, sender)| {
                 if rendered.load(Ordering::SeqCst) >= config.chunks_render_per_frame {
                     return;
                 }

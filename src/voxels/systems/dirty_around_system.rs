@@ -6,16 +6,16 @@ use crate::{
         world::VoxelWorldProcedural,
     },
 };
-use amethyst::{
-    core::Transform,
-    ecs::{IntoQuery, Runnable, SubWorld},
-};
-use flurry::epoch::pin;
 use amethyst::ecs::{
     component,
     query::{And, ComponentFilter, EntityFilterTuple, Passthrough, Query},
     SystemBuilder,
 };
+use amethyst::{
+    core::Transform,
+    ecs::{IntoQuery, Runnable, SubWorld},
+};
+use flurry::epoch::pin;
 use std::collections::HashSet;
 
 pub struct RenderedTag;

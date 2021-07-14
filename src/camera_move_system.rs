@@ -1,11 +1,11 @@
 use crate::core::Vec3f;
+use amethyst::ecs::SystemBuilder;
 use amethyst::{
     core::{math, Transform},
     ecs::{IntoQuery, Runnable, SystemBundle},
     input::{InputHandler, VirtualKeyCode},
     renderer::Camera,
 };
-use amethyst::ecs::SystemBuilder;
 
 pub struct CameraMoveSensitivity {
     mouse: f32,
