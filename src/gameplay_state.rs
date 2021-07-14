@@ -50,16 +50,15 @@ impl SimpleState for GameplayState {
 
         data.resources
             .insert(AmbientColor(Srgba::new(0.5, 0.5, 0.5, 1.0)));
-        let mats;
-        {
+        let mats = {
             let loader = data.resources.get::<DefaultLoader>().unwrap();
             let tex_queue = data
                 .resources
                 .get::<ProcessingQueue<TextureData>>()
                 .unwrap();
             let mat_queue = data.resources.get::<ProcessingQueue<Material>>().unwrap();
-            mats = init_materials(&*loader, &*tex_queue, &*mat_queue);
-        }
+            init_materials(&*loader, &*tex_queue, &*mat_queue)
+        };
         data.resources.insert(mats);
 
         // hide cursor
