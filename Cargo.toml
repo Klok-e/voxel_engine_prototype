@@ -2,23 +2,23 @@
 name = "voxel_engine_prototype"
 version = "0.1.0"
 authors = ["LokiVKlokeNaAndoke <ma.ba1@rambler.ru>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dev-dependencies]
 rstest = "0.10.0"
 criterion = "0.3"
 
-[[bench]]
-name = "meshing"
-harness = false
+# [[bench]]
+# name = "meshing"
+# harness = false
 
-[[bench]]
-name = "generation"
-harness = false
+# [[bench]]
+# name = "generation"
+# harness = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst", branch = "main", features = ["ui"] }
+bevy = { version = "0.10" , features = ["dynamic_linking"]}
 bitflags = "1.2.1"
 log = "0.4.13"
 lazy_static = "1.4.0"
@@ -34,19 +34,15 @@ rayon = "1.5.0"
 crossbeam = "0.8.0"
 toml = "0.5.8"
 
-[features]
-default = ["vulkan"]
-vulkan = ["amethyst/vulkan"]
-
 [profile.dev.package."*"]
 opt-level = 3
 
 [profile.dev]
 opt-level = 1
 
-[profile.release]
+# [profile.release]
 # lto = "thin"
-debug = true
+# debug = true
 
 [profile.bench]
 # lto = "thin"

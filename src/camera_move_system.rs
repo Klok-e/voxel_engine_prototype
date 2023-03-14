@@ -1,15 +1,16 @@
-use crate::core::Vec3f;
-use amethyst::ecs::SystemBuilder;
-use amethyst::{
-    core::{math, Transform},
-    ecs::{IntoQuery, Runnable, SystemBundle},
-    input::{InputHandler, VirtualKeyCode},
-    renderer::Camera,
+use bevy::{
+    input::mouse::MouseMotion,
+    math,
+    prelude::{
+        Camera3d, Component, EventReader, Input, KeyCode, Query, Res, Resource, Transform, With,
+    },
+    window::CursorMoved,
 };
 
+#[derive(Resource)]
 pub struct CameraMoveSensitivity {
-    mouse: f32,
-    translation: f32,
+    pub mouse: f32,
+    pub translation: f32,
 }
 impl Default for CameraMoveSensitivity {
     fn default() -> Self {
@@ -20,64 +21,51 @@ impl Default for CameraMoveSensitivity {
     }
 }
 
-fn camera_move_system() -> impl Runnable {
-    SystemBuilder::new("camera_move_system")
-        .read_resource::<InputHandler>()
-        .read_resource::<CameraMoveSensitivity>()
-        .with_query(<(&Camera, &mut Transform)>::query())
-        .build(move |_, world, (input, sensitivity), query| {
-            let (input, sensitivity): (&InputHandler, &CameraMoveSensitivity) =
-                (input, sensitivity);
+pub fn camera_move_system(
+    mut cameras: Query<&mut Transform, With<Camera3d>>,
+    keyboard: Res<Input<KeyCode>>,
+    sensitivity: Res<CameraMoveSensitivity>,
+    mut cursor_moved_events: EventReader<MouseMotion>,
+) {
+    let mut translation = math::Vec3::ZERO;
+    if keyboard.pressed(KeyCode::W) {
+        translation -= math::Vec3::Z;
+    }
+    if keyboard.pressed(KeyCode::S) {
+        translation += math::Vec3::Z;
+    }
+    if keyboard.pressed(KeyCode::A) {
+        translation -= math::Vec3::X;
+    }
+    if keyboard.pressed(KeyCode::D) {
+        translation += math::Vec3::X;
+    }
+    if keyboard.pressed(KeyCode::V) {
+        translation += math::Vec3::Y;
+    }
+    if keyboard.pressed(KeyCode::C) {
+        translation -= math::Vec3::Y;
+    }
 
-            let mut translation = math::Vector3::<f32>::zeros();
-            if input.key_is_down(VirtualKeyCode::W) {
-                translation -= math::Vector3::z();
-            }
-            if input.key_is_down(VirtualKeyCode::S) {
-                translation += math::Vector3::z();
-            }
-            if input.key_is_down(VirtualKeyCode::A) {
-                translation -= math::Vector3::x();
-            }
-            if input.key_is_down(VirtualKeyCode::D) {
-                translation += math::Vector3::x();
-            }
-            if input.key_is_down(VirtualKeyCode::V) {
-                translation += math::Vector3::y();
-            }
-            if input.key_is_down(VirtualKeyCode::C) {
-                translation -= math::Vector3::y();
-            }
-            if translation.abs().sum() > 1. {
-                translation.normalize_mut();
-            }
+    let mut delta = math::Vec2::ZERO;
+    for event in cursor_moved_events.iter() {
+        delta += event.delta;
+    }
 
-            let d_x = input.axis_value("mouse_x").unwrap();
-            let d_y = input.axis_value("mouse_y").unwrap();
+    for mut cam_trans in cameras.iter_mut() {
+        // let forward = cam_trans.forward();
+        let vec3 = cam_trans.rotation * translation;
+        cam_trans.translation += vec3 * sensitivity.translation;
 
-            for (_, cam_trans) in query.iter_mut(world) {
-                cam_trans.append_translation(translation * sensitivity.translation);
-                cam_trans.append_rotation_x_axis(d_y * sensitivity.mouse);
-                cam_trans.append_rotation_y_axis(d_x * sensitivity.mouse);
+        // cam_trans.look
+        cam_trans.rotate_local_x(sensitivity.mouse * -delta.y);
+        cam_trans.rotate_local_y(sensitivity.mouse * -delta.x);
+        // cam_trans.rota
+        // cam_trans.append_rotation_x_axis(d_y * sensitivity.mouse);
+        // cam_trans.append_rotation_y_axis(d_x * sensitivity.mouse);
 
-                let right = cam_trans.rotation() * Vec3f::x();
-                let angle = right.angle(&Vec3f::y()) - std::f32::consts::FRAC_PI_2;
-                cam_trans.append_rotation_z_axis(-angle);
-            }
-        })
-}
-
-#[derive(Default)]
-pub struct ControlsBundle;
-
-impl SystemBundle for ControlsBundle {
-    fn load(
-        &mut self,
-        _world: &mut amethyst::prelude::World,
-        _resources: &mut amethyst::prelude::Resources,
-        builder: &mut amethyst::ecs::DispatcherBuilder,
-    ) -> Result<(), amethyst::Error> {
-        builder.add_thread_local(Box::new(|| camera_move_system()));
-        Ok(())
+        // let right = cam_trans.rotation() * Vec3f::x();
+        // let angle = right.angle(&Vec3f::y()) - std::f32::consts::FRAC_PI_2;
+        // cam_trans.append_rotation_z_axis(-angle);
     }
 }
