@@ -1,8 +1,8 @@
-use amethyst::core::{
-    math::{base::Scalar, Vector3},
-    num::{NumAssignRef, PrimInt},
-};
+use bitflags::bitflags;
+
 use bitflags::_core::iter::from_fn;
+use nalgebra::{Vector3, Scalar};
+use num::{PrimInt, traits::NumAssignRef};
 
 bitflags! {
     pub struct Directions: u8 {

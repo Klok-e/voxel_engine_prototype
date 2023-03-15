@@ -1,14 +1,13 @@
+use bevy::render::mesh::Mesh;
+use nalgebra::{Vector3, Vector2};
+
 use crate::directions::Directions;
-use amethyst::{
-    core::math::{self},
-    renderer::rendy::mesh::{Indices, MeshBuilder, Normal, Position, TexCoord},
-};
 
 #[derive(Debug)]
 pub struct ChunkMeshData {
-    positions: Vec<Position>,
-    normals: Vec<Normal>,
-    uv: Vec<TexCoord>,
+    positions: Vec<Vector3<f32>>,
+    normals: Vec<Vector3<f32>>,
+    uv: Vec<Vector2<f32>>,
     indices: Vec<u16>,
 }
 
@@ -22,7 +21,7 @@ impl ChunkMeshData {
         }
     }
 
-    pub fn insert_quad(&mut self, pos: math::Vector3<f32>, dir: Directions) {
+    pub fn insert_quad(&mut self, pos: Vector3<f32>, dir: Directions) {
         if dir.into_iter().count() > 1 {
             panic!("insert_quad called with more than one direction");
         }
@@ -34,10 +33,10 @@ impl ChunkMeshData {
         0-------1  y->
         */
         let verts: [(
-            math::Vector3<f32>,
-            math::Vector3<f32>,
-            math::Vector3<f32>,
-            math::Vector3<f32>,
+            Vector3<f32>,
+            Vector3<f32>,
+            Vector3<f32>,
+            Vector3<f32>,
         ); 6] = [
             // south
             (
@@ -115,17 +114,19 @@ impl ChunkMeshData {
         self.indices.push(count + 1);
         self.indices.push(count + 2);
     }
+
     /// Returns a mesh. None if mesh is empty.
-    pub fn build_mesh<'a>(&self) -> Option<MeshBuilder<'a>> {
+    pub fn build_mesh<'a>(&self) -> Option<Mesh> {
         if self.positions.is_empty() {
             None
         } else {
+            let mesh = Mesh::new(bevy::render::render_resource::PrimitiveTopology::TriangleList);
+            mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, self.positions.clone());
+            mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, self.normals.clone());
+            mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, self.uv.clone());
+            mesh.set_indices(Some(self.indices.clone()));
             Some(
-                amethyst::renderer::rendy::mesh::MeshBuilder::new()
-                    .with_vertices(self.positions.clone())
-                    .with_vertices(self.normals.clone())
-                    .with_vertices(self.uv.clone())
-                    .with_indices(Indices::from(self.indices.clone())),
+mesh
             )
         }
     }

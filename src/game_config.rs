@@ -1,9 +1,9 @@
-use amethyst::ecs::{DispatcherBuilder, SystemBundle};
-
-use log::warn;
+use bevy::prelude::{Plugin, Resource, warn};
 use serde::{Deserialize, Serialize};
 
 use std::path::Path;
+
+use crate::error;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GameConfig {
@@ -13,7 +13,7 @@ pub struct GameConfig {
 }
 
 impl GameConfig {
-    pub fn from_file_ron<P: AsRef<Path>>(path: P) -> Result<Self, crate::Error> {
+    pub fn from_file_ron<P: AsRef<Path>>(path: P) -> error::Result<Self> {
         let str = std::fs::read_to_string(path)?;
         let config: GameConfig = ron::from_str(str.as_ref())?;
         if config.render_around_bubble >= config.generate_around_bubble {
@@ -27,6 +27,7 @@ impl GameConfig {
     }
 }
 
+#[derive(Resource)]
 pub struct RuntimeGameConfig {
     pub chunks_render_per_frame: u32,
     pub chunks_generate_per_frame: u32,
@@ -43,25 +44,18 @@ impl From<GameConfig> for RuntimeGameConfig {
     }
 }
 
-pub struct ConfigsBundle {
+pub struct GameConfigPlugin {
     game_config: GameConfig,
 }
 
-impl ConfigsBundle {
+impl GameConfigPlugin {
     pub fn new(game_config: GameConfig) -> Self {
         Self { game_config }
     }
 }
 
-impl SystemBundle for ConfigsBundle {
-    fn load(
-        &mut self,
-        _world: &mut amethyst::ecs::World,
-        resources: &mut amethyst::prelude::Resources,
-        _builder: &mut DispatcherBuilder,
-    ) -> Result<(), amethyst::Error> {
-        resources.insert(RuntimeGameConfig::from(self.game_config.clone()));
-
-        Ok(())
+impl Plugin for GameConfigPlugin {
+    fn build(&self, app: &mut bevy::prelude::App) {
+        app.insert_resource(RuntimeGameConfig::from(self.game_config.clone()));
     }
 }

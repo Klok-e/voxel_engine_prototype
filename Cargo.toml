@@ -20,7 +20,6 @@ criterion = "0.3"
 [dependencies]
 bevy = { version = "0.10" , features = ["dynamic_linking"]}
 bitflags = "1.2.1"
-log = "0.4.13"
 lazy_static = "1.4.0"
 chrono = "0.4.19"
 ndarray = "0.15.3"
@@ -33,6 +32,8 @@ thiserror = "1.0"
 rayon = "1.5.0"
 crossbeam = "0.8.0"
 toml = "0.5.8"
+nalgebra = "0.32"
+num = "0.4"
 
 [profile.dev.package."*"]
 opt-level = 3
