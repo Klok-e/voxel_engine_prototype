@@ -1,5 +1,6 @@
-use crate::{core::Vec3i, directions::Directions};
+use crate::{directions::Directions};
 use bitflags::_core::cmp::Ordering;
+use nalgebra::Vector3;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -36,7 +37,7 @@ impl<const N: usize> Chunk<N> {
     /// Checks whether the provided index is on the chunk border
     /// and if it is, return border direction
     pub fn is_on_border(ind: &[usize; 3]) -> Option<Directions> {
-        let dir = Vec3i::new(ind[0] as i32, ind[1] as i32, ind[2] as i32);
+        let dir = Vector3::<i32>::new(ind[0] as i32, ind[1] as i32, ind[2] as i32);
         let dir = dir.map(|v| {
             if v == Self::NI - 1 {
                 1
@@ -65,7 +66,7 @@ impl<const N: usize> Chunk<N> {
     }
 
     #[inline]
-    pub fn chunk_voxel_index_wrap(ind: &Vec3i) -> Option<Vec3i> {
+    pub fn chunk_voxel_index_wrap(ind: &Vector3<i32>) -> Option<Vector3<i32>> {
         let x = Self::wrap(ind.x);
         let y = Self::wrap(ind.y);
         let z = Self::wrap(ind.z);
@@ -79,17 +80,17 @@ impl<const N: usize> Chunk<N> {
 
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Deserialize, Serialize)]
 pub struct ChunkPosition {
-    pub pos: Vec3i,
+    pub pos: Vector3<i32>,
 }
 
 impl ChunkPosition {
-    pub fn new(pos: Vec3i) -> Self {
+    pub fn new(pos: Vector3<i32>) -> Self {
         ChunkPosition { pos }
     }
 }
 
-impl From<Vec3i> for ChunkPosition {
-    fn from(value: Vec3i) -> Self {
+impl From<Vector3<i32>> for ChunkPosition {
+    fn from(value: Vector3<i32>) -> Self {
         ChunkPosition::new(value)
     }
 }
@@ -97,7 +98,7 @@ impl From<Vec3i> for ChunkPosition {
 impl Default for ChunkPosition {
     fn default() -> Self {
         Self {
-            pos: Vec3i::zeros(),
+            pos: Vector3::<i32>::zeros(),
         }
     }
 }
@@ -124,7 +125,6 @@ mod tests {
     use rstest::rstest;
 
     const SMALLCH: usize = 3;
-    //const SMALLCHI: i32 = SMALLCH as i32;
     type SmallChunk = Chunk<SMALLCH>;
 
     #[test]
@@ -142,17 +142,17 @@ mod tests {
 
     #[rstest(to_wrap, exp_wrapped,
         // no wrap
-        case(Vec3i::from([0,0,0]), None),
-        case(Vec3i::from([0,2,0]), None),
-        case(Vec3i::from([0,2,1]), None),
+        case(Vector3::<i32>::from([0,0,0]), None),
+        case(Vector3::<i32>::from([0,2,0]), None),
+        case(Vector3::<i32>::from([0,2,1]), None),
         // wrap
-        case(Vec3i::from([-1,2,1]), Some(Vec3i::from([2,2,1]))),
-        case(Vec3i::from([-1,-1,1]), Some(Vec3i::from([2,2,1]))),
-        case(Vec3i::from([-1,3,1]), Some(Vec3i::from([2,0,1]))),
+        case(Vector3::<i32>::from([-1,2,1]), Some(Vector3::<i32>::from([2,2,1]))),
+        case(Vector3::<i32>::from([-1,-1,1]), Some(Vector3::<i32>::from([2,2,1]))),
+        case(Vector3::<i32>::from([-1,3,1]), Some(Vector3::<i32>::from([2,0,1]))),
         // overwrap
-        case(Vec3i::from([-1,4,1]), Some(Vec3i::from([2,1,1]))),
+        case(Vector3::<i32>::from([-1,4,1]), Some(Vector3::<i32>::from([2,1,1]))),
     )]
-    fn chunk_voxel_index_wrap(to_wrap: Vec3i, exp_wrapped: Option<Vec3i>) {
+    fn chunk_voxel_index_wrap(to_wrap: Vector3<i32>, exp_wrapped: Option<Vector3<i32>>) {
         let actual_wrp = SmallChunk::chunk_voxel_index_wrap(&to_wrap);
 
         assert_eq!(exp_wrapped, actual_wrp);
