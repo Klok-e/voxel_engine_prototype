@@ -5,10 +5,10 @@ use criterion::{
     Criterion,
 };
 
+use nalgebra::Vector3;
 use ndarray::Array3;
 use rand::prelude::*;
 use voxel_engine_prototype_lib::{
-    core::Vec3i,
     directions::Directions,
     voxels::{
         chunk::ChunkPosition, terrain_generation::VoxelGenerator, voxel::Voxel, world::VoxelWorld,
@@ -35,7 +35,7 @@ impl<const N: usize> VoxelGenerator<N> for RandomGenerator<N> {
 
 fn setup<const N: usize>() -> VoxelWorld<RandomGenerator<N>, N> {
     let world = VoxelWorld::new(RandomGenerator::new(42));
-    let pos = Vec3i::new(0, 0, 0);
+    let pos = Vector3::<i32>::new(0, 0, 0);
     world.gen_chunk(&ChunkPosition::new(pos));
     for dir in Directions::all().into_iter() {
         let dir_vec = dir.to_vec::<i32>();
@@ -48,7 +48,7 @@ pub fn meshing(c: &mut Criterion) {
     fn bench_const<const N: usize>(group: &mut BenchmarkGroup<WallTime>, id: BenchmarkId) {
         group.bench_function(id, |b| {
             b.iter_batched(
-                || setup::<N>(),
+                setup::<N>,
                 |world| world.mesh(&ChunkPosition::new([0, 0, 0].into())),
                 BatchSize::SmallInput,
             )

@@ -2,12 +2,10 @@ use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
     Criterion,
 };
-use voxel_engine_prototype_lib::{
-    core::Vec3i,
-    voxels::{
-        chunk::{Chunk, ChunkPosition},
-        terrain_generation::{ProceduralGenerator, VoxelGenerator},
-    },
+use nalgebra::Vector3;
+use voxel_engine_prototype_lib::voxels::{
+    chunk::{Chunk, ChunkPosition},
+    terrain_generation::{ProceduralGenerator, VoxelGenerator},
 };
 
 pub fn generation(c: &mut Criterion) {
@@ -17,8 +15,8 @@ pub fn generation(c: &mut Criterion) {
                 || (ProceduralGenerator::<N>::new(42), Chunk::<N>::new()),
                 |(gen, mut ch)| {
                     gen.fill_random(
-                        &ChunkPosition::new(Vec3i::from([0, 0, 0])),
-                        &mut ch.data_mut(),
+                        &ChunkPosition::new(Vector3::<i32>::from([0, 0, 0])),
+                        ch.data_mut(),
                     )
                 },
                 BatchSize::SmallInput,
