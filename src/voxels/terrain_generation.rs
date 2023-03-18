@@ -1,5 +1,7 @@
+use crate::core::ConvertVecExtension;
+
 use super::{chunk::ChunkPosition, voxel::Voxel};
-use crate::core::{to_vec2d, Vec2i};
+use nalgebra::Vector2;
 use ndarray::prelude::*;
 use noise::{Fbm, NoiseFn, Seedable};
 
@@ -32,8 +34,8 @@ impl<const N: usize> VoxelGenerator<N> for ProceduralGenerator<N> {
         //let mut filled = 0;
         for x in 0..Self::NI {
             for z in 0..Self::NI {
-                let p = Vec2i::from([x, z]);
-                let p = to_vec2d(p + pos.pos.xz() * Self::NI);
+                let p = Vector2::<i32>::from([x, z]);
+                let p = (p + pos.pos.xz() * Self::NI).convert_vec();
                 let value = self.rng.get([p.x / 100., p.y / 100.]);
                 for y in 0..Self::NI {
                     let height = y + pos.pos[1] * Self::NI;
@@ -47,6 +49,5 @@ impl<const N: usize> VoxelGenerator<N> for ProceduralGenerator<N> {
                 }
             }
         }
-        //dbg!(pos, filled);
     }
 }
