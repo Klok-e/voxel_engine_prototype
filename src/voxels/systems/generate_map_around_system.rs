@@ -5,7 +5,6 @@ use crate::{
 };
 use bevy::prelude::{Component, Query, Res, ResMut, Transform, With};
 use nalgebra::Vector3;
-use rayon::prelude::*;
 
 #[derive(Component)]
 pub struct GenerateMapAround;
