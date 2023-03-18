@@ -1,4 +1,5 @@
 use crate::directions::Directions;
+use bevy::prelude::Component;
 use bitflags::_core::cmp::Ordering;
 use nalgebra::Vector3;
 use ndarray::prelude::*;
@@ -78,7 +79,7 @@ impl<const N: usize> Chunk<N> {
     }
 }
 
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Deserialize, Serialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Deserialize, Serialize, Component)]
 pub struct ChunkPosition {
     pub pos: Vector3<i32>,
 }

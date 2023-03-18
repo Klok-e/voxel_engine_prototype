@@ -5,6 +5,7 @@ use super::{
     voxel::Voxel,
 };
 use crate::{core::ConvertVecExtension, directions::Directions};
+use bevy::prelude::Resource;
 use flurry::epoch::{pin, Guard};
 use nalgebra::{Vector, Vector3};
 use rayon::prelude::*;
@@ -27,6 +28,7 @@ impl VoxChange {
 
 pub type VoxelWorldProcedural = VoxelWorld<ProceduralGenerator<CHSIZE>, CHSIZE>;
 
+#[derive(Resource)]
 pub struct VoxelWorld<G, const N: usize> {
     chunks: HashMap<ChunkPosition, Chunk<N>>,
     chunk_changes: flurry::HashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>>,

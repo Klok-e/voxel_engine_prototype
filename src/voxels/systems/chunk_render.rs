@@ -1,23 +1,12 @@
 use crate::{
-    core::{to_vecf, Vec3f},
+    core::ConvertVecExtension,
     game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
-        materials::Materials,
         world::VoxelWorldProcedural,
     },
 };
-use amethyst::{
-    assets::{DefaultLoader, Handle, Loader, ProcessingQueue},
-    core::Transform,
-    ecs::{CommandBuffer, IntoQuery, Runnable, SubWorld},
-    renderer::{
-        debug_drawing::DebugLinesComponent, palette::Srgba, types::MeshData,
-        visibility::BoundingSphere, Material, Mesh,
-    },
-};
-
-use amethyst::ecs::{query::Query, Entity, SystemBuilder};
+use bevy::prelude::{debug, Assets, Commands, Entity, Handle, Mesh, Query, Res, ResMut, Transform};
 use flurry::epoch::pin;
 use rayon::prelude::*;
 use std::{
@@ -28,68 +17,25 @@ use std::{
     },
 };
 
-use super::dirty_around_system::RenderedTag;
+use super::{dirty_around_system::RenderedTag, materials::Materials};
 
-pub fn chunk_render_system() -> impl Runnable {
-    SystemBuilder::new("chunk_render_system")
-        .read_resource::<VoxelWorldProcedural>()
-        .read_resource::<RuntimeGameConfig>()
-        .read_resource::<Materials>()
-        .read_resource::<DefaultLoader>()
-        .read_resource::<ProcessingQueue<MeshData>>()
-        .with_query(<(Entity, &mut ChunkPosition)>::query())
-        .with_query(<(&mut Handle<Mesh>,)>::query())
-        .with_query(<(
-            Entity,
-            &mut ChunkPosition,
-            &mut Transform,
-            &mut Handle<Mesh>,
-            &mut Handle<Material>,
-            &mut DebugLinesComponent,
-            &mut BoundingSphere,
-        )>::query())
-        .build(move |commands, world, resources, query| {
-            chunk_render(
-                commands,
-                world,
-                &resources.0,
-                &resources.1,
-                &resources.2,
-                &resources.3,
-                &resources.4,
-                &mut query.0,
-                &mut query.1,
-            )
-        })
-}
-
-fn chunk_render(
-    commands: &mut CommandBuffer,
-    w: &mut SubWorld,
-    vox_world: &VoxelWorldProcedural,
-    config: &RuntimeGameConfig,
-    materials: &Materials,
-    loader: &DefaultLoader,
-    mesh_queue: &ProcessingQueue<MeshData>,
-    q1: &mut Query<(Entity, &mut ChunkPosition)>,
-    _meshes: &mut Query<(&mut Handle<Mesh>,)>,
+pub fn chunk_render_system(
+    mut commands: Commands,
+    vox_world: Res<VoxelWorldProcedural>,
+    config: Res<RuntimeGameConfig>,
+    mats: Res<Materials>,
+    mut q1: Query<(Entity, &mut ChunkPosition)>,
+    mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    struct CreateNew(
-        ChunkPosition,
-        Transform,
-        Handle<Material>,
-        DebugLinesComponent,
-        BoundingSphere,
-        RenderedTag,
-    );
-    struct SetMesh(Handle<Mesh>, Option<Entity>);
+    struct CreateNew(ChunkPosition, Transform, RenderedTag);
+    struct SetMesh(Mesh, Option<Entity>);
 
-    log::debug!("chunk_render");
+    debug!("chunk_render");
 
     let chunk_entities = {
         let mut map = HashMap::new();
-        for (ent, chunk_pos) in q1.iter_mut(w) {
-            map.insert(*chunk_pos, *ent);
+        for (ent, chunk_pos) in q1.iter_mut() {
+            map.insert(*chunk_pos, ent);
         }
         map
     };
@@ -118,44 +64,25 @@ fn chunk_render(
                 };
 
                 // create mesh
-                let mesh: Option<Handle<Mesh>> = mesh
-                    .build_mesh()
-                    .map(|m| MeshData(m.into_owned()))
-                    .map(|m| loader.load_from_data(m, (), mesh_queue));
+                let mesh: Option<Mesh> = mesh.build_mesh();
 
                 // get entity from hashmap or create a new one
                 let mut command = (None, None);
                 let ent = chunk_entities.get(&to_clean).cloned();
                 if ent.is_none() {
                     let mut transform = Transform::default();
-                    transform.set_translation(to_vecf(to_clean.pos * CHSIZEI));
+                    transform.translation = (to_clean.pos * CHSIZEI).convert_vec();
 
                     // draw debug lines
-                    let mut debug_lines = DebugLinesComponent::new();
-                    debug_lines.add_box(
-                        (to_vecf(to_clean.pos) * CHSIZEF).into(),
-                        ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
-                        Srgba::new(0.1, 0.1, 0.1, 0.5),
-                    );
-
-                    let def_mat = materials.chunks.clone();
+                    // let mut debug_lines = DebugLinesComponent::new();
+                    // debug_lines.add_box(
+                    //     (to_vecf(to_clean.pos) * CHSIZEF).into(),
+                    //     ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
+                    //     Srgba::new(0.1, 0.1, 0.1, 0.5),
+                    // );
 
                     // create entity
-                    command = (
-                        Some(CreateNew(
-                            to_clean,
-                            transform,
-                            def_mat,
-                            debug_lines,
-                            BoundingSphere::new(
-                                (Vec3f::from([1., 1., 1.]) * CHSIZEF / 2.).into(),
-                                // distance from center to outermost vertex of a cube
-                                CHSIZEF * 3. / 2.,
-                            ),
-                            RenderedTag,
-                        )),
-                        None,
-                    );
+                    command = (Some(CreateNew(to_clean, transform, RenderedTag)), None);
                 };
                 if let Some(m) = mesh {
                     command.1 = Some(SetMesh(m, ent));
@@ -171,14 +98,14 @@ fn chunk_render(
 
     for cmd in receiver.into_iter() {
         match cmd {
-            (Some(CreateNew(chpos, pos, mat, lines, bound, render)), Some(SetMesh(mesh, _))) => {
-                commands.push((chpos, pos, mat, lines, bound, render, mesh));
+            (Some(CreateNew(chpos, pos, render)), Some(SetMesh(mesh, _))) => {
+                commands.spawn((chpos, pos, mats.material.clone(), render, meshes.add(mesh)));
             }
-            (Some(CreateNew(chpos, pos, mat, lines, bound, render)), None) => {
-                commands.push((chpos, pos, mat, lines, bound, render));
+            (Some(CreateNew(chpos, pos, render)), None) => {
+                commands.spawn((chpos, pos, mats.material.clone(), render));
             }
             (None, Some(SetMesh(mesh, ent))) => {
-                commands.add_component(ent.unwrap(), mesh);
+                commands.entity(ent.unwrap()).insert(meshes.add(mesh));
             }
             (None, None) => {}
         }

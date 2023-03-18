@@ -8,6 +8,7 @@ use bevy::{
 use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
     game_config::{GameConfig, GameConfigPlugin},
+    voxels::systems::materials::Materials,
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -52,6 +53,10 @@ fn startup(
     let debug_material = materials.add(StandardMaterial {
         base_color_texture: Some(images.add(uv_debug_texture())),
         ..default()
+    });
+
+    commands.insert_resource(Materials {
+        material: debug_material.clone(),
     });
 
     let shapes = [

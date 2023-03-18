@@ -1,74 +1,39 @@
 use crate::{
-    core::Vec3i,
     game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZE},
         world::VoxelWorldProcedural,
     },
 };
-use amethyst::ecs::{
-    component,
-    query::{And, ComponentFilter, EntityFilterTuple, Passthrough, Query},
-    SystemBuilder,
-};
-use amethyst::{
-    core::Transform,
-    ecs::{IntoQuery, Runnable, SubWorld},
-};
+
+use bevy::prelude::{Component, Query, Res, Transform, With};
 use flurry::epoch::pin;
+use nalgebra::Vector3;
 use std::collections::HashSet;
 
+#[derive(Component)]
 pub struct RenderedTag;
 
+#[derive(Component)]
 pub struct RenderAround;
 
-pub fn dirty_around_system() -> impl Runnable {
-    SystemBuilder::new("dirty_around_system")
-        .read_resource::<VoxelWorldProcedural>()
-        .read_resource::<RuntimeGameConfig>()
-        .with_query(<&Transform>::query().filter(component::<RenderAround>()))
-        .with_query(<&ChunkPosition>::query().filter(component::<RenderedTag>()))
-        .build(move |_, world, resources, query| {
-            dirty_around(
-                world,
-                &resources.0,
-                &resources.1,
-                &mut query.0,
-                &mut query.1,
-            )
-        })
-}
-
-fn dirty_around(
-    w: &mut SubWorld,
-    vox_world: &VoxelWorldProcedural,
-    config: &RuntimeGameConfig,
-    render_bubbles: &mut Query<
-        &Transform,
-        EntityFilterTuple<
-            And<(ComponentFilter<Transform>, ComponentFilter<RenderAround>)>,
-            Passthrough,
-        >,
-    >,
-    rendered_chunks: &mut Query<
-        &ChunkPosition,
-        EntityFilterTuple<
-            And<(ComponentFilter<ChunkPosition>, ComponentFilter<RenderedTag>)>,
-            Passthrough,
-        >,
-    >,
+pub fn dirty_around_system(
+    vox_world: Res<VoxelWorldProcedural>,
+    config: Res<RuntimeGameConfig>,
+    mut render_bubbles: Query<&Transform, (With<Transform>, With<RenderAround>)>,
+    mut rendered_chunks: Query<&ChunkPosition, (With<ChunkPosition>, With<RenderedTag>)>,
 ) {
     let mut loaded_chunks = HashSet::new();
     let mut chunks_to_load = HashSet::new();
-    for transform in render_bubbles.iter(w) {
-        let pos = transform.translation() / CHSIZE as f32;
-        let pos = Vec3i::new(
+    for transform in render_bubbles.iter() {
+        let pos = transform.translation / CHSIZE as f32;
+        let pos = Vector3::<i32>::new(
             pos.x.floor() as i32,
             pos.y.floor() as i32,
             pos.z.floor() as i32,
         );
 
-        for chunk_pos in rendered_chunks.iter(w) {
+        for chunk_pos in rendered_chunks.iter() {
             loaded_chunks.insert(*chunk_pos);
         }
 
@@ -76,7 +41,7 @@ fn dirty_around(
         for z in -render_around..=render_around {
             for y in -render_around..=render_around {
                 for x in -render_around..=render_around {
-                    let pos = ChunkPosition::new(Vec3i::new(x, y, z) + pos.clone());
+                    let pos = ChunkPosition::new(Vector3::<i32>::new(x, y, z) + pos.clone());
                     chunks_to_load.insert(pos);
                 }
             }
