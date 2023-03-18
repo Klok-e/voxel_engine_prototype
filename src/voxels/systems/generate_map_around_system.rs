@@ -32,8 +32,7 @@ pub fn generate_map_around_system(
         (pos.pos - Vector3::<i32>::from([x, y, z])).abs().sum()
     });
     positions
-        .into_par_iter()
-        .take(config.chunks_generate_per_frame as usize)
+        .into_iter()
         .flat_map(|(x, y, z, pos)| {
             let pos = ChunkPosition::new(pos.pos + Vector3::<i32>::from([x, y, z]));
             match vox_world.chunk_at(&pos) {
@@ -41,6 +40,7 @@ pub fn generate_map_around_system(
                 None => Some((vox_world.gen_chunk(&pos), pos)),
             }
         })
+        .take(config.chunks_generate_per_frame as usize)
         .collect::<Vec<_>>()
         .into_iter()
         .for_each(|(c, pos)| vox_world.insert_at(&pos, c));

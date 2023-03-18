@@ -8,7 +8,10 @@ use bevy::{
 use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
     game_config::{GameConfig, GameConfigPlugin},
-    voxels::systems::materials::Materials,
+    voxels::systems::{
+        dirty_around_system::RenderAround, generate_map_around_system::GenerateMapAround,
+        materials::Materials, VoxelBundle,
+    },
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -26,6 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .add_plugin(GameConfigPlugin::new(GameConfig::from_file_ron(
             config_path.join("game_configs.ron"),
         )?))
+        .add_plugin(VoxelBundle)
         .add_startup_system(startup)
         .add_startup_system(add_camera)
         .add_system(camera_move_system)
@@ -99,10 +103,13 @@ fn startup(
         ..default()
     });
 
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 6., 12.0).looking_at(Vec3::new(0., 1., 0.), Vec3::Y),
-        ..default()
-    });
+    commands
+        .spawn(Camera3dBundle {
+            transform: Transform::from_xyz(0.0, 6., 12.0)
+                .looking_at(Vec3::new(0., 1., 0.), Vec3::Y),
+            ..default()
+        })
+        .insert((RenderAround, GenerateMapAround));
 }
 
 /// Creates a colorful test pattern

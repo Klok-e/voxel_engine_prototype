@@ -6,7 +6,9 @@ use crate::{
         world::VoxelWorldProcedural,
     },
 };
-use bevy::prelude::{debug, Assets, Commands, Entity, Mesh, Query, Res, ResMut, Transform};
+use bevy::prelude::{
+    default, Assets, Commands, Entity, Mesh, PbrBundle, Query, Res, ResMut, Transform,
+};
 use flurry::epoch::pin;
 use rayon::prelude::*;
 use std::{
@@ -30,7 +32,7 @@ pub fn chunk_render_system(
     struct CreateNew(ChunkPosition, Transform, RenderedTag);
     struct SetMesh(Mesh, Option<Entity>);
 
-    debug!("chunk_render");
+    // debug!("chunk_render");
 
     let chunk_entities = {
         let mut map = HashMap::new();
@@ -96,10 +98,23 @@ pub fn chunk_render_system(
     for cmd in receiver.into_iter() {
         match cmd {
             (Some(CreateNew(chpos, pos, render)), Some(SetMesh(mesh, _))) => {
-                commands.spawn((chpos, pos, mats.material.clone(), render, meshes.add(mesh)));
+                commands
+                    .spawn(PbrBundle {
+                        mesh: meshes.add(mesh),
+                        material: mats.material.clone(),
+                        transform: pos,
+                        ..default()
+                    })
+                    .insert((chpos, render));
             }
             (Some(CreateNew(chpos, pos, render)), None) => {
-                commands.spawn((chpos, pos, mats.material.clone(), render));
+                commands
+                    .spawn(PbrBundle {
+                        material: mats.material.clone(),
+                        transform: pos,
+                        ..default()
+                    })
+                    .insert((chpos, render));
             }
             (None, Some(SetMesh(mesh, ent))) => {
                 commands.entity(ent.unwrap()).insert(meshes.add(mesh));
