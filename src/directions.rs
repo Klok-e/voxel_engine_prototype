@@ -1,8 +1,8 @@
 use bitflags::bitflags;
 
 use bitflags::_core::iter::from_fn;
-use nalgebra::{Vector3, Scalar};
-use num::{PrimInt, traits::NumAssignRef};
+use nalgebra::{Scalar, Vector3};
+use num::{traits::NumAssignRef, PrimInt};
 
 bitflags! {
     pub struct Directions: u8 {

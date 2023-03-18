@@ -1,10 +1,8 @@
 use bevy::{
     input::mouse::MouseMotion,
     math,
-    prelude::{
-        Camera3d, EventReader, Input, KeyCode, Query, Res, Resource, Transform, With,
-    },
-    window::{Window, CursorGrabMode},
+    prelude::{Camera3d, EventReader, Input, KeyCode, Query, Res, Resource, Transform, With},
+    window::{CursorGrabMode, Window},
 };
 
 #[derive(Resource)]

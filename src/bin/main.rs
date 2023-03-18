@@ -1,12 +1,13 @@
 use std::{error::Error, f32::consts::PI, path::Path};
 
 use bevy::{
+    log::Level,
     prelude::*,
-    render::render_resource::{Extent3d, TextureDimension, TextureFormat}, log::Level,
+    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
 use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
-    game_config::{GameConfig, GameConfigPlugin}, 
+    game_config::{GameConfig, GameConfigPlugin},
 };
 
 fn main() -> Result<(), Box<dyn Error>> {

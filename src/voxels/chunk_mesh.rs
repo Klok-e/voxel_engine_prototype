@@ -1,5 +1,5 @@
-use bevy::render::mesh::Mesh;
-use nalgebra::{Vector3, Vector2};
+use bevy::render::mesh::{Indices, Mesh};
+use nalgebra::{Vector2, Vector3};
 
 use crate::directions::Directions;
 
@@ -32,12 +32,7 @@ impl ChunkMeshData {
         |       |  x|
         0-------1  y->
         */
-        let verts: [(
-            Vector3<f32>,
-            Vector3<f32>,
-            Vector3<f32>,
-            Vector3<f32>,
-        ); 6] = [
+        let verts: [(Vector3<f32>, Vector3<f32>, Vector3<f32>, Vector3<f32>); 6] = [
             // south
             (
                 [-0.5, 0.5, 0.5].into(),
@@ -120,14 +115,28 @@ impl ChunkMeshData {
         if self.positions.is_empty() {
             None
         } else {
-            let mesh = Mesh::new(bevy::render::render_resource::PrimitiveTopology::TriangleList);
-            mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, self.positions.clone());
-            mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, self.normals.clone());
-            mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, self.uv.clone());
-            mesh.set_indices(Some(self.indices.clone()));
-            Some(
-mesh
-            )
+            let mut mesh =
+                Mesh::new(bevy::render::render_resource::PrimitiveTopology::TriangleList);
+            mesh.insert_attribute(
+                Mesh::ATTRIBUTE_POSITION,
+                self.positions
+                    .iter()
+                    .map(|&x| x.into())
+                    .collect::<Vec<[f32; 3]>>(),
+            );
+            mesh.insert_attribute(
+                Mesh::ATTRIBUTE_NORMAL,
+                self.normals
+                    .iter()
+                    .map(|&x| x.into())
+                    .collect::<Vec<[f32; 3]>>(),
+            );
+            mesh.insert_attribute(
+                Mesh::ATTRIBUTE_UV_0,
+                self.uv.iter().map(|&x| x.into()).collect::<Vec<[f32; 2]>>(),
+            );
+            mesh.set_indices(Some(Indices::U16(self.indices.clone())));
+            Some(mesh)
         }
     }
 }

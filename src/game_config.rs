@@ -1,4 +1,4 @@
-use bevy::prelude::{Plugin, Resource, warn};
+use bevy::prelude::{warn, Plugin, Resource};
 use serde::{Deserialize, Serialize};
 
 use std::path::Path;

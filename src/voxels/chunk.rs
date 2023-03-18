@@ -1,4 +1,4 @@
-use crate::{directions::Directions};
+use crate::directions::Directions;
 use bitflags::_core::cmp::Ordering;
 use nalgebra::Vector3;
 use ndarray::prelude::*;
