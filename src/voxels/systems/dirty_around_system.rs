@@ -20,8 +20,8 @@ pub struct RenderAround;
 pub fn dirty_around_system(
     vox_world: Res<VoxelWorldProcedural>,
     config: Res<RuntimeGameConfig>,
-    mut render_bubbles: Query<&Transform, (With<Transform>, With<RenderAround>)>,
-    mut rendered_chunks: Query<&ChunkPosition, (With<ChunkPosition>, With<RenderedTag>)>,
+    render_bubbles: Query<&Transform, (With<Transform>, With<RenderAround>)>,
+    rendered_chunks: Query<&ChunkPosition, (With<ChunkPosition>, With<RenderedTag>)>,
 ) {
     let mut loaded_chunks = HashSet::new();
     let mut chunks_to_load = HashSet::new();
@@ -41,7 +41,7 @@ pub fn dirty_around_system(
         for z in -render_around..=render_around {
             for y in -render_around..=render_around {
                 for x in -render_around..=render_around {
-                    let pos = ChunkPosition::new(Vector3::<i32>::new(x, y, z) + pos.clone());
+                    let pos = ChunkPosition::new(Vector3::<i32>::new(x, y, z) + pos);
                     chunks_to_load.insert(pos);
                 }
             }

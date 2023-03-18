@@ -7,7 +7,7 @@ use super::{
 use crate::{core::ConvertVecExtension, directions::Directions};
 use bevy::prelude::Resource;
 use flurry::epoch::{pin, Guard};
-use nalgebra::{Vector, Vector3};
+use nalgebra::Vector3;
 use rayon::prelude::*;
 use std::{
     collections::{HashMap, VecDeque},
@@ -70,7 +70,7 @@ where
 
     pub fn gen_chunk(&self, pos: &ChunkPosition) -> Chunk<N> {
         let mut c = Chunk::<N>::new();
-        self.procedural.fill_random(&pos, c.data_mut());
+        self.procedural.fill_random(pos, c.data_mut());
         c
     }
 
@@ -160,9 +160,9 @@ where
         let chunk_changes = &self.chunk_changes;
         let dirty = &self.dirty;
 
-        chunks.par_iter_mut().for_each_init(
-            || pin(),
-            |guard, (pos, chunk)| {
+        chunks
+            .par_iter_mut()
+            .for_each_init(pin, |guard, (pos, chunk)| {
                 let changes = match chunk_changes.get(pos, guard) {
                     Some(x) => x,
                     None => return,
@@ -180,8 +180,7 @@ where
                     }
                 });
                 list.clear();
-            },
-        );
+            });
 
         let guard = pin();
         for (chunk_pos, adj_dir) in borders_changed.iter(&guard) {

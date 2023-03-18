@@ -1,5 +1,5 @@
 use bevy::prelude::Vec3;
-use nalgebra::{Vector, Vector2, Vector3};
+use nalgebra::{Vector2, Vector3};
 
 pub trait ConvertVecExtension<T> {
     fn convert_vec(self) -> T;

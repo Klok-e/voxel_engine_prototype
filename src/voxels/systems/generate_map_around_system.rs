@@ -13,7 +13,7 @@ pub struct GenerateMapAround;
 pub fn generate_map_around_system(
     mut vox_world: ResMut<VoxelWorldProcedural>,
     config: Res<RuntimeGameConfig>,
-    mut q1: Query<&Transform, (With<Transform>, With<GenerateMapAround>)>,
+    q1: Query<&Transform, (With<Transform>, With<GenerateMapAround>)>,
 ) {
     // TODO:: consider using binary heap ()
     let mut positions = Vec::new();

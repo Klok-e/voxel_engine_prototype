@@ -87,22 +87,22 @@ impl ChunkMeshData {
             _ => unreachable!(),
         };
 
-        self.positions.push((pos.clone() + vert0).into());
-        self.positions.push((pos.clone() + vert1).into());
-        self.positions.push((pos.clone() + vert2).into());
-        self.positions.push((pos.clone() + vert3).into());
+        self.positions.push(pos + vert0);
+        self.positions.push(pos + vert1);
+        self.positions.push(pos + vert2);
+        self.positions.push(pos + vert3);
 
-        self.normals.push(dir.to_vec().into());
-        self.normals.push(dir.to_vec().into());
-        self.normals.push(dir.to_vec().into());
-        self.normals.push(dir.to_vec().into());
+        self.normals.push(dir.to_vec());
+        self.normals.push(dir.to_vec());
+        self.normals.push(dir.to_vec());
+        self.normals.push(dir.to_vec());
 
         self.uv.push([0., 0.].into());
         self.uv.push([1., 0.].into());
         self.uv.push([0., 1.].into());
         self.uv.push([1., 1.].into());
 
-        self.indices.push(count + 0);
+        self.indices.push(count);
         self.indices.push(count + 2);
         self.indices.push(count + 1);
         self.indices.push(count + 3);

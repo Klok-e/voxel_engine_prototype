@@ -2,11 +2,11 @@ use crate::{
     core::ConvertVecExtension,
     game_config::RuntimeGameConfig,
     voxels::{
-        chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
+        chunk::{ChunkPosition, CHSIZEI},
         world::VoxelWorldProcedural,
     },
 };
-use bevy::prelude::{debug, Assets, Commands, Entity, Handle, Mesh, Query, Res, ResMut, Transform};
+use bevy::prelude::{debug, Assets, Commands, Entity, Mesh, Query, Res, ResMut, Transform};
 use flurry::epoch::pin;
 use rayon::prelude::*;
 use std::{
@@ -51,50 +51,47 @@ pub fn chunk_render_system(
         .into_par_iter()
         .copied()
         .map_with(sender, |s, pos| (pos, s.clone()))
-        .for_each_init(
-            || pin(),
-            |guard, (to_clean, sender)| {
-                if rendered.load(Ordering::SeqCst) >= config.chunks_render_per_frame {
-                    return;
-                }
-                let mesh = if let Some(m) = vox_world.mesh(&to_clean) {
-                    m
-                } else {
-                    return;
-                };
+        .for_each_init(pin, |guard, (to_clean, sender)| {
+            if rendered.load(Ordering::SeqCst) >= config.chunks_render_per_frame {
+                return;
+            }
+            let mesh = if let Some(m) = vox_world.mesh(&to_clean) {
+                m
+            } else {
+                return;
+            };
 
-                // create mesh
-                let mesh: Option<Mesh> = mesh.build_mesh();
+            // create mesh
+            let mesh: Option<Mesh> = mesh.build_mesh();
 
-                // get entity from hashmap or create a new one
-                let mut command = (None, None);
-                let ent = chunk_entities.get(&to_clean).cloned();
-                if ent.is_none() {
-                    let mut transform = Transform::default();
-                    transform.translation = (to_clean.pos * CHSIZEI).convert_vec();
+            // get entity from hashmap or create a new one
+            let mut command = (None, None);
+            let ent = chunk_entities.get(&to_clean).cloned();
+            if ent.is_none() {
+                let mut transform = Transform::default();
+                transform.translation = (to_clean.pos * CHSIZEI).convert_vec();
 
-                    // draw debug lines
-                    // let mut debug_lines = DebugLinesComponent::new();
-                    // debug_lines.add_box(
-                    //     (to_vecf(to_clean.pos) * CHSIZEF).into(),
-                    //     ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
-                    //     Srgba::new(0.1, 0.1, 0.1, 0.5),
-                    // );
+                // draw debug lines
+                // let mut debug_lines = DebugLinesComponent::new();
+                // debug_lines.add_box(
+                //     (to_vecf(to_clean.pos) * CHSIZEF).into(),
+                //     ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
+                //     Srgba::new(0.1, 0.1, 0.1, 0.5),
+                // );
 
-                    // create entity
-                    command = (Some(CreateNew(to_clean, transform, RenderedTag)), None);
-                };
-                if let Some(m) = mesh {
-                    command.1 = Some(SetMesh(m, ent));
-                }
-                sender.send(command).unwrap();
+                // create entity
+                command = (Some(CreateNew(to_clean, transform, RenderedTag)), None);
+            };
+            if let Some(m) = mesh {
+                command.1 = Some(SetMesh(m, ent));
+            }
+            sender.send(command).unwrap();
 
-                vox_world.dirty().remove(&to_clean, &guard);
+            vox_world.dirty().remove(&to_clean, guard);
 
-                let r = rendered.load(Ordering::SeqCst);
-                rendered.store(r + 1, Ordering::SeqCst)
-            },
-        );
+            let r = rendered.load(Ordering::SeqCst);
+            rendered.store(r + 1, Ordering::SeqCst)
+        });
 
     for cmd in receiver.into_iter() {
         match cmd {

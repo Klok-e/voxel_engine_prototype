@@ -1,4 +1,4 @@
-use bevy::prelude::{Handle, Material, Resource, StandardMaterial};
+use bevy::prelude::{Handle, Resource, StandardMaterial};
 
 #[derive(Debug, Clone, Resource)]
 pub struct Materials {
