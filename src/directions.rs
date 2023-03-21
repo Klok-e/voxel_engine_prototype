@@ -3,9 +3,6 @@ use std::iter::from_fn;
 use bevy::prelude::{IVec3, Vec3};
 use bitflags::bitflags;
 
-use nalgebra::{Scalar, Vector3};
-use num::{traits::NumAssignRef, PrimInt};
-
 bitflags! {
     #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash, PartialOrd, Ord)]
     pub struct Directions: u8 {
@@ -19,14 +16,6 @@ bitflags! {
 }
 
 impl Directions {
-    #[inline]
-    pub fn to_vec<T>(&self) -> Vector3<T>
-    where
-        T: NumAssignRef + Scalar,
-    {
-        Vector3::<T>::from(*self)
-    }
-
     #[inline]
     pub fn to_ivec(self) -> IVec3 {
         IVec3::from(self)
@@ -57,62 +46,7 @@ impl Directions {
     }
 
     pub fn invert(self) -> Self {
-        (-self.to_vec::<i32>()).into()
-    }
-}
-
-impl<T> From<Directions> for Vector3<T>
-where
-    T: NumAssignRef + Scalar,
-{
-    #[inline]
-    fn from(dir: Directions) -> Self {
-        let mut res = Vector3::<T>::zeros();
-        if dir.intersects(Directions::UP) {
-            res += Vector3::<T>::y();
-        }
-        if dir.intersects(Directions::DOWN) {
-            res -= Vector3::<T>::y();
-        }
-        if dir.intersects(Directions::WEST) {
-            res -= Vector3::<T>::x();
-        }
-        if dir.intersects(Directions::EAST) {
-            res += Vector3::<T>::x();
-        }
-        if dir.intersects(Directions::NORTH) {
-            res -= Vector3::<T>::z();
-        }
-        if dir.intersects(Directions::SOUTH) {
-            res += Vector3::<T>::z();
-        }
-        res
-    }
-}
-
-impl<T> From<Vector3<T>> for Directions
-where
-    T: PrimInt + Scalar + NumAssignRef,
-{
-    #[inline]
-    fn from(vec: Vector3<T>) -> Self {
-        let mut res = Directions::empty();
-        if vec.x == Vector3::<T>::from(Directions::EAST).x {
-            res |= Directions::EAST;
-        } else if vec.x == Vector3::<T>::from(Directions::WEST).x {
-            res |= Directions::WEST;
-        }
-        if vec.y == Vector3::<T>::from(Directions::UP).y {
-            res |= Directions::UP;
-        } else if vec.y == Vector3::<T>::from(Directions::DOWN).y {
-            res |= Directions::DOWN;
-        }
-        if vec.z == Vector3::<T>::from(Directions::NORTH).z {
-            res |= Directions::NORTH;
-        } else if vec.z == Vector3::<T>::from(Directions::SOUTH).z {
-            res |= Directions::SOUTH;
-        }
-        res
+        (-self.to_ivec()).into()
     }
 }
 
