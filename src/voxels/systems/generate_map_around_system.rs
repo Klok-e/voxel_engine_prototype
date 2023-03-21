@@ -3,7 +3,7 @@ use crate::{
     game_config::RuntimeGameConfig,
     voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
 };
-use bevy::prelude::{Component, Query, Res, ResMut, Transform, With};
+use bevy::prelude::{Component, IVec3, Query, Res, ResMut, Transform, With};
 use nalgebra::Vector3;
 
 #[derive(Component)]
@@ -17,7 +17,7 @@ pub fn generate_map_around_system(
     // TODO:: consider using binary heap ()
     let mut positions = Vec::new();
     for transform in q1.iter() {
-        let (pos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation.convert_vec());
+        let (pos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
         let generate_around = config.config.generate_around_bubble as i32;
         for z in -generate_around..=generate_around {
             for y in -generate_around..=generate_around {
@@ -28,12 +28,16 @@ pub fn generate_map_around_system(
         }
     }
     positions.sort_unstable_by_key(|&(x, y, z, pos)| {
-        (pos.pos - Vector3::<i32>::from([x, y, z])).abs().sum()
+        (pos.pos - IVec3::from([x, y, z]))
+            .abs()
+            .to_array()
+            .iter()
+            .sum::<i32>()
     });
     positions
         .into_iter()
         .flat_map(|(x, y, z, pos)| {
-            let pos = ChunkPosition::new(pos.pos + Vector3::<i32>::from([x, y, z]));
+            let pos = ChunkPosition::new(pos.pos + IVec3::from([x, y, z]));
             match vox_world.chunk_at(&pos) {
                 Some(_) => None,
                 None => Some((vox_world.gen_chunk(&pos), pos)),

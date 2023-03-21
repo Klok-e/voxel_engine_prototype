@@ -1,4 +1,7 @@
-use bevy::render::mesh::{Indices, Mesh};
+use bevy::{
+    prelude::Vec3,
+    render::mesh::{Indices, Mesh},
+};
 use nalgebra::{Vector2, Vector3};
 
 use crate::directions::Directions;
@@ -21,7 +24,9 @@ impl ChunkMeshData {
         }
     }
 
-    pub fn insert_quad(&mut self, pos: Vector3<f32>, dir: Directions) {
+    pub fn insert_quad(&mut self, pos: Vec3, dir: Directions) {
+        let pos: Vector3<f32> = pos.to_array().into();
+
         if dir.into_iter().count() > 1 {
             panic!("insert_quad called with more than one direction");
         }

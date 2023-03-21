@@ -1,5 +1,6 @@
 use std::iter::from_fn;
 
+use bevy::prelude::IVec3;
 use bitflags::bitflags;
 
 use nalgebra::{Scalar, Vector3};
@@ -24,6 +25,11 @@ impl Directions {
         T: NumAssignRef + Scalar,
     {
         Vector3::<T>::from(*self)
+    }
+
+    #[inline]
+    pub fn to_ivec(&self) -> IVec3 {
+        IVec3::from(*self)
     }
 
     pub fn into_iter(self) -> impl Iterator<Item = Self> {
@@ -99,6 +105,55 @@ where
         if vec.z == Vector3::<T>::from(Directions::NORTH).z {
             res |= Directions::NORTH;
         } else if vec.z == Vector3::<T>::from(Directions::SOUTH).z {
+            res |= Directions::SOUTH;
+        }
+        res
+    }
+}
+
+impl From<Directions> for IVec3 {
+    #[inline]
+    fn from(dir: Directions) -> Self {
+        let mut res = IVec3::ZERO;
+        if dir.intersects(Directions::UP) {
+            res += IVec3::Y;
+        }
+        if dir.intersects(Directions::DOWN) {
+            res -= IVec3::Y;
+        }
+        if dir.intersects(Directions::WEST) {
+            res -= IVec3::X;
+        }
+        if dir.intersects(Directions::EAST) {
+            res += IVec3::X;
+        }
+        if dir.intersects(Directions::NORTH) {
+            res -= IVec3::Z;
+        }
+        if dir.intersects(Directions::SOUTH) {
+            res += IVec3::Z;
+        }
+        res
+    }
+}
+
+impl From<IVec3> for Directions {
+    #[inline]
+    fn from(vec: IVec3) -> Self {
+        let mut res = Directions::empty();
+        if vec.x == IVec3::from(Directions::EAST).x {
+            res |= Directions::EAST;
+        } else if vec.x == IVec3::from(Directions::WEST).x {
+            res |= Directions::WEST;
+        }
+        if vec.y == IVec3::from(Directions::UP).y {
+            res |= Directions::UP;
+        } else if vec.y == IVec3::from(Directions::DOWN).y {
+            res |= Directions::DOWN;
+        }
+        if vec.z == IVec3::from(Directions::NORTH).z {
+            res |= Directions::NORTH;
+        } else if vec.z == IVec3::from(Directions::SOUTH).z {
             res |= Directions::SOUTH;
         }
         res

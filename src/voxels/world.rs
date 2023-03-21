@@ -4,8 +4,11 @@ use super::{
     terrain_generation::{ProceduralGenerator, VoxelGenerator},
     voxel::Voxel,
 };
-use crate::{core::ConvertVecExtension, directions::Directions};
-use bevy::prelude::Resource;
+use crate::{
+    core::{ConvertVecExtension, VecExtensions},
+    directions::Directions,
+};
+use bevy::prelude::{IVec3, Resource, Vec3};
 use flurry::epoch::{pin, Guard};
 use nalgebra::Vector3;
 use rayon::prelude::*;
@@ -78,7 +81,7 @@ where
         self.chunks.insert(*pos, chunk);
     }
 
-    pub fn voxel_at_pos(&self, pos: &Vector3<f32>) -> Option<Voxel> {
+    pub fn voxel_at_pos(&self, pos: &Vec3) -> Option<Voxel> {
         let (ch, ind) = Self::to_ch_pos_index(pos);
         self.voxel_at(&ch, &ind)
     }
@@ -86,7 +89,7 @@ where
         self.chunk_at(chunk).map(|c| c.data()[*ind])
     }
 
-    pub fn set_voxel_at_pos(&self, pos: &Vector3<f32>, new_vox: Voxel, guard: &Guard) {
+    pub fn set_voxel_at_pos(&self, pos: &Vec3, new_vox: Voxel, guard: &Guard) {
         let (ch, ind) = Self::to_ch_pos_index(pos);
         self.set_voxel_at(&ch, &ind, new_vox, guard)
     }
@@ -111,39 +114,39 @@ where
     }
 
     pub fn mesh(&self, chpos: &ChunkPosition) -> Option<ChunkMeshData> {
-        let onef: Vector3<f32> = [1., 1., 1.].into();
+        let onef: Vec3 = [1., 1., 1.].into();
 
         let chunk = self.chunk_at(chpos)?;
         let mut chunk_mesh = ChunkMeshData::new();
         for x in 0..Self::NI {
             for y in 0..Self::NI {
                 for z in 0..Self::NI {
-                    let pos: Vector3<i32> = [x, y, z].into();
-                    let convert_vec: [usize; 3] = (pos).convert_vec();
+                    let pos: IVec3 = [x, y, z].into();
+                    let convert_vec: [usize; 3] = (pos).to_usize();
                     if chunk.data()[convert_vec].is_transparent() {
                         // if current voxel is transparent
                         continue;
                     }
                     // if current voxel is solid
                     for dir in Directions::all().into_iter() {
-                        let dir_vec = dir.to_vec::<i32>();
-                        let spos: Vector3<i32> = pos + dir_vec;
+                        let dir_vec = dir.to_ivec();
+                        let spos = pos + dir_vec;
                         let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => {
-                                let convert_vec: [usize; 3] = index.convert_vec();
+                                let convert_vec: [usize; 3] = index.to_usize();
                                 self.chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))?
                                     .data()[convert_vec]
                             }
                             None => {
-                                let convert_vec: [usize; 3] = spos.convert_vec();
+                                let convert_vec: [usize; 3] = spos.to_usize();
                                 chunk.data()[convert_vec]
                             }
                         };
 
                         if adj_vox.is_transparent() {
                             // if adjacent voxel is transparent
-                            let convert_vec: Vector3<f32> = pos.convert_vec();
-                            chunk_mesh.insert_quad(convert_vec + onef / 2., dir);
+                            let convert_vec: Vec3 = pos.convert_vec();
+                            chunk_mesh.insert_quad((convert_vec + onef / 2.), dir);
                         }
                     }
                 }
@@ -184,7 +187,7 @@ where
 
         let guard = pin();
         for (chunk_pos, adj_dir) in borders_changed.iter(&guard) {
-            let adj_vec = adj_dir.to_vec::<i32>();
+            let adj_vec = adj_dir.to_ivec();
             let next_chunk_pos = chunk_pos.pos + adj_vec;
 
             self.dirty.insert(
@@ -196,15 +199,15 @@ where
         }
     }
 
-    pub fn to_ch_pos_index(pos: &Vector3<f32>) -> (ChunkPosition, [usize; 3]) {
-        let posch: Vector3<f32> = pos / Self::NF;
-        let ch_pos = Vector3::<i32>::new(
+    pub fn to_ch_pos_index(pos: &Vec3) -> (ChunkPosition, [usize; 3]) {
+        let posch: Vec3 = *pos / Self::NF;
+        let ch_pos = IVec3::new(
             posch.x.floor() as i32,
             posch.y.floor() as i32,
             posch.z.floor() as i32,
         );
-        let convert_vec: Vector3<f32> = ch_pos.convert_vec();
-        let index: Vector3<f32> = (posch - convert_vec) * Self::NF;
+        let convert_vec: Vec3 = ch_pos.convert_vec();
+        let index: Vec3 = (posch - convert_vec) * Self::NF;
         let index = [
             index.x.floor() as usize,
             index.y.floor() as usize,
