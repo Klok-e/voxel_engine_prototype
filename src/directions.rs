@@ -1,10 +1,12 @@
+use std::iter::from_fn;
+
 use bitflags::bitflags;
 
-use bitflags::_core::iter::from_fn;
 use nalgebra::{Scalar, Vector3};
 use num::{traits::NumAssignRef, PrimInt};
 
 bitflags! {
+    #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash, PartialOrd, Ord)]
     pub struct Directions: u8 {
         const NORTH = 1 << 0;
         const SOUTH = 1 << 1;

@@ -1,6 +1,7 @@
+use std::cmp::Ordering;
+
 use crate::directions::Directions;
 use bevy::prelude::Component;
-use bitflags::_core::cmp::Ordering;
 use nalgebra::Vector3;
 use ndarray::prelude::*;
 use serde::{Deserialize, Serialize};

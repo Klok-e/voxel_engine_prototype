@@ -3,14 +3,14 @@ use crate::core::ConvertVecExtension;
 use super::{chunk::ChunkPosition, voxel::Voxel};
 use nalgebra::Vector2;
 use ndarray::prelude::*;
-use noise::{Fbm, NoiseFn, Seedable};
+use noise::{Fbm, NoiseFn, Perlin};
 
 pub trait VoxelGenerator<const N: usize> {
     fn fill_random(&self, pos: &ChunkPosition, arr: &mut Array3<Voxel>);
 }
 
 pub struct ProceduralGenerator<const N: usize> {
-    rng: Fbm,
+    rng: Fbm<Perlin>,
 }
 
 impl<const N: usize> Default for ProceduralGenerator<N> {
@@ -24,7 +24,7 @@ impl<const N: usize> ProceduralGenerator<N> {
 
     pub fn new(seed: u32) -> Self {
         Self {
-            rng: Fbm::new().set_seed(seed),
+            rng: Fbm::new(seed),
         }
     }
 }

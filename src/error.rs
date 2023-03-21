@@ -5,7 +5,7 @@ pub enum Error {
     #[error("Io error")]
     ConfigFile(#[from] std::io::Error),
     #[error("Ron Serialization error")]
-    SerializationRon(#[from] ron::Error),
+    SerializationRon(#[from] ron::error::SpannedError),
     #[error("Toml Serialization error")]
     SerializationToml(#[from] toml::de::Error),
 }
