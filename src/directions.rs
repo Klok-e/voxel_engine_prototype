@@ -1,6 +1,6 @@
 use std::iter::from_fn;
 
-use bevy::prelude::IVec3;
+use bevy::prelude::{IVec3, Vec3};
 use bitflags::bitflags;
 
 use nalgebra::{Scalar, Vector3};
@@ -28,8 +28,13 @@ impl Directions {
     }
 
     #[inline]
-    pub fn to_ivec(&self) -> IVec3 {
-        IVec3::from(*self)
+    pub fn to_ivec(self) -> IVec3 {
+        IVec3::from(self)
+    }
+
+    #[inline]
+    pub fn to_fvec(self) -> Vec3 {
+        Vec3::from(self)
     }
 
     pub fn into_iter(self) -> impl Iterator<Item = Self> {
@@ -132,6 +137,32 @@ impl From<Directions> for IVec3 {
         }
         if dir.intersects(Directions::SOUTH) {
             res += IVec3::Z;
+        }
+        res
+    }
+}
+
+impl From<Directions> for Vec3 {
+    #[inline]
+    fn from(dir: Directions) -> Self {
+        let mut res = Vec3::ZERO;
+        if dir.intersects(Directions::UP) {
+            res += Vec3::Y;
+        }
+        if dir.intersects(Directions::DOWN) {
+            res -= Vec3::Y;
+        }
+        if dir.intersects(Directions::WEST) {
+            res -= Vec3::X;
+        }
+        if dir.intersects(Directions::EAST) {
+            res += Vec3::X;
+        }
+        if dir.intersects(Directions::NORTH) {
+            res -= Vec3::Z;
+        }
+        if dir.intersects(Directions::SOUTH) {
+            res += Vec3::Z;
         }
         res
     }

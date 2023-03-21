@@ -1,5 +1,4 @@
 use crate::{
-    core::ConvertVecExtension,
     game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZE},
@@ -9,7 +8,6 @@ use crate::{
 
 use bevy::prelude::{Component, IVec3, Query, Res, Transform, With};
 use flurry::epoch::pin;
-use nalgebra::Vector3;
 use std::collections::HashSet;
 
 #[derive(Component)]
@@ -28,7 +26,7 @@ pub fn dirty_around_system(
     let mut chunks_to_load = HashSet::new();
     for transform in render_bubbles.iter() {
         let pos = transform.translation / CHSIZE as f32;
-        let pos = Vector3::<i32>::new(
+        let pos = IVec3::new(
             pos.x.floor() as i32,
             pos.y.floor() as i32,
             pos.z.floor() as i32,
@@ -42,7 +40,7 @@ pub fn dirty_around_system(
         for z in -render_around..=render_around {
             for y in -render_around..=render_around {
                 for x in -render_around..=render_around {
-                    let convert_vec: IVec3 = pos.convert_vec();
+                    let convert_vec: IVec3 = pos;
                     let pos = ChunkPosition::new(IVec3::new(x, y, z) + convert_vec);
                     chunks_to_load.insert(pos);
                 }

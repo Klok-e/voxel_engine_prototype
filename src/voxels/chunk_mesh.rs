@@ -1,16 +1,15 @@
 use bevy::{
-    prelude::Vec3,
+    prelude::{Vec2, Vec3},
     render::mesh::{Indices, Mesh},
 };
-use nalgebra::{Vector2, Vector3};
 
 use crate::directions::Directions;
 
 #[derive(Debug)]
 pub struct ChunkMeshData {
-    positions: Vec<Vector3<f32>>,
-    normals: Vec<Vector3<f32>>,
-    uv: Vec<Vector2<f32>>,
+    positions: Vec<Vec3>,
+    normals: Vec<Vec3>,
+    uv: Vec<Vec2>,
     indices: Vec<u16>,
 }
 
@@ -25,8 +24,6 @@ impl ChunkMeshData {
     }
 
     pub fn insert_quad(&mut self, pos: Vec3, dir: Directions) {
-        let pos: Vector3<f32> = pos.to_array().into();
-
         if dir.into_iter().count() > 1 {
             panic!("insert_quad called with more than one direction");
         }
@@ -37,7 +34,7 @@ impl ChunkMeshData {
         |       |  x|
         0-------1  y->
         */
-        let verts: [(Vector3<f32>, Vector3<f32>, Vector3<f32>, Vector3<f32>); 6] = [
+        let verts: [(Vec3, Vec3, Vec3, Vec3); 6] = [
             // south
             (
                 [-0.5, 0.5, 0.5].into(),
@@ -97,10 +94,10 @@ impl ChunkMeshData {
         self.positions.push(pos + vert2);
         self.positions.push(pos + vert3);
 
-        self.normals.push(dir.to_vec());
-        self.normals.push(dir.to_vec());
-        self.normals.push(dir.to_vec());
-        self.normals.push(dir.to_vec());
+        self.normals.push(dir.to_fvec());
+        self.normals.push(dir.to_fvec());
+        self.normals.push(dir.to_fvec());
+        self.normals.push(dir.to_fvec());
 
         self.uv.push([0., 0.].into());
         self.uv.push([1., 0.].into());
