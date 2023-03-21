@@ -2,10 +2,9 @@ use crate::{
     game_config::RuntimeGameConfig,
     voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
 };
-use bevy::prelude::{Component, IVec3, Query, Res, ResMut, Transform, With};
+use bevy::prelude::{IVec3, Query, Res, ResMut, Transform, With};
 
-#[derive(Component)]
-pub struct GenerateMapAround;
+use super::components::GenerateMapAround;
 
 pub fn generate_map_around_system(
     mut vox_world: ResMut<VoxelWorldProcedural>,

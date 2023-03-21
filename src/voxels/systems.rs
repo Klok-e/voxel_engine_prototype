@@ -8,6 +8,7 @@ use world_change_apply_system::world_apply_changes_system;
 use super::{chunk::CHSIZE, terrain_generation::ProceduralGenerator, world::VoxelWorld};
 
 pub mod chunk_render;
+pub mod components;
 pub mod destroy_on_touch_system;
 pub mod dirty_around_system;
 pub mod generate_map_around_system;

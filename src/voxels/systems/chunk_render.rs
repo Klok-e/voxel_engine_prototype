@@ -3,6 +3,7 @@ use crate::{
     game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZEI},
+        systems::components::RenderedTag,
         world::VoxelWorldProcedural,
     },
 };
@@ -18,7 +19,7 @@ use std::{
     },
 };
 
-use super::{dirty_around_system::RenderedTag, materials::Materials};
+use super::materials::Materials;
 
 pub fn chunk_render_system(
     mut commands: Commands,
@@ -30,8 +31,6 @@ pub fn chunk_render_system(
 ) {
     struct CreateNew(ChunkPosition, Transform, RenderedTag);
     struct SetMesh(Mesh, Option<Entity>);
-
-    // debug!("chunk_render");
 
     let chunk_entities = {
         let mut map = HashMap::new();
@@ -71,14 +70,6 @@ pub fn chunk_render_system(
             if ent.is_none() {
                 let mut transform = Transform::default();
                 transform.translation = (to_clean.pos * CHSIZEI).convert_vec();
-
-                // draw debug lines
-                // let mut debug_lines = DebugLinesComponent::new();
-                // debug_lines.add_box(
-                //     (to_vecf(to_clean.pos) * CHSIZEF).into(),
-                //     ((to_vecf(to_clean.pos) + Vec3f::from([1., 1., 1.])) * CHSIZEF).into(),
-                //     Srgba::new(0.1, 0.1, 0.1, 0.5),
-                // );
 
                 // create entity
                 command = (Some(CreateNew(to_clean, transform, RenderedTag)), None);

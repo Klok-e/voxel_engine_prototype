@@ -1,8 +1,7 @@
 use crate::voxels::{voxel::Voxel, world::VoxelWorldProcedural};
-use bevy::prelude::{Component, Query, Res};
+use bevy::prelude::{Query, Res};
 
-#[derive(Debug, Default, Component)]
-pub struct DestroyVoxOnTouch;
+use super::components::DestroyVoxOnTouch;
 
 pub fn destroy_on_touch_system(
     vox_world: Res<VoxelWorldProcedural>,

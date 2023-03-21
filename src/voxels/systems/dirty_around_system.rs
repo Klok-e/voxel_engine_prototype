@@ -6,14 +6,10 @@ use crate::{
     },
 };
 
-use bevy::prelude::{Component, IVec3, Query, Res, Transform, With};
+use bevy::prelude::{IVec3, Query, Res, Transform, With};
 use std::collections::HashSet;
 
-#[derive(Component)]
-pub struct RenderedTag;
-
-#[derive(Component)]
-pub struct RenderAround;
+use super::components::{RenderAround, RenderedTag};
 
 pub fn dirty_around_system(
     vox_world: Res<VoxelWorldProcedural>,

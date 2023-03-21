@@ -9,8 +9,9 @@ use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
     game_config::{GameConfig, GameConfigPlugin},
     voxels::systems::{
-        dirty_around_system::RenderAround, generate_map_around_system::GenerateMapAround,
-        materials::Materials, VoxelBundle,
+        components::{GenerateMapAround, RenderAround},
+        materials::Materials,
+        VoxelBundle,
     },
 };
 
