@@ -10,7 +10,7 @@ use crate::{
 };
 use bevy::prelude::{IVec3, Resource, Vec3};
 use flurry::epoch::{pin, Guard};
-use nalgebra::Vector3;
+
 use rayon::prelude::*;
 use std::{
     collections::{HashMap, VecDeque},
@@ -146,7 +146,7 @@ where
                         if adj_vox.is_transparent() {
                             // if adjacent voxel is transparent
                             let convert_vec: Vec3 = pos.convert_vec();
-                            chunk_mesh.insert_quad((convert_vec + onef / 2.), dir);
+                            chunk_mesh.insert_quad(convert_vec + onef / 2., dir);
                         }
                     }
                 }

@@ -1,10 +1,8 @@
 use crate::{
-    core::ConvertVecExtension,
     game_config::RuntimeGameConfig,
     voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
 };
 use bevy::prelude::{Component, IVec3, Query, Res, ResMut, Transform, With};
-use nalgebra::Vector3;
 
 #[derive(Component)]
 pub struct GenerateMapAround;

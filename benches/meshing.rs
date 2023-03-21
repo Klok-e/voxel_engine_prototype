@@ -1,11 +1,11 @@
 use std::sync::{Arc, Mutex};
 
+use bevy::prelude::IVec3;
 use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BatchSize, BenchmarkGroup, BenchmarkId,
     Criterion,
 };
 
-use nalgebra::Vector3;
 use ndarray::Array3;
 use rand::prelude::*;
 use voxel_engine_prototype_lib::{
@@ -35,10 +35,10 @@ impl<const N: usize> VoxelGenerator<N> for RandomGenerator<N> {
 
 fn setup<const N: usize>() -> VoxelWorld<RandomGenerator<N>, N> {
     let world = VoxelWorld::new(RandomGenerator::new(42));
-    let pos = Vector3::<i32>::new(0, 0, 0);
+    let pos = IVec3::new(0, 0, 0);
     world.gen_chunk(&ChunkPosition::new(pos));
     for dir in Directions::all().into_iter() {
-        let dir_vec = dir.to_vec::<i32>();
+        let dir_vec = dir.to_ivec();
         world.gen_chunk(&ChunkPosition::new(pos + dir_vec));
     }
     world

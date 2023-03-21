@@ -1,8 +1,6 @@
-use crate::core::ConvertVecExtension;
-
 use super::{chunk::ChunkPosition, voxel::Voxel};
 use bevy::{math::Vec3Swizzles, prelude::IVec2};
-use nalgebra::Vector2;
+
 use ndarray::prelude::*;
 use noise::{Fbm, NoiseFn, Perlin};
 
@@ -36,7 +34,7 @@ impl<const N: usize> VoxelGenerator<N> for ProceduralGenerator<N> {
         for x in 0..Self::NI {
             for z in 0..Self::NI {
                 let p = IVec2::from([x, z]);
-                let p = (p + pos.pos.xz() * Self::NI);
+                let p = p + pos.pos.xz() * Self::NI;
                 let value = self.rng.get([p.x as f64 / 100., p.y as f64 / 100.]);
                 for y in 0..Self::NI {
                     let height = y + pos.pos[1] * Self::NI;

@@ -1,7 +1,4 @@
-use crate::{
-    core::ConvertVecExtension,
-    voxels::{voxel::Voxel, world::VoxelWorldProcedural},
-};
+use crate::voxels::{voxel::Voxel, world::VoxelWorldProcedural};
 use bevy::prelude::{Component, Query, Res};
 use flurry::epoch::pin;
 
