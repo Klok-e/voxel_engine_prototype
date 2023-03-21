@@ -11,7 +11,6 @@ use crate::{
 use bevy::prelude::{IVec3, Resource, Vec3};
 use flurry::Guard;
 
-use rayon::prelude::*;
 use std::{
     collections::{HashMap, VecDeque},
     sync::Mutex,

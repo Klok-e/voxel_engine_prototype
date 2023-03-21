@@ -1,4 +1,4 @@
-use std::{error::Error, f32::consts::PI, path::Path};
+use std::{error::Error, path::Path};
 
 use bevy::{
     log::Level,
@@ -31,26 +31,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         )?))
         .add_plugin(VoxelBundle)
         .add_startup_system(startup)
-        .add_startup_system(add_camera)
+        .add_startup_system(add_camera_settings)
         .add_system(camera_move_system)
         .run();
 
     Ok(())
 }
 
-/// A marker component for our shapes so we can query them separately from the ground plane
-#[derive(Component)]
-struct Shape;
-
-const X_EXTENT: f32 = 14.5;
-
-fn add_camera(mut commands: Commands) {
+fn add_camera_settings(mut commands: Commands) {
     commands.insert_resource(CameraMoveSensitivity::default());
 }
 
 fn startup(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
@@ -60,46 +53,12 @@ fn startup(
     });
 
     commands.insert_resource(Materials {
-        material: debug_material.clone(),
+        material: debug_material,
     });
 
-    let shapes = [
-        meshes.add(shape::Cube::default().into()),
-        meshes.add(shape::Box::default().into()),
-        meshes.add(shape::Capsule::default().into()),
-        meshes.add(shape::Torus::default().into()),
-        meshes.add(shape::Cylinder::default().into()),
-        meshes.add(shape::Icosphere::default().try_into().unwrap()),
-        meshes.add(shape::UVSphere::default().into()),
-    ];
-
-    let num_shapes = shapes.len();
-
-    for (i, shape) in shapes.into_iter().enumerate() {
-        commands.spawn((
-            PbrBundle {
-                mesh: shape,
-                material: debug_material.clone(),
-                transform: Transform::from_xyz(
-                    -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
-                    2.0,
-                    0.0,
-                )
-                .with_rotation(Quat::from_rotation_x(-PI / 4.)),
-                ..default()
-            },
-            Shape,
-        ));
-    }
-
-    commands.spawn(PointLightBundle {
-        point_light: PointLight {
-            intensity: 9000.0,
-            range: 100.,
-            shadows_enabled: true,
-            ..default()
-        },
-        transform: Transform::from_xyz(8.0, 16.0, 8.0),
+    commands.spawn(bevy::pbr::DirectionalLightBundle {
+        directional_light: DirectionalLight { ..default() },
+        transform: Transform::default().looking_to(Vec3::NEG_Y, Vec3::NEG_Z),
         ..default()
     });
 
