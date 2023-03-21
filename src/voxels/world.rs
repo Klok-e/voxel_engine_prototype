@@ -9,7 +9,7 @@ use crate::{
     directions::Directions,
 };
 use bevy::prelude::{IVec3, Resource, Vec3};
-use flurry::epoch::{pin, Guard};
+use flurry::Guard;
 
 use rayon::prelude::*;
 use std::{
@@ -158,44 +158,40 @@ where
 
     pub fn apply_voxel_changes(&mut self) {
         let borders_changed = flurry::HashSet::new();
+        let borders_changed = borders_changed.pin();
 
         let chunks = &mut self.chunks;
-        let chunk_changes = &self.chunk_changes;
-        let dirty = &self.dirty;
+        let chunk_changes = self.chunk_changes.pin();
+        let dirty = self.dirty.pin();
 
-        chunks
-            .par_iter_mut()
-            .for_each_init(pin, |guard, (pos, chunk)| {
-                let changes = match chunk_changes.get(pos, guard) {
-                    Some(x) => x,
-                    None => return,
-                };
-                let mut list = changes.try_lock().unwrap();
-                list.iter().for_each(|change| {
-                    chunk.data_mut()[change.index] = change.new_vox;
+        chunks.iter_mut().for_each(|(pos, chunk)| {
+            let changes = match chunk_changes.get(pos) {
+                Some(x) => x,
+                None => return,
+            };
+            let mut list = changes.try_lock().unwrap();
+            list.iter().for_each(|change| {
+                chunk.data_mut()[change.index] = change.new_vox;
 
-                    dirty.insert(*pos, guard);
+                dirty.insert(*pos);
 
-                    // if on a border
-                    let border = Chunk::<N>::is_on_border(&change.index);
-                    if let Some(border_dir) = border {
-                        borders_changed.insert((*pos, border_dir), guard);
-                    }
-                });
-                list.clear();
+                // if on a border
+                let border = Chunk::<N>::is_on_border(&change.index);
+                if let Some(border_dir) = border {
+                    borders_changed.insert((*pos, border_dir));
+                }
             });
+            list.clear();
+        });
 
-        let guard = pin();
-        for (chunk_pos, adj_dir) in borders_changed.iter(&guard) {
+        let dirty = self.dirty.pin();
+        for (chunk_pos, adj_dir) in borders_changed.iter() {
             let adj_vec = adj_dir.to_ivec();
             let next_chunk_pos = chunk_pos.pos + adj_vec;
 
-            self.dirty.insert(
-                ChunkPosition {
-                    pos: next_chunk_pos,
-                },
-                &guard,
-            );
+            dirty.insert(ChunkPosition {
+                pos: next_chunk_pos,
+            });
         }
     }
 

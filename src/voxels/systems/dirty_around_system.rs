@@ -7,7 +7,6 @@ use crate::{
 };
 
 use bevy::prelude::{Component, IVec3, Query, Res, Transform, With};
-use flurry::epoch::pin;
 use std::collections::HashSet;
 
 #[derive(Component)]
@@ -48,8 +47,8 @@ pub fn dirty_around_system(
         }
     }
 
-    let guard = pin();
+    let dirty = vox_world.dirty().pin();
     for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-        vox_world.dirty().insert(*to_load_pos, &guard);
+        dirty.insert(*to_load_pos);
     }
 }

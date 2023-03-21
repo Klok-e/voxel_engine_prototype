@@ -6,8 +6,8 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dev-dependencies]
-rstest = "0.10.0"
-criterion = "0.3"
+rstest = "0.16.0"
+criterion = "0.4.0"
 
 # [[bench]]
 # name = "meshing"
@@ -25,7 +25,7 @@ chrono = "0.4.19"
 ndarray = "0.15.3"
 rand = { version = "0.8.3", features = ["small_rng"] }
 noise = "0.8.2"
-flurry = { version = "0.3.1", features = ["rayon"] }
+flurry = { version = "0.4.0", features = ["rayon"] }
 serde = { version = "1.0", features = ["derive"] }
 ron = "0.8.0"
 thiserror = "1.0"

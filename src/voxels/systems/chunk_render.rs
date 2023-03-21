@@ -9,7 +9,6 @@ use crate::{
 use bevy::prelude::{
     default, Assets, Commands, Entity, Mesh, PbrBundle, Query, Res, ResMut, Transform,
 };
-use flurry::epoch::pin;
 use rayon::prelude::*;
 use std::{
     collections::HashMap,
@@ -45,15 +44,15 @@ pub fn chunk_render_system(
     let (sender, receiver) = channel();
 
     let rendered = AtomicU32::new(0);
-    let guard = pin();
     vox_world
         .dirty()
-        .iter(&guard)
+        .pin()
+        .iter()
         .collect::<Vec<_>>()
         .into_par_iter()
         .copied()
         .map_with(sender, |s, pos| (pos, s.clone()))
-        .for_each_init(pin, |guard, (to_clean, sender)| {
+        .for_each(|(to_clean, sender)| {
             if rendered.load(Ordering::SeqCst) >= config.chunks_render_per_frame {
                 return;
             }
@@ -89,7 +88,7 @@ pub fn chunk_render_system(
             }
             sender.send(command).unwrap();
 
-            vox_world.dirty().remove(&to_clean, guard);
+            vox_world.dirty().pin().remove(&to_clean);
 
             let r = rendered.load(Ordering::SeqCst);
             rendered.store(r + 1, Ordering::SeqCst)
