@@ -68,8 +68,10 @@ pub fn chunk_render_system(
             let mut command = (None, None);
             let ent = chunk_entities.get(&to_clean).cloned();
             if ent.is_none() {
-                let mut transform = Transform::default();
-                transform.translation = (to_clean.pos * CHSIZEI).convert_vec();
+                let transform = Transform {
+                    translation: (to_clean.pos * CHSIZEI).convert_vec(),
+                    ..Default::default()
+                };
 
                 // create entity
                 command = (Some(CreateNew(to_clean, transform, RenderedTag)), None);

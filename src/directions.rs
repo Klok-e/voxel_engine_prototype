@@ -1,5 +1,3 @@
-use std::iter::from_fn;
-
 use bevy::prelude::{IVec3, Vec3};
 use bitflags::bitflags;
 
@@ -24,25 +22,6 @@ impl Directions {
     #[inline]
     pub fn to_fvec(self) -> Vec3 {
         Vec3::from(self)
-    }
-
-    pub fn into_iter(self) -> impl Iterator<Item = Self> {
-        let mut i = 0u8;
-        const MAX: u8 = 6u8;
-        from_fn(move || {
-            let mut res = Directions::from_bits_truncate(1 << i);
-            while !self.contains(res) && i < MAX {
-                i += 1;
-                res = Directions::from_bits_truncate(1 << i);
-            }
-            let prev_i = i;
-            i += 1;
-            if prev_i >= MAX {
-                None
-            } else {
-                Some(res)
-            }
-        })
     }
 
     pub fn invert(self) -> Self {

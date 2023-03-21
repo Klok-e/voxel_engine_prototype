@@ -79,6 +79,12 @@ impl<const N: usize> Chunk<N> {
     }
 }
 
+impl<const N: usize> Default for Chunk<N> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Deserialize, Serialize, Component)]
 pub struct ChunkPosition {
     pub pos: IVec3,

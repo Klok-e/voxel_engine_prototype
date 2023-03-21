@@ -5,7 +5,7 @@ use bevy::{
 
 use crate::directions::Directions;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ChunkMeshData {
     positions: Vec<Vec3>,
     normals: Vec<Vec3>,
@@ -15,12 +15,7 @@ pub struct ChunkMeshData {
 
 impl ChunkMeshData {
     pub fn new() -> Self {
-        ChunkMeshData {
-            positions: Vec::new(),
-            normals: Vec::new(),
-            uv: Vec::new(),
-            indices: Vec::new(),
-        }
+        Self::default()
     }
 
     pub fn insert_quad(&mut self, pos: Vec3, dir: Directions) {
@@ -113,7 +108,7 @@ impl ChunkMeshData {
     }
 
     /// Returns a mesh. None if mesh is empty.
-    pub fn build_mesh<'a>(&self) -> Option<Mesh> {
+    pub fn build_mesh(&self) -> Option<Mesh> {
         if self.positions.is_empty() {
             None
         } else {
