@@ -9,12 +9,14 @@ use bevy::{
 pub struct CameraMoveSensitivity {
     pub mouse: f32,
     pub translation: f32,
+    pub boost_translation: f32,
 }
 impl Default for CameraMoveSensitivity {
     fn default() -> Self {
         Self {
             mouse: 0.001,
             translation: 0.1,
+            boost_translation: 10.,
         }
     }
 }
@@ -49,6 +51,11 @@ pub fn camera_move_system(
     if keyboard.pressed(KeyCode::C) {
         translation -= math::Vec3::Y;
     }
+    let boost = if keyboard.pressed(KeyCode::LShift) {
+        sensitivity.boost_translation
+    } else {
+        1.
+    };
 
     let mut delta = math::Vec2::ZERO;
     for event in cursor_moved_events.iter() {
@@ -57,7 +64,7 @@ pub fn camera_move_system(
 
     for mut cam_trans in cameras.iter_mut() {
         let vec3 = cam_trans.rotation * translation;
-        cam_trans.translation += vec3 * sensitivity.translation;
+        cam_trans.translation += vec3 * sensitivity.translation * boost;
 
         cam_trans.rotate_local_x(sensitivity.mouse * -delta.y);
         cam_trans.rotate_local_y(sensitivity.mouse * -delta.x);

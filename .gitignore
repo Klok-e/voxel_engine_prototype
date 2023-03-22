@@ -3,6 +3,7 @@
 /output.log
 /.idea
 /perf.data*
-/flamegraph.svg
+/trace-*.json
+/flamegraph*.svg
 /.assets_db
 .vscode/settings.json

@@ -18,7 +18,7 @@ name = "generation"
 harness = false
 
 [dependencies]
-bevy = { version = "0.10", features = ["dynamic_linking"] }
+bevy = { version = "0.10", features = [] }
 bitflags = "2.0.0"
 lazy_static = "1.4.0"
 chrono = "0.4.19"
@@ -40,9 +40,9 @@ opt-level = 3
 [profile.dev]
 opt-level = 1
 
-# [profile.release]
+[profile.release]
 # lto = "thin"
-# debug = true
+debug = true
 
 [profile.bench]
 # lto = "thin"

@@ -14,11 +14,22 @@ use super::components::{RenderAround, RenderedTag};
 pub fn dirty_around_system(
     vox_world: Res<VoxelWorldProcedural>,
     config: Res<RuntimeGameConfig>,
-    render_bubbles: Query<&Transform, (With<Transform>, With<RenderAround>)>,
-    rendered_chunks: Query<&ChunkPosition, (With<ChunkPosition>, With<RenderedTag>)>,
+    render_bubbles: Query<&Transform, (With<RenderAround>,)>,
+    rendered_chunks: Query<&ChunkPosition, (With<RenderedTag>,)>,
+    chunks: Query<&ChunkPosition>,
 ) {
+    let mut chunks_set = HashSet::new();
     let mut loaded_chunks = HashSet::new();
     let mut chunks_to_load = HashSet::new();
+
+    for chpos in chunks.iter() {
+        chunks_set.insert(*chpos);
+    }
+
+    for chunk_pos in rendered_chunks.iter() {
+        loaded_chunks.insert(*chunk_pos);
+    }
+
     for transform in render_bubbles.iter() {
         let pos = transform.translation / CHSIZE as f32;
         let pos = IVec3::new(
@@ -26,10 +37,6 @@ pub fn dirty_around_system(
             pos.y.floor() as i32,
             pos.z.floor() as i32,
         );
-
-        for chunk_pos in rendered_chunks.iter() {
-            loaded_chunks.insert(*chunk_pos);
-        }
 
         let render_around = config.config.render_around_bubble as i32;
         for z in -render_around..=render_around {
@@ -45,6 +52,8 @@ pub fn dirty_around_system(
 
     let dirty = vox_world.dirty().pin();
     for to_load_pos in chunks_to_load.difference(&loaded_chunks) {
-        dirty.insert(*to_load_pos);
+        if chunks_set.contains(to_load_pos) {
+            dirty.insert(*to_load_pos);
+        }
     }
 }

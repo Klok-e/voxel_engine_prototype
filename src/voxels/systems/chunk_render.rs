@@ -1,15 +1,8 @@
 use crate::{
-    core::ConvertVecExtension,
     game_config::RuntimeGameConfig,
-    voxels::{
-        chunk::{ChunkPosition, CHSIZEI},
-        systems::components::RenderedTag,
-        world::VoxelWorldProcedural,
-    },
+    voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
 };
-use bevy::prelude::{
-    default, Assets, Commands, Entity, Mesh, PbrBundle, Query, Res, ResMut, Transform,
-};
+use bevy::prelude::{Assets, Commands, Entity, Mesh, Query, Res, ResMut};
 use rayon::prelude::*;
 use std::{
     collections::HashMap,
@@ -26,15 +19,15 @@ pub fn chunk_render_system(
     vox_world: Res<VoxelWorldProcedural>,
     config: Res<RuntimeGameConfig>,
     mats: Res<Materials>,
-    mut q1: Query<(Entity, &mut ChunkPosition)>,
+    mut chunks: Query<(Entity, &mut ChunkPosition)>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    struct CreateNew(ChunkPosition, Transform, RenderedTag);
-    struct SetMesh(Mesh, Option<Entity>);
+    #[derive(Debug)]
+    struct SetMesh(Mesh, Entity);
 
     let chunk_entities = {
         let mut map = HashMap::new();
-        for (ent, chunk_pos) in q1.iter_mut() {
+        for (ent, chunk_pos) in chunks.iter_mut() {
             map.insert(*chunk_pos, ent);
         }
         map
@@ -65,19 +58,10 @@ pub fn chunk_render_system(
             let mesh: Option<Mesh> = mesh.build_mesh();
 
             // get entity from hashmap or create a new one
-            let mut command = (None, None);
-            let ent = chunk_entities.get(&to_clean).cloned();
-            if ent.is_none() {
-                let transform = Transform {
-                    translation: (to_clean.pos * CHSIZEI).convert_vec(),
-                    ..Default::default()
-                };
-
-                // create entity
-                command = (Some(CreateNew(to_clean, transform, RenderedTag)), None);
-            };
+            let mut command = None;
+            let ent = chunk_entities[&to_clean];
             if let Some(m) = mesh {
-                command.1 = Some(SetMesh(m, ent));
+                command = Some(SetMesh(m, ent));
             }
             sender.send(command).unwrap();
 
@@ -89,29 +73,12 @@ pub fn chunk_render_system(
 
     for cmd in receiver.into_iter() {
         match cmd {
-            (Some(CreateNew(chpos, pos, render)), Some(SetMesh(mesh, _))) => {
+            Some(SetMesh(mesh, ent)) => {
                 commands
-                    .spawn(PbrBundle {
-                        mesh: meshes.add(mesh),
-                        material: mats.material.clone(),
-                        transform: pos,
-                        ..default()
-                    })
-                    .insert((chpos, render));
+                    .entity(ent)
+                    .insert((meshes.add(mesh), mats.material.clone()));
             }
-            (Some(CreateNew(chpos, pos, render)), None) => {
-                commands
-                    .spawn(PbrBundle {
-                        material: mats.material.clone(),
-                        transform: pos,
-                        ..default()
-                    })
-                    .insert((chpos, render));
-            }
-            (None, Some(SetMesh(mesh, ent))) => {
-                commands.entity(ent.unwrap()).insert(meshes.add(mesh));
-            }
-            (None, None) => {}
+            None => {}
         }
     }
 }

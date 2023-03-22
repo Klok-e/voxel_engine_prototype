@@ -1,5 +1,5 @@
 (
-    generation_maintain_fps: 30,
+    generation_maintain_fps: 60,
     render_around_bubble: 8,
-    generate_around_bubble: 10,
+    generate_around_bubble: 12,
 )

@@ -8,10 +8,12 @@ use bevy::{
 use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
     game_config::{GameConfig, GameConfigPlugin},
-    voxels::systems::{
-        components::{GenerateMapAround, RenderAround},
-        materials::Materials,
-        VoxelBundle,
+    voxels::{
+        bundle::VoxelBundle,
+        systems::{
+            components::{DestroyVoxOnTouch, GenerateMapAround, RenderAround},
+            materials::Materials,
+        },
     },
 };
 
@@ -69,7 +71,7 @@ fn startup(
                 .looking_at(Vec3::new(0., 1., 0.), Vec3::Y),
             ..default()
         })
-        .insert((RenderAround, GenerateMapAround));
+        .insert((RenderAround, GenerateMapAround, DestroyVoxOnTouch));
 }
 
 /// Creates a colorful test pattern
