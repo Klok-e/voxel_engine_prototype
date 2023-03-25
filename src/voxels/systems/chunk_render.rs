@@ -1,6 +1,6 @@
 use crate::{
     game_config::RuntimeGameConfig,
-    voxels::{chunk::ChunkPosition, world::VoxelWorldProcedural},
+    voxels::{chunk::ChunkPosition, systems::components::RenderedTag, world::VoxelWorldProcedural},
 };
 use bevy::prelude::{Assets, Commands, Entity, Mesh, Query, Res, ResMut};
 use rayon::prelude::*;
@@ -75,6 +75,6 @@ pub fn chunk_render_system(
         let SetMesh(mesh, ent) = cmd;
         commands
             .entity(ent)
-            .insert((meshes.add(mesh), mats.material.clone()));
+            .insert((meshes.add(mesh), mats.material.clone(), RenderedTag));
     }
 }

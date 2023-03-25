@@ -8,10 +8,7 @@ use crate::{
 };
 use bevy::prelude::{Commands, Entity, IVec3, PbrBundle, Query, Res, ResMut, Transform, With};
 
-use super::{
-    common::process_chunk_edges,
-    components::{EdgeChunk, EdgeRenderChunk, GenerateMapAround},
-};
+use super::components::{EdgeChunk, GenerateMapAround};
 
 pub fn generate_map_around_system(
     mut vox_world: ResMut<VoxelWorldProcedural>,
@@ -21,23 +18,32 @@ pub fn generate_map_around_system(
     edge_chunks: Query<(Entity, &ChunkPosition), (With<EdgeChunk>,)>,
     mut commands: Commands,
 ) {
-    process_chunk_edges::<EdgeChunk, GenerateMapAround>(
-        edge_chunks,
-        &mut vox_world,
-        &loaders,
-        &mut ent_chunks,
-        &mut commands,
-        |edge_chunk_pos, loaders, vox_world, ent_chunks, commands| {
-            generate_chunks_on_edge(
-                loaders,
-                edge_chunk_pos,
-                config.config.generate_around_bubble,
-                vox_world,
-                ent_chunks,
-                commands,
-            )
-        },
-    );
+    // info!("gen edge_chunks {}", edge_chunks.iter().count());
+
+    for (ent, chpos) in edge_chunks.iter() {
+        let mut is_edge = false;
+        for dir in crate::directions::Directions::all()
+            .into_iter()
+            .map(|d| d.to_ivec())
+        {
+            let edge_chunk_pos = chpos.pos + dir;
+            if vox_world.chunk_at(&edge_chunk_pos.into()).is_none() {
+                is_edge = true;
+
+                generate_chunks_on_edge(
+                    &loaders,
+                    edge_chunk_pos,
+                    config.config.generate_around_bubble,
+                    &mut vox_world,
+                    &mut ent_chunks,
+                    &mut commands,
+                )
+            }
+        }
+        if !is_edge {
+            commands.entity(ent).remove::<EdgeChunk>();
+        }
+    }
 
     for transform in loaders.iter() {
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
@@ -78,7 +84,6 @@ fn create_chunk(
         .spawn((
             chpos,
             EdgeChunk,
-            EdgeRenderChunk,
             PbrBundle {
                 transform: Transform {
                     translation: (chpos.pos * CHSIZEI).as_vec3(),
