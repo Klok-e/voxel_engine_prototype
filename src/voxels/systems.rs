@@ -1,4 +1,5 @@
 pub mod chunk_render;
+pub mod common;
 pub mod components;
 pub mod destroy_on_touch_system;
 pub mod dirty_around_system;
