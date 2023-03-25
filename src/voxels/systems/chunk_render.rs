@@ -4,13 +4,7 @@ use crate::{
 };
 use bevy::prelude::{Assets, Commands, Entity, Mesh, Query, Res, ResMut};
 use rayon::prelude::*;
-use std::{
-    collections::HashMap,
-    sync::{
-        atomic::{AtomicU32, Ordering},
-        mpsc::channel,
-    },
-};
+use std::{collections::HashMap, sync::mpsc::channel};
 
 use super::materials::Materials;
 
@@ -22,9 +16,6 @@ pub fn chunk_render_system(
     mut chunks: Query<(Entity, &mut ChunkPosition)>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    #[derive(Debug)]
-    struct SetMesh(Mesh, Entity);
-
     let chunk_entities = {
         let mut map = HashMap::new();
         for (ent, chunk_pos) in chunks.iter_mut() {
@@ -35,46 +26,33 @@ pub fn chunk_render_system(
 
     let (sender, receiver) = channel();
 
-    let rendered = AtomicU32::new(0);
-    vox_world
-        .dirty()
-        .pin()
+    let dirty = vox_world.dirty().pin();
+    dirty
         .iter()
+        .take(config.chunks_render_per_frame as usize)
         .collect::<Vec<_>>()
         .into_par_iter()
         .copied()
         .map_with(sender, |s, pos| (pos, s.clone()))
         .for_each(|(to_clean, sender)| {
-            if rendered.load(Ordering::SeqCst) >= config.chunks_render_per_frame {
-                return;
-            }
-            let mesh = if let Some(m) = vox_world.mesh(&to_clean) {
-                m
-            } else {
-                return;
-            };
+            let mesh = vox_world.mesh(&to_clean);
 
             // create mesh
             let mesh: Option<Mesh> = mesh.build_mesh();
 
             // get entity from hashmap or create a new one
-            let mut command = None;
             let ent = chunk_entities[&to_clean];
-            if let Some(m) = mesh {
-                command = Some(SetMesh(m, ent));
-            }
-            sender.send(command).unwrap();
-
-            vox_world.dirty().pin().remove(&to_clean);
-
-            let r = rendered.load(Ordering::SeqCst);
-            rendered.store(r + 1, Ordering::SeqCst)
+            sender.send((mesh, ent, to_clean)).unwrap();
         });
 
-    for cmd in receiver.into_iter().flatten() {
-        let SetMesh(mesh, ent) = cmd;
-        commands
-            .entity(ent)
-            .insert((meshes.add(mesh), mats.material.clone(), RenderedTag));
+    for cmd in receiver.into_iter() {
+        let (mesh, ent, to_clean) = cmd;
+        let mut entity = commands.entity(ent);
+        if let Some(mesh) = mesh {
+            entity.insert((meshes.add(mesh), mats.material.clone()));
+        }
+        entity.insert(RenderedTag);
+
+        dirty.remove(&to_clean);
     }
 }

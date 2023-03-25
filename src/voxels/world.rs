@@ -112,10 +112,10 @@ where
         ch_list.push_back(VoxChange::new(*ind, new_vox));
     }
 
-    pub fn mesh(&self, chpos: &ChunkPosition) -> Option<ChunkMeshData> {
+    pub fn mesh(&self, chpos: &ChunkPosition) -> ChunkMeshData {
         let onef: Vec3 = [1., 1., 1.].into();
 
-        let chunk = self.chunk_at(chpos)?;
+        let chunk = self.chunk_at(chpos).unwrap();
         let mut chunk_mesh = ChunkMeshData::new();
         for x in 0..Self::NI {
             for y in 0..Self::NI {
@@ -133,7 +133,8 @@ where
                         let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => {
                                 let convert_vec: [usize; 3] = index.to_usize();
-                                self.chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))?
+                                self.chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))
+                                    .unwrap()
                                     .data()[convert_vec]
                             }
                             None => {
@@ -152,7 +153,7 @@ where
             }
         }
 
-        Some(chunk_mesh)
+        chunk_mesh
     }
 
     pub fn apply_voxel_changes(&mut self) {
@@ -183,7 +184,6 @@ where
             list.clear();
         });
 
-        let dirty = self.dirty.pin();
         for (chunk_pos, adj_dir) in borders_changed.iter() {
             let adj_vec = adj_dir.to_ivec();
             let next_chunk_pos = chunk_pos.pos + adj_vec;

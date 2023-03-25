@@ -3,7 +3,7 @@ use crate::{
     voxels::{chunk::ChunkPosition, resources::EntityChunks, world::VoxelWorldProcedural},
 };
 
-use bevy::prelude::{info, Commands, Entity, IVec3, Query, Res, ResMut, Transform, With};
+use bevy::prelude::{Commands, Entity, IVec3, Query, Res, ResMut, Transform, With};
 
 use super::components::{EdgeRenderChunk, RenderAround, RenderedTag};
 
@@ -16,8 +16,8 @@ pub fn dirty_around_system(
     edge_chunks: Query<(Entity, &ChunkPosition), (With<EdgeRenderChunk>,)>,
     mut commands: Commands,
 ) {
-    info!("edge_chunks {}", edge_chunks.iter().count());
-    info!("dirty {}", vox_world.dirty().len());
+    // info!("edge_chunks {}", edge_chunks.iter().count());
+    // info!("dirty {}", vox_world.dirty().len());
 
     for (ent, chpos) in edge_chunks.iter() {
         let mut is_edge = false;
@@ -48,9 +48,7 @@ pub fn dirty_around_system(
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
         // chunk loader currently occupies MUST be generated
-        if !rendered_chunks.contains(ent_chunks.map[&curr_chpos])
-            && !vox_world.dirty().pin().contains(&curr_chpos)
-        {
+        if !rendered_chunks.contains(ent_chunks.map[&curr_chpos]) {
             mark_for_render(&vox_world, &ent_chunks, curr_chpos, &mut commands);
         };
     }
@@ -83,4 +81,6 @@ fn mark_for_render(
     dirty.insert(curr_chpos);
     let entity = ent_chunks.map[&curr_chpos];
     commands.entity(entity).insert(EdgeRenderChunk);
+
+    // info!("mark {}", curr_chpos.pos);
 }

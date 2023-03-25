@@ -20,6 +20,7 @@ pub fn generate_map_around_system(
 ) {
     // info!("gen edge_chunks {}", edge_chunks.iter().count());
 
+    let mut chunks_generated = 0;
     for (ent, chpos) in edge_chunks.iter() {
         let mut is_edge = false;
         for dir in crate::directions::Directions::all()
@@ -33,10 +34,11 @@ pub fn generate_map_around_system(
                 generate_chunks_on_edge(
                     &loaders,
                     edge_chunk_pos,
-                    config.config.generate_around_bubble,
+                    &config,
                     &mut vox_world,
                     &mut ent_chunks,
                     &mut commands,
+                    &mut chunks_generated,
                 )
             }
         }
@@ -58,16 +60,25 @@ pub fn generate_map_around_system(
 fn generate_chunks_on_edge(
     loaders: &Query<&Transform, (With<GenerateMapAround>,)>,
     edge_chunk_pos: IVec3,
-    generate_around_bubble: usize,
+    config: &RuntimeGameConfig,
     vox_world: &mut VoxelWorldProcedural,
     ent_chunks: &mut EntityChunks,
     commands: &mut Commands,
+    chunks_generated: &mut usize,
 ) {
     for transform in loaders.iter() {
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
-        if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize <= generate_around_bubble {
+        if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize
+            <= config.config.render_around_bubble + 1
+        {
             create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
+        } else if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize
+            <= config.config.generate_around_bubble
+            && *chunks_generated < config.chunks_generate_per_frame as usize
+        {
+            create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
+            *chunks_generated += 1;
         }
     }
 }

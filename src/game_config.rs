@@ -39,7 +39,7 @@ impl From<GameConfig> for RuntimeGameConfig {
         Self {
             config: conf,
             chunks_generate_per_frame: 1,
-            chunks_render_per_frame: 1,
+            chunks_render_per_frame: 50,
         }
     }
 }
