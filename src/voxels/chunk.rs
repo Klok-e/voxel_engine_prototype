@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::{cell::Cell, cmp::Ordering, sync::Mutex};
 
 use crate::directions::Directions;
 use bevy::prelude::{Component, IVec3};
@@ -14,6 +14,8 @@ pub const CHSIZEF: f32 = CHSIZE as f32;
 #[derive(Debug)]
 pub struct Chunk<const N: usize> {
     data: Array3<Voxel>,
+    is_transparent: Mutex<Cell<Option<bool>>>,
+    is_nontransparent: Mutex<Cell<Option<bool>>>,
 }
 
 impl<const N: usize> Chunk<N> {
@@ -22,11 +24,15 @@ impl<const N: usize> Chunk<N> {
     pub fn new() -> Self {
         Chunk {
             data: Array3::default([N, N, N]),
+            is_transparent: Default::default(),
+            is_nontransparent: Default::default(),
         }
     }
 
     #[inline]
     pub fn data_mut(&mut self) -> &mut Array3<Voxel> {
+        self.is_transparent.lock().unwrap().set(None);
+        self.is_nontransparent.lock().unwrap().set(None);
         &mut self.data
     }
 
@@ -76,6 +82,24 @@ impl<const N: usize> Chunk<N> {
         } else {
             Some([x, y, z].into())
         }
+    }
+
+    pub fn is_nontransparent(&self) -> bool {
+        if let Some(v) = self.is_nontransparent.lock().unwrap().get() {
+            return v;
+        }
+        let all = self.data.iter().all(|x| !x.is_transparent());
+        self.is_nontransparent.lock().unwrap().set(Some(all));
+        all
+    }
+
+    pub fn is_transparent(&self) -> bool {
+        if let Some(v) = self.is_transparent.lock().unwrap().get() {
+            return v;
+        }
+        let all = self.data.iter().all(|x| x.is_transparent());
+        self.is_transparent.lock().unwrap().set(Some(all));
+        all
     }
 }
 
