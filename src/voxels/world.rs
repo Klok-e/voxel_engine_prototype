@@ -9,7 +9,6 @@ use crate::{
     directions::Directions,
 };
 use bevy::prelude::{IVec3, Resource, Vec3};
-use flurry::Guard;
 
 use std::{
     collections::{HashMap, VecDeque},
@@ -88,24 +87,19 @@ where
         self.chunk_at(chunk).map(|c| c.data()[*ind])
     }
 
-    pub fn set_voxel_at_pos(&self, pos: &Vec3, new_vox: Voxel, guard: &Guard) {
+    pub fn set_voxel_at_pos(&self, pos: &Vec3, new_vox: Voxel) {
         let (ch, ind) = Self::to_ch_pos_index(pos);
-        self.set_voxel_at(&ch, &ind, new_vox, guard)
+        self.set_voxel_at(&ch, &ind, new_vox)
     }
-    pub fn set_voxel_at(
-        &self,
-        chunk: &ChunkPosition,
-        ind: &[usize; 3],
-        new_vox: Voxel,
-        guard: &Guard,
-    ) {
-        let ch_list = match self.chunk_changes.get(chunk, guard) {
+    pub fn set_voxel_at(&self, chunk: &ChunkPosition, ind: &[usize; 3], new_vox: Voxel) {
+        let chunk_changes = self.chunk_changes.pin();
+        let ch_list = match chunk_changes.get(chunk) {
             Some(change_list) => change_list,
             None => {
-                self.chunk_changes
-                    .try_insert(*chunk, Mutex::new(VecDeque::new()), guard)
+                chunk_changes
+                    .try_insert(*chunk, Mutex::new(VecDeque::new()))
                     .unwrap();
-                self.chunk_changes.get(chunk, guard).unwrap()
+                chunk_changes.get(chunk).unwrap()
             }
         };
         let mut ch_list = ch_list.lock().unwrap();
