@@ -71,14 +71,10 @@ pub fn chunk_render_system(
             rendered.store(r + 1, Ordering::SeqCst)
         });
 
-    for cmd in receiver.into_iter() {
-        match cmd {
-            Some(SetMesh(mesh, ent)) => {
-                commands
-                    .entity(ent)
-                    .insert((meshes.add(mesh), mats.material.clone()));
-            }
-            None => {}
-        }
+    for cmd in receiver.into_iter().flatten() {
+        let SetMesh(mesh, ent) = cmd;
+        commands
+            .entity(ent)
+            .insert((meshes.add(mesh), mats.material.clone()));
     }
 }
