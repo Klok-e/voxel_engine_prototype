@@ -38,7 +38,7 @@ impl From<GameConfig> for RuntimeGameConfig {
     fn from(conf: GameConfig) -> Self {
         Self {
             config: conf,
-            chunks_generate_per_frame: 50,
+            chunks_generate_per_frame: 1,
             chunks_render_per_frame: 50,
         }
     }
