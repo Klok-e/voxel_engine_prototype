@@ -28,7 +28,7 @@ pub fn generate_map_around_system(
             .map(|d| d.to_ivec())
         {
             let edge_chunk_pos = chpos.pos + dir;
-            if vox_world.chunk_at(&edge_chunk_pos.into()).is_none() {
+            if vox_world.get_chunk_at(&edge_chunk_pos.into()).is_none() {
                 is_edge = true;
 
                 generate_chunks_on_edge(
@@ -51,7 +51,7 @@ pub fn generate_map_around_system(
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
         // chunk loader currently occupies MUST be generated
-        if vox_world.chunk_at(&curr_chpos).is_none() {
+        if vox_world.get_chunk_at(&curr_chpos).is_none() {
             create_chunk(&mut vox_world, &mut ent_chunks, curr_chpos, &mut commands);
         };
     }

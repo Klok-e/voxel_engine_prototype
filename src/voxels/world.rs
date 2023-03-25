@@ -61,8 +61,12 @@ where
         &self.dirty
     }
 
-    pub fn chunk_at<'a>(&'a self, pos: &ChunkPosition) -> Option<&'a Chunk<N>> {
+    pub fn get_chunk_at<'a>(&'a self, pos: &ChunkPosition) -> Option<&'a Chunk<N>> {
         self.chunks.get(pos)
+    }
+
+    pub fn chunk_at<'a>(&'a self, pos: &ChunkPosition) -> &'a Chunk<N> {
+        self.chunks.get(pos).expect("Chunk expected.")
     }
 
     pub fn chunk_at_mut<'a>(&'a mut self, pos: &ChunkPosition) -> Option<&'a mut Chunk<N>> {
@@ -84,7 +88,7 @@ where
         self.voxel_at(&ch, &ind)
     }
     pub fn voxel_at(&self, chunk: &ChunkPosition, ind: &[usize; 3]) -> Option<Voxel> {
-        self.chunk_at(chunk).map(|c| c.data()[*ind])
+        self.get_chunk_at(chunk).map(|c| c.data()[*ind])
     }
 
     pub fn set_voxel_at_pos(&self, pos: &Vec3, new_vox: Voxel) {
@@ -109,7 +113,7 @@ where
     pub fn mesh(&self, chpos: &ChunkPosition) -> ChunkMeshData {
         let onef: Vec3 = [1., 1., 1.].into();
 
-        let chunk = self.chunk_at(chpos).unwrap();
+        let chunk = self.chunk_at(chpos);
         let mut chunk_mesh = ChunkMeshData::new();
         for x in 0..Self::NI {
             for y in 0..Self::NI {
@@ -127,7 +131,7 @@ where
                         let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => {
                                 let convert_vec: [usize; 3] = index.to_usize();
-                                self.chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))
+                                self.get_chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))
                                     .unwrap()
                                     .data()[convert_vec]
                             }
