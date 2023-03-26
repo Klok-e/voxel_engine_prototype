@@ -8,6 +8,7 @@ use bevy::{
 use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
     game_config::{GameConfig, GameConfigPlugin},
+    ui::bundle::DebugUiBundle,
     voxels::{
         bundle::VoxelBundle,
         systems::{
@@ -33,6 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             config_path.join("game_configs.ron"),
         )?))
         .add_plugin(VoxelBundle)
+        .add_plugin(DebugUiBundle)
         .add_startup_system(startup)
         .add_startup_system(add_camera_settings)
         .add_system(camera_move_system)

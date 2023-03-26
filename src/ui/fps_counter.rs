@@ -1,35 +1,18 @@
-use amethyst::ecs::{query::Query, SystemBuilder};
-use amethyst::{
-    ecs::{Entity, IntoQuery, Runnable, SubWorld},
-    ui::UiText,
-    utils::fps_counter::FpsCounter,
+use bevy::{
+    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    prelude::{Component, Query, Res, With},
+    text::Text,
 };
-use log;
 
-pub struct FpsText {
-    pub text: Entity,
-}
+#[derive(Component)]
+pub struct FpsText;
 
-pub fn fps_ui_system() -> impl Runnable {
-    SystemBuilder::new("fps_ui_system")
-        .read_resource::<FpsCounter>()
-        .read_resource::<FpsText>()
-        .with_query(<(&mut UiText,)>::query())
-        .build(move |_, world, resources, query| fps_ui(world, &resources.0, &resources.1, query))
-}
-
-fn fps_ui(
-    world: &mut SubWorld,
-    counter: &FpsCounter,
-    text_handle: &FpsText,
-    q: &mut Query<(&mut UiText,)>,
-) {
-    match q.get_mut(world, text_handle.text) {
-        Ok(t) => {
-            t.0.text = format!("{:.2}", counter.sampled_fps());
-        }
-        Err(e) => {
-            log::warn!("No Fps Counter UiText found! {}", e);
+pub fn fps_ui_system(mut text: Query<&mut Text, With<FpsText>>, diagnostics: Res<Diagnostics>) {
+    let mut text = text.single_mut();
+    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+        if let Some(value) = fps.smoothed() {
+            // Update the value of the second section
+            text.sections[1].value = format!("{value:.2}");
         }
     }
 }
