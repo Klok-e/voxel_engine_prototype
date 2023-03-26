@@ -66,8 +66,8 @@ fn mark_dirty_on_edge(
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
         if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize <= render_around_bubble {
-            let will_produce_mesh = may_chunk_produce_mesh(vox_world, edge_chunk_pos);
-            if will_produce_mesh {
+            let may_produce_mesh = may_chunk_produce_mesh(vox_world, edge_chunk_pos);
+            if may_produce_mesh {
                 mark_for_render(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
             }
         }

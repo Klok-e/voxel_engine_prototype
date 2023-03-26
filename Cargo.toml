@@ -18,7 +18,7 @@ name = "generation"
 harness = false
 
 [dependencies]
-bevy = { version = "0.10", features = [] }
+bevy = { version = "0.10", features = ["dynamic_linking"] }
 bitflags = "2.0.0"
 lazy_static = "1.4.0"
 chrono = "0.4.19"
