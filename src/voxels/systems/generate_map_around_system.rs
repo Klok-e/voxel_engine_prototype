@@ -1,4 +1,5 @@
 use crate::{
+    directions::Directions,
     game_config::RuntimeGameConfig,
     voxels::{
         chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
@@ -11,7 +12,10 @@ use bevy::prelude::{
 };
 use bevy_prototype_debug_lines::DebugShapes;
 
-use super::components::{EdgeChunk, GenerateMapAround};
+use super::{
+    common::may_neighbours_produce_mesh,
+    components::{EdgeChunk, GenerateMapAround},
+};
 
 pub fn generate_map_around_system(
     mut vox_world: ResMut<VoxelWorldProcedural>,
@@ -33,10 +37,7 @@ pub fn generate_map_around_system(
             .color(Color::PURPLE);
 
         let mut is_edge = false;
-        for dir in crate::directions::Directions::all()
-            .into_iter()
-            .map(|d| d.to_ivec())
-        {
+        for dir in Directions::all().into_iter().map(|d| d.to_ivec()) {
             let edge_chunk_pos = chpos.pos + dir;
             if vox_world.get_chunk_at(&edge_chunk_pos.into()).is_none() {
                 is_edge = true;
@@ -65,6 +66,22 @@ pub fn generate_map_around_system(
             create_chunk(&mut vox_world, &mut ent_chunks, curr_chpos, &mut commands);
         };
     }
+
+    let pos_with_changes = vox_world
+        .chunk_changes()
+        .pin()
+        .iter()
+        .filter(|(_, changes)| changes.lock().unwrap().len() > 0)
+        .flat_map(|(pos, _1)| {
+            std::iter::once(pos.pos)
+                .chain(Directions::all().into_iter().map(|d| pos.pos + d.to_ivec()))
+        })
+        .collect::<Vec<_>>();
+    for chpos in pos_with_changes {
+        if vox_world.get_chunk_at(&chpos.into()).is_none() {
+            create_chunk(&mut vox_world, &mut ent_chunks, chpos.into(), &mut commands);
+        };
+    }
 }
 
 fn generate_chunks_on_edge(
@@ -79,13 +96,19 @@ fn generate_chunks_on_edge(
     for transform in loaders.iter() {
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
-        if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize
+        let may_neighbours_mesh = || may_neighbours_produce_mesh(vox_world, edge_chunk_pos);
+        if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize <= 2 {
+            create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
+        } else if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize
             <= config.config.render_around_bubble
         {
-            create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
+            if may_neighbours_mesh() {
+                create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
+            }
         } else if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize
             <= config.config.generate_around_bubble
             && *chunks_generated < config.chunks_generate_per_frame as usize
+            && may_neighbours_mesh()
         {
             create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
             *chunks_generated += 1;

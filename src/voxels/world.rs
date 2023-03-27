@@ -61,6 +61,10 @@ where
         &self.dirty
     }
 
+    pub fn chunk_changes(&self) -> &flurry::HashMap<ChunkPosition, Mutex<VecDeque<VoxChange>>> {
+        &self.chunk_changes
+    }
+
     pub fn get_chunk_at<'a>(&'a self, pos: &ChunkPosition) -> Option<&'a Chunk<N>> {
         self.chunks.get(pos)
     }
@@ -131,8 +135,7 @@ where
                         let adj_vox = match Chunk::<N>::chunk_voxel_index_wrap(&spos) {
                             Some(index) => {
                                 let convert_vec: [usize; 3] = index.to_usize();
-                                self.get_chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))
-                                    .unwrap()
+                                self.chunk_at(&ChunkPosition::new(chpos.pos + dir_vec))
                                     .data()[convert_vec]
                             }
                             None => {

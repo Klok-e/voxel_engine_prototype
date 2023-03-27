@@ -23,8 +23,8 @@ impl Plugin for VoxelBundle {
 
         app.add_system(generate_map_around_system);
         app.add_system(destroy_on_touch_system);
-        app.add_system(world_apply_changes_system);
         app.add_system(dirty_around_system);
+        app.add_system(world_apply_changes_system);
         app.add_system(chunk_render_system);
     }
 }

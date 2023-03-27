@@ -7,6 +7,7 @@ use bevy::{
 
 use super::{
     chunk_counter::{chunk_counter_ui_system, ChunkCountersText},
+    current_chunk_info::{current_chunk_info_system, CurrentChunkInfoText},
     fps_counter::{fps_ui_system, FpsText},
 };
 
@@ -17,6 +18,7 @@ impl Plugin for DebugUiBundle {
         app.add_plugin(FrameTimeDiagnosticsPlugin::default());
         app.add_system(chunk_counter_ui_system);
         app.add_system(fps_ui_system);
+        app.add_system(current_chunk_info_system);
 
         app.add_startup_system(startup);
     }
@@ -90,7 +92,7 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
             ),
             TextSection::from_style(TextStyle {
-                font,
+                font: font.clone(),
                 font_size: 30.0,
                 color: Color::GOLD,
             }),
@@ -106,5 +108,34 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         }),
         ChunkCountersText,
+    ));
+
+    commands.spawn((
+        TextBundle::from_sections([
+            TextSection::new(
+                "Current Ch: ",
+                TextStyle {
+                    font: font.clone(),
+                    font_size: 30.0,
+                    color: Color::WHITE,
+                },
+            ),
+            TextSection::from_style(TextStyle {
+                font,
+                font_size: 30.0,
+                color: Color::GOLD,
+            }),
+        ])
+        .with_text_alignment(TextAlignment::Left)
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            position: UiRect {
+                top: Val::Px(65.0),
+                left: Val::Px(5.0),
+                ..default()
+            },
+            ..default()
+        }),
+        CurrentChunkInfoText,
     ));
 }
