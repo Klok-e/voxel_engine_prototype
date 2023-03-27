@@ -30,11 +30,13 @@ pub fn generate_map_around_system(
 
     let mut chunks_generated = 0;
     for (ent, chpos) in edge_chunks.iter() {
-        lines
-            .cuboid()
-            .position((chpos.pos * CHSIZEI).as_vec3())
-            .size(Vec3::ONE * CHSIZEF)
-            .color(Color::PURPLE);
+        if config.debug_show_edge_chunks {
+            lines
+                .cuboid()
+                .position((chpos.pos * CHSIZEI).as_vec3())
+                .size(Vec3::ONE * CHSIZEF)
+                .color(Color::PURPLE);
+        }
 
         let mut is_edge = false;
         for dir in Directions::all().into_iter().map(|d| d.to_ivec()) {

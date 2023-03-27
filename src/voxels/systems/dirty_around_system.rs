@@ -30,10 +30,12 @@ pub fn dirty_around_system(
     // info!("dirty {}", vox_world.dirty().len());
 
     for (ent, chpos) in edge_chunks.iter() {
-        lines
-            .cuboid()
-            .position((chpos.pos * CHSIZEI).as_vec3())
-            .size(Vec3::ONE * CHSIZEF);
+        if config.debug_show_edge_chunks {
+            lines
+                .cuboid()
+                .position((chpos.pos * CHSIZEI).as_vec3())
+                .size(Vec3::ONE * CHSIZEF);
+        }
 
         if edge_generated_chunks.contains(ent) {
             continue;

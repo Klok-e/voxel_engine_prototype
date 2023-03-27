@@ -31,6 +31,7 @@ impl GameConfig {
 pub struct RuntimeGameConfig {
     pub chunks_render_per_frame: u32,
     pub chunks_generate_per_frame: u32,
+    pub debug_show_edge_chunks: bool,
     pub config: GameConfig,
 }
 
@@ -40,6 +41,7 @@ impl From<GameConfig> for RuntimeGameConfig {
             config: conf,
             chunks_generate_per_frame: 10,
             chunks_render_per_frame: 50,
+            debug_show_edge_chunks: false,
         }
     }
 }
