@@ -5,6 +5,7 @@ use bevy::{
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
+use bevy_prototype_debug_lines::DebugLinesPlugin;
 use voxel_engine_prototype_lib::{
     camera_move_system::{camera_move_system, CameraMoveSensitivity},
     game_config::{GameConfig, GameConfigPlugin},
@@ -33,6 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .add_plugin(GameConfigPlugin::new(GameConfig::from_file_ron(
             config_path.join("game_configs.ron"),
         )?))
+        .add_plugin(DebugLinesPlugin::with_depth_test(true))
         .add_plugin(VoxelBundle)
         .add_plugin(DebugUiBundle)
         .add_startup_system(startup)

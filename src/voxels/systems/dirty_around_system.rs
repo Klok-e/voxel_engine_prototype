@@ -1,11 +1,19 @@
 use crate::{
     game_config::RuntimeGameConfig,
-    voxels::{chunk::ChunkPosition, resources::EntityChunks, world::VoxelWorldProcedural},
+    voxels::{
+        chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
+        resources::EntityChunks,
+        world::VoxelWorldProcedural,
+    },
 };
 
-use bevy::prelude::{Commands, Entity, IVec3, Query, Res, ResMut, Transform, With};
+use bevy::prelude::{Commands, Entity, IVec3, Query, Res, ResMut, Transform, Vec3, With};
+use bevy_prototype_debug_lines::DebugShapes;
 
-use super::components::{EdgeRenderChunk, RenderAround, RenderedTag};
+use super::{
+    common::may_chunk_produce_mesh,
+    components::{EdgeChunk, EdgeRenderChunk, RenderAround, RenderedTag},
+};
 
 pub fn dirty_around_system(
     vox_world: ResMut<VoxelWorldProcedural>,
@@ -14,19 +22,38 @@ pub fn dirty_around_system(
     rendered_chunks: Query<&ChunkPosition, (With<RenderedTag>,)>,
     ent_chunks: Res<EntityChunks>,
     edge_chunks: Query<(Entity, &ChunkPosition), (With<EdgeRenderChunk>,)>,
+    edge_generated_chunks: Query<(Entity, &ChunkPosition), (With<EdgeChunk>,)>,
     mut commands: Commands,
+    mut lines: ResMut<DebugShapes>,
 ) {
     // info!("edge_chunks {}", edge_chunks.iter().count());
     // info!("dirty {}", vox_world.dirty().len());
 
     for (ent, chpos) in edge_chunks.iter() {
+        lines
+            .cuboid()
+            .position((chpos.pos * CHSIZEI).as_vec3())
+            .size(Vec3::ONE * CHSIZEF);
+
+        if edge_generated_chunks.contains(ent) {
+            continue;
+        }
+
         let mut is_edge = false;
         for dir in crate::directions::Directions::all()
             .into_iter()
             .map(|d| d.to_ivec())
         {
             let edge_chunk_pos = chpos.pos + dir;
-            if !rendered_chunks.contains(ent_chunks.map[&edge_chunk_pos.into()]) {
+            let entity = ent_chunks.map[&edge_chunk_pos.into()];
+
+            // don't step on generated edge chunks, or meshing will fail
+            if edge_generated_chunks.contains(entity) {
+                is_edge = true;
+                continue;
+            }
+
+            if !rendered_chunks.contains(entity) {
                 is_edge = true;
 
                 mark_dirty_on_edge(
@@ -48,7 +75,8 @@ pub fn dirty_around_system(
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
         // chunk loader currently occupies MUST be generated
-        if !rendered_chunks.contains(ent_chunks.map[&curr_chpos]) {
+        let entity = ent_chunks.map[&curr_chpos];
+        if !rendered_chunks.contains(entity) {
             mark_for_render(&vox_world, &ent_chunks, curr_chpos, &mut commands);
         };
     }
@@ -72,50 +100,6 @@ fn mark_dirty_on_edge(
             }
         }
     }
-}
-
-fn may_chunk_produce_mesh(vox_world: &VoxelWorldProcedural, pos: IVec3) -> bool {
-    enum Foo {
-        Transparent,
-        Nontransparent,
-    }
-
-    let chunk_at = vox_world.chunk_at(&pos.into());
-    let is_transparent = chunk_at.is_transparent();
-    let is_nontransparent = chunk_at.is_nontransparent();
-    if !is_transparent && !is_nontransparent {
-        return true;
-    }
-
-    let variant = if is_transparent {
-        Foo::Transparent
-    } else {
-        Foo::Nontransparent
-    };
-
-    let mut will_produce_mesh = false;
-    for dir in crate::directions::Directions::all()
-        .into_iter()
-        .map(|d| d.to_ivec())
-    {
-        let edge_chunk_pos = pos + dir;
-        let Some(next_chunk) = &vox_world.get_chunk_at(&edge_chunk_pos.into()) else {
-            return false;
-        };
-        let is_next_transparent = match variant {
-            Foo::Transparent => next_chunk.is_transparent(),
-            Foo::Nontransparent => next_chunk.is_nontransparent(),
-        };
-        if match variant {
-            Foo::Transparent => chunk_at.is_transparent(),
-            Foo::Nontransparent => chunk_at.is_nontransparent(),
-        } != is_next_transparent
-        {
-            will_produce_mesh = true;
-            break;
-        }
-    }
-    will_produce_mesh
 }
 
 fn mark_for_render(

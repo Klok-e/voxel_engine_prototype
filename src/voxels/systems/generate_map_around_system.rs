@@ -1,12 +1,15 @@
 use crate::{
     game_config::RuntimeGameConfig,
     voxels::{
-        chunk::{ChunkPosition, CHSIZEI},
+        chunk::{ChunkPosition, CHSIZEF, CHSIZEI},
         resources::EntityChunks,
         world::VoxelWorldProcedural,
     },
 };
-use bevy::prelude::{Commands, Entity, IVec3, PbrBundle, Query, Res, ResMut, Transform, With};
+use bevy::prelude::{
+    Color, Commands, Entity, IVec3, PbrBundle, Query, Res, ResMut, Transform, Vec3, With,
+};
+use bevy_prototype_debug_lines::DebugShapes;
 
 use super::components::{EdgeChunk, GenerateMapAround};
 
@@ -17,11 +20,18 @@ pub fn generate_map_around_system(
     loaders: Query<&Transform, (With<GenerateMapAround>,)>,
     edge_chunks: Query<(Entity, &ChunkPosition), (With<EdgeChunk>,)>,
     mut commands: Commands,
+    mut lines: ResMut<DebugShapes>,
 ) {
     // info!("gen edge_chunks {}", edge_chunks.iter().count());
 
     let mut chunks_generated = 0;
     for (ent, chpos) in edge_chunks.iter() {
+        lines
+            .cuboid()
+            .position((chpos.pos * CHSIZEI).as_vec3())
+            .size(Vec3::ONE * CHSIZEF)
+            .color(Color::PURPLE);
+
         let mut is_edge = false;
         for dir in crate::directions::Directions::all()
             .into_iter()
@@ -70,7 +80,7 @@ fn generate_chunks_on_edge(
         let (curr_chpos, _) = VoxelWorldProcedural::to_ch_pos_index(&transform.translation);
 
         if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize
-            <= config.config.render_around_bubble + 1
+            <= config.config.render_around_bubble
         {
             create_chunk(vox_world, ent_chunks, edge_chunk_pos.into(), commands);
         } else if (curr_chpos.pos - edge_chunk_pos).as_vec3().length() as usize

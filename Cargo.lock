@@ -673,6 +673,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_prototype_debug_lines"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8407986cbcabb473b8dc6bd92a5b0879eee065cecc72857f34391951f1dcfd2"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "bevy_ptr"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3720,6 +3729,7 @@ name = "voxel_engine_prototype"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_prototype_debug_lines",
  "bitflags 2.0.2",
  "chrono",
  "criterion",
