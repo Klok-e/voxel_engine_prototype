@@ -1,7 +1,10 @@
 use bevy::{
     input::mouse::MouseMotion,
     math,
-    prelude::{Camera3d, EventReader, Input, KeyCode, Query, Res, Resource, Transform, With},
+    prelude::{
+        Camera3d, EulerRot, EventReader, Input, KeyCode, Quat, Query, Res, Resource, Transform,
+        With,
+    },
     window::{CursorGrabMode, Window},
 };
 
@@ -66,6 +69,9 @@ pub fn camera_move_system(
         let vec3 = cam_trans.rotation * translation;
         cam_trans.translation += vec3 * sensitivity.translation * boost;
 
+        let mut angles = cam_trans.rotation.to_euler(EulerRot::default());
+        angles.2 = 0.0;
+        cam_trans.rotation = Quat::from_euler(EulerRot::default(), angles.0, angles.1, angles.2);
         cam_trans.rotate_local_x(sensitivity.mouse * -delta.y);
         cam_trans.rotate_local_y(sensitivity.mouse * -delta.x);
     }

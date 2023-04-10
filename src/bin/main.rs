@@ -64,7 +64,7 @@ fn startup(
     });
 
     commands.spawn(bevy::pbr::DirectionalLightBundle {
-        directional_light: DirectionalLight { ..default() },
+        directional_light: default(),
         transform: Transform::default().looking_to(Vec3::NEG_Y, Vec3::NEG_Z),
         ..default()
     });
